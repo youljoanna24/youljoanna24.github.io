@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나의 글쓰기 노트</title>
+<style>
+:root{
+  --bg:#faf8f4; --panel:#fff; --border:#e5e0d8; --text:#2b2620; --muted:#8a8175;
+  --accent:#a3673c; --accent-soft:#f1e4d6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1c1a17; --panel:#242119; --border:#3a352c; --text:#ece7dd; --muted:#a89f8f;
+    --accent:#d69a63; --accent-soft:#332a1f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1c1a17; --panel:#242119; --border:#3a352c; --text:#ece7dd; --muted:#a89f8f;
+  --accent:#d69a63; --accent-soft:#332a1f;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:'Georgia','Noto Serif KR',serif;
+  display:flex; height:100%;
+}
+#sidebar{
+  width:230px; min-width:230px; background:var(--panel); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; padding:14px 10px;
+}
+#brand{font-size:15px; font-weight:bold; padding:6px 8px 14px; color:var(--accent); letter-spacing:.5px;}
+#newBtn{
+  border:1px solid var(--accent); color:var(--accent); background:transparent;
+  border-radius:8px; padding:9px; font-size:14px; cursor:pointer; margin-bottom:12px; font-family:inherit;
+}
+#newBtn:hover{background:var(--accent-soft);}
+#pageList{list-style:none; margin:0; padding:0; overflow-y:auto; flex:1;}
+#pageList li{
+  padding:10px 10px; border-radius:8px; cursor:pointer; margin-bottom:4px;
+  font-size:13.5px; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:6px;
+}
+#pageList li:hover{background:var(--accent-soft);}
+#pageList li.active{background:var(--accent-soft); color:var(--text); font-weight:bold;}
+#pageList li span.title{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;}
+#pageList li button{
+  background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; opacity:.6; flex-shrink:0;
+}
+#pageList li button:hover{opacity:1; color:#c0392b;}
+#main{flex:1; display:flex; flex-direction:column; min-width:0;}
+#topbar{
+  padding:14px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;
+}
+#titleInput{
+  font-size:22px; font-weight:bold; border:none; background:transparent; color:var(--text);
+  outline:none; width:100%; font-family:inherit;
+}
+#titleInput::placeholder{color:var(--muted);}
+#status{font-size:12px; color:var(--muted); white-space:nowrap; margin-left:16px;}
+#editorWrap{flex:1; overflow-y:auto; padding:24px; display:flex; justify-content:center;}
+#editor{
+  width:100%; max-width:720px; min-height:100%; border:none; outline:none; resize:none;
+  background:transparent; color:var(--text); font-size:16px; line-height:1.9; font-family:inherit;
+}
+#editor::placeholder{color:var(--muted);}
+#empty{margin:auto; text-align:center; color:var(--muted); font-size:14px;}
+@media (max-width:640px){
+  #sidebar{position:fixed; z-index:10; height:100%; transform:translateX(-100%); transition:transform .2s;}
+  #sidebar.open{transform:translateX(0);}
+  #menuBtn{display:inline-block !important;}
+  #titleInput{font-size:19px;}
+}
+#menuBtn{display:none; border:none; background:none; font-size:20px; color:var(--text); cursor:pointer; margin-right:10px;}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div id="brand">나의 글쓰기 노트</div>
+  <button id="newBtn">+ 새 페이지</button>
+  <ul id="pageList"></ul>
+</div>
+<div id="main">
+  <div id="topbar">
+    <div style="display:flex;align-items:center;flex:1;min-width:0;">
+      <button id="menuBtn">☰</button>
+      <input id="titleInput" placeholder="제목 없음" />
+    </div>
+    <div id="status">저장됨</div>
+  </div>
+  <div id="editorWrap">
+    <textarea id="editor" placeholder="여기에 글을 쓰세요..."></textarea>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "writing-site-pages-v1";
+let pages = [];
+let currentId = null;
+let saveTimer = null;
+
+function loadPages(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    pages = raw ? JSON.parse(raw) : [];
+  }catch(e){ pages = []; }
+}
+function persist(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); }catch(e){}
+}
+function newPage(){
+  const p = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:"", content:"", updated: Date.now() };
+  pages.unshift(p);
+  currentId = p.id;
+  persist();
+  renderList();
+  renderEditor();
+  document.getElementById("titleInput").focus();
+}
+function deletePage(id, e){
+  e.stopPropagation();
+  if(!confirm("이 페이지를 삭제할까요?")) return;
+  pages = pages.filter(p=>p.id!==id);
+  if(currentId===id){ currentId = pages.length ? pages[0].id : null; }
+  persist();
+  renderList();
+  renderEditor();
+}
+function selectPage(id){
+  currentId = id;
+  renderList();
+  renderEditor();
+  if(window.innerWidth<=640) document.getElementById("sidebar").classList.remove("open");
+}
+function renderList(){
+  const ul = document.getElementById("pageList");
+  ul.innerHTML = "";
+  pages.slice().sort((a,b)=>b.updated-a.updated).forEach(p=>{
+    const li = document.createElement("li");
+    li.className = p.id===currentId ? "active":"";
+    const span = document.createElement("span");
+    span.className = "title";
+    span.textContent = p.title || "제목 없음";
+    li.appendChild(span);
+    const del = document.createElement("button");
+    del.textContent = "✕";
+    del.onclick = (e)=>deletePage(p.id,e);
+    li.appendChild(del);
+    li.onclick = ()=>selectPage(p.id);
+    ul.appendChild(li);
+  });
+}
+function renderEditor(){
+  const titleInput = document.getElementById("titleInput");
+  const editor = document.getElementById("editor");
+  const wrap = document.getElementById("editorWrap");
+  const p = pages.find(p=>p.id===currentId);
+  if(!p){
+    wrap.innerHTML = '<div id="empty">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>';
+    return;
+  }
+  if(!document.getElementById("titleInput")) return;
+  titleInput.value = p.title;
+  editor.value = p.content;
+}
+function onEdit(){
+  const p = pages.find(p=>p.id===currentId);
+  if(!p) return;
+  p.title = document.getElementById("titleInput").value;
+  p.content = document.getElementById("editor").value;
+  p.updated = Date.now();
+  document.getElementById("status").textContent = "저장 중...";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    persist();
+    renderList();
+    document.getElementById("status").textContent = "저장됨";
+  }, 400);
+}
+
+loadPages();
+if(pages.length){ currentId = pages.slice().sort((a,b)=>b.updated-a.updated)[0].id; }
+renderList();
+
+// wire up editor area (must exist in DOM already)
+document.getElementById("newBtn").onclick = newPage;
+document.getElementById("menuBtn").onclick = ()=>document.getElementById("sidebar").classList.toggle("open");
+
+if(pages.length){
+  renderEditor();
+} else {
+  document.getElementById("editorWrap").innerHTML = '<div id="empty">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>';
+}
+
+document.addEventListener("input", (e)=>{
+  if(e.target.id==="titleInput" || e.target.id==="editor") onEdit();
+});
+</script>
+</body>
+</html>
