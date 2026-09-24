@@ -4,10 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>나의 글쓰기 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#faf8f4; --panel:#fff; --border:#e5e0d8; --text:#2b2620; --muted:#8a8175;
   --accent:#a3673c; --accent-soft:#f1e4d6;
+  --editor-font:'Georgia','Noto Serif KR',serif;
+  --editor-size:16px;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -58,38 +63,75 @@ body{
 }
 #titleInput{
   font-size:22px; font-weight:bold; border:none; background:transparent; color:var(--text);
-  outline:none; width:100%; font-family:inherit;
+  outline:none; width:100%; font-family:var(--editor-font);
 }
 #titleInput::placeholder{color:var(--muted);}
 #status{font-size:12px; color:var(--muted); white-space:nowrap; margin-left:16px;}
-#pageNav{display:flex; align-items:center; gap:8px; margin:0 16px; flex-shrink:0;}
-#pageNav button{
-  border:1px solid var(--border); background:transparent; color:var(--text);
-  border-radius:6px; width:26px; height:26px; cursor:pointer; font-size:12px; padding:0;
+#fontControls{display:flex; align-items:center; gap:6px; margin-left:12px; flex-shrink:0;}
+#fontControls select{
+  border:1px solid var(--border); background:var(--panel); color:var(--text);
+  border-radius:7px; padding:6px 8px; font-size:12px; cursor:pointer; font-family:inherit;
 }
-#pageNav button:hover{background:var(--accent-soft); border-color:var(--accent);}
-#pageNav button:disabled{opacity:.3; cursor:default;}
-#pageNav button:disabled:hover{background:transparent; border-color:var(--border);}
-#pageNumLabel{font-size:13px; color:var(--muted); min-width:44px; text-align:center;}
-#pageFooter{
-  text-align:center; padding:10px 0 calc(14px + env(safe-area-inset-bottom,0px));
-  font-size:12px; color:var(--muted); border-top:1px solid var(--border);
+#fontControls select:hover{border-color:var(--accent);}
+#pdfBtn{
+  margin-left:12px; border:1px solid var(--border); background:transparent; color:var(--text);
+  border-radius:7px; padding:7px 12px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:nowrap;
 }
-#editorWrap{flex:1; overflow-y:auto; padding:24px; display:flex; justify-content:center;}
+#pdfBtn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
+#printArea{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #printArea, #printArea *{visibility:visible;}
+  #printArea{display:block; position:absolute; top:0; left:0; width:100%;}
+  .print-page{page-break-after:always; padding:70px 60px; position:relative; min-height:90vh; box-sizing:border-box;}
+  .print-page:last-child{page-break-after:auto;}
+  .print-page h1{font-size:21px; margin:0 0 28px; font-family:var(--editor-font);}
+  .print-content{font-size:var(--editor-size); line-height:1.9; white-space:pre-wrap; font-family:var(--editor-font);}
+  .print-footer{position:absolute; bottom:28px; left:0; right:0; text-align:center; font-size:11px; color:#888; letter-spacing:1px;}
+}
+#editorWrap{
+  flex:1; overflow-y:auto; padding:32px 20px; display:flex; justify-content:center;
+  background:var(--bg);
+}
+#page{
+  width:100%; max-width:640px; min-height:100%;
+  background:var(--panel); border:1px solid var(--border); border-radius:2px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  padding:56px 48px; position:relative;
+}
 #editor{
-  width:100%; max-width:720px; min-height:100%; border:none; outline:none; resize:none;
-  background:transparent; color:var(--text); font-size:16px; line-height:1.9; font-family:inherit;
+  width:100%; height:100%; min-height:520px; border:none; outline:none; resize:none;
+  background:transparent; color:var(--text); font-size:var(--editor-size); line-height:2; font-family:var(--editor-font);
 }
 #editor::placeholder{color:var(--muted);}
-#empty{margin:auto; text-align:center; color:var(--muted); font-size:14px;}
+#empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--muted); font-size:14px; padding:0 40px;}
+#pageNumOnPage{
+  position:absolute; bottom:20px; left:0; right:0; text-align:center;
+  font-size:13px; color:var(--muted); letter-spacing:1.5px;
+  font-family:var(--editor-font);
+}
+#pageFooter{
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  padding:12px 0 calc(16px + env(safe-area-inset-bottom,0px));
+  font-size:13px; color:var(--muted); border-top:1px solid var(--border);
+  font-family:'Georgia','Noto Serif KR',serif; letter-spacing:1px;
+}
+#pageFooter button{
+  border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:13px; padding:4px 6px;
+}
+#pageFooter button:hover{color:var(--accent);}
+#pageFooter button:disabled{opacity:.25; cursor:default;}
+#pageFooter button:disabled:hover{color:var(--muted);}
 @media (max-width:640px){
   #sidebar{position:fixed; z-index:10; height:100%; transform:translateX(-100%); transition:transform .2s;}
   #sidebar.open{transform:translateX(0);}
   #menuBtn{display:inline-block !important;}
   #titleInput{font-size:19px;}
-  #pageNav{margin:0 8px;}
-  #pageNumLabel{min-width:36px; font-size:12px;}
   #status{display:none;}
+  #page{padding:32px 22px;}
+  #editorWrap{padding:16px 12px;}
+  #fontControls{margin-left:6px; gap:4px;}
+  #fontControls select{padding:5px 4px; font-size:11px;}
 }
 #menuBtn{display:none; border:none; background:none; font-size:20px; color:var(--text); cursor:pointer; margin-right:10px;}
 </style>
@@ -106,19 +148,38 @@ body{
       <button id="menuBtn">☰</button>
       <input id="titleInput" placeholder="제목 없음" />
     </div>
-    <div id="pageNav">
-      <button id="prevBtn" title="이전 페이지">◀</button>
-      <span id="pageNumLabel">-</span>
-      <button id="nextBtn" title="다음 페이지">▶</button>
+    <div id="fontControls">
+      <select id="fontSelect" title="글꼴">
+        <option value="'Georgia','Noto Serif KR',serif">명조체</option>
+        <option value="'Noto Sans KR',-apple-system,sans-serif">고딕체</option>
+        <option value="'Gaegu',cursive">손글씨체</option>
+        <option value="'Nanum Gothic Coding','Courier New',monospace">타자기체</option>
+      </select>
+      <select id="sizeSelect" title="글자 크기">
+        <option value="14px">14</option>
+        <option value="16px" selected>16</option>
+        <option value="18px">18</option>
+        <option value="20px">20</option>
+        <option value="22px">22</option>
+        <option value="24px">24</option>
+      </select>
     </div>
     <div id="status">저장됨</div>
+    <button id="pdfBtn" title="PDF로 저장">PDF 저장</button>
   </div>
   <div id="editorWrap">
-    <textarea id="editor" placeholder="여기에 글을 쓰세요..."></textarea>
-    <div id="empty" style="display:none;">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>
+    <div id="page">
+      <textarea id="editor" placeholder="여기에 글을 쓰세요..."></textarea>
+      <div id="empty" style="display:none;">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>
+      <div id="pageNumOnPage">-</div>
+    </div>
   </div>
-  <div id="pageFooter">- <span id="pageNumFooter">-</span> -</div>
+  <div id="pageFooter">
+    <button id="prevBtn" title="이전 페이지">◀</button>
+    <button id="nextBtn" title="다음 페이지">▶</button>
+  </div>
 </div>
+<div id="printArea"></div>
 
 <script>
 const STORAGE_KEY = "writing-site-pages-v1";
@@ -184,18 +245,16 @@ function renderEditor(){
   const titleInput = document.getElementById("titleInput");
   const editor = document.getElementById("editor");
   const empty = document.getElementById("empty");
-  const pageNumLabel = document.getElementById("pageNumLabel");
-  const pageNumFooter = document.getElementById("pageNumFooter");
+  const pageNumOnPage = document.getElementById("pageNumOnPage");
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
   const p = pages.find(p=>p.id===currentId);
   if(!p){
     editor.style.display = "none";
-    empty.style.display = "block";
+    empty.style.display = "flex";
     titleInput.value = "";
     titleInput.disabled = true;
-    pageNumLabel.textContent = "-";
-    pageNumFooter.textContent = "-";
+    pageNumOnPage.textContent = "-";
     prevBtn.disabled = true;
     nextBtn.disabled = true;
     return;
@@ -209,11 +268,9 @@ function renderEditor(){
   const order = orderedPages();
   const idx = order.findIndex(x=>x.id===currentId);
   const num = idx+1;
-  const total = order.length;
-  pageNumLabel.textContent = num + " / " + total;
-  pageNumFooter.textContent = num + " / " + total;
+  pageNumOnPage.textContent = "- " + num + " -";
   prevBtn.disabled = idx<=0;
-  nextBtn.disabled = idx>=total-1;
+  nextBtn.disabled = idx>=order.length-1;
 }
 function onEdit(){
   const p = pages.find(p=>p.id===currentId);
@@ -230,6 +287,27 @@ function onEdit(){
   }, 400);
 }
 
+const FONT_KEY = "writing-site-font-v1";
+function loadFontSettings(){
+  let saved = {};
+  try{ saved = JSON.parse(localStorage.getItem(FONT_KEY) || "{}"); }catch(e){}
+  const fontSelect = document.getElementById("fontSelect");
+  const sizeSelect = document.getElementById("sizeSelect");
+  if(saved.font) fontSelect.value = saved.font;
+  if(saved.size) sizeSelect.value = saved.size;
+  applyFontSettings();
+}
+function applyFontSettings(){
+  const font = document.getElementById("fontSelect").value;
+  const size = document.getElementById("sizeSelect").value;
+  document.documentElement.style.setProperty("--editor-font", font);
+  document.documentElement.style.setProperty("--editor-size", size);
+  try{ localStorage.setItem(FONT_KEY, JSON.stringify({font, size})); }catch(e){}
+}
+document.getElementById("fontSelect").onchange = applyFontSettings;
+document.getElementById("sizeSelect").onchange = applyFontSettings;
+loadFontSettings();
+
 loadPages();
 if(pages.length){ currentId = pages.slice().sort((a,b)=>b.updated-a.updated)[0].id; }
 renderList();
@@ -237,6 +315,24 @@ renderList();
 // wire up editor area (must exist in DOM already)
 document.getElementById("newBtn").onclick = newPage;
 document.getElementById("menuBtn").onclick = ()=>document.getElementById("sidebar").classList.toggle("open");
+function escapeHtml(s){
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function exportPDF(){
+  const order = orderedPages();
+  if(!order.length){ alert("저장할 페이지가 없어요. 먼저 페이지를 만들어주세요."); return; }
+  const area = document.getElementById("printArea");
+  area.innerHTML = order.map((p,i)=>{
+    const title = escapeHtml(p.title || "제목 없음");
+    const content = escapeHtml(p.content).replace(/\n/g,"<br>");
+    return '<div class="print-page"><h1>'+title+'</h1><div class="print-content">'+content+'</div><div class="print-footer">- '+(i+1)+' -</div></div>';
+  }).join("");
+  window.print();
+}
+window.addEventListener("afterprint", ()=>{
+  document.getElementById("printArea").innerHTML = "";
+});
+document.getElementById("pdfBtn").onclick = exportPDF;
 document.getElementById("prevBtn").onclick = ()=>{
   const order = orderedPages();
   const idx = order.findIndex(x=>x.id===currentId);
