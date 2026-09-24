@@ -94,6 +94,7 @@ body{
   </div>
   <div id="editorWrap">
     <textarea id="editor" placeholder="여기에 글을 쓰세요..."></textarea>
+    <div id="empty" style="display:none;">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>
   </div>
 </div>
 
@@ -157,13 +158,18 @@ function renderList(){
 function renderEditor(){
   const titleInput = document.getElementById("titleInput");
   const editor = document.getElementById("editor");
-  const wrap = document.getElementById("editorWrap");
+  const empty = document.getElementById("empty");
   const p = pages.find(p=>p.id===currentId);
   if(!p){
-    wrap.innerHTML = '<div id="empty">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>';
+    editor.style.display = "none";
+    empty.style.display = "block";
+    titleInput.value = "";
+    titleInput.disabled = true;
     return;
   }
-  if(!document.getElementById("titleInput")) return;
+  editor.style.display = "block";
+  empty.style.display = "none";
+  titleInput.disabled = false;
   titleInput.value = p.title;
   editor.value = p.content;
 }
@@ -190,11 +196,7 @@ renderList();
 document.getElementById("newBtn").onclick = newPage;
 document.getElementById("menuBtn").onclick = ()=>document.getElementById("sidebar").classList.toggle("open");
 
-if(pages.length){
-  renderEditor();
-} else {
-  document.getElementById("editorWrap").innerHTML = '<div id="empty">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>';
-}
+renderEditor();
 
 document.addEventListener("input", (e)=>{
   if(e.target.id==="titleInput" || e.target.id==="editor") onEdit();
