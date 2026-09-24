@@ -62,6 +62,19 @@ body{
 }
 #titleInput::placeholder{color:var(--muted);}
 #status{font-size:12px; color:var(--muted); white-space:nowrap; margin-left:16px;}
+#pageNav{display:flex; align-items:center; gap:8px; margin:0 16px; flex-shrink:0;}
+#pageNav button{
+  border:1px solid var(--border); background:transparent; color:var(--text);
+  border-radius:6px; width:26px; height:26px; cursor:pointer; font-size:12px; padding:0;
+}
+#pageNav button:hover{background:var(--accent-soft); border-color:var(--accent);}
+#pageNav button:disabled{opacity:.3; cursor:default;}
+#pageNav button:disabled:hover{background:transparent; border-color:var(--border);}
+#pageNumLabel{font-size:13px; color:var(--muted); min-width:44px; text-align:center;}
+#pageFooter{
+  text-align:center; padding:10px 0 calc(14px + env(safe-area-inset-bottom,0px));
+  font-size:12px; color:var(--muted); border-top:1px solid var(--border);
+}
 #editorWrap{flex:1; overflow-y:auto; padding:24px; display:flex; justify-content:center;}
 #editor{
   width:100%; max-width:720px; min-height:100%; border:none; outline:none; resize:none;
@@ -74,6 +87,9 @@ body{
   #sidebar.open{transform:translateX(0);}
   #menuBtn{display:inline-block !important;}
   #titleInput{font-size:19px;}
+  #pageNav{margin:0 8px;}
+  #pageNumLabel{min-width:36px; font-size:12px;}
+  #status{display:none;}
 }
 #menuBtn{display:none; border:none; background:none; font-size:20px; color:var(--text); cursor:pointer; margin-right:10px;}
 </style>
@@ -90,12 +106,18 @@ body{
       <button id="menuBtn">☰</button>
       <input id="titleInput" placeholder="제목 없음" />
     </div>
+    <div id="pageNav">
+      <button id="prevBtn" title="이전 페이지">◀</button>
+      <span id="pageNumLabel">-</span>
+      <button id="nextBtn" title="다음 페이지">▶</button>
+    </div>
     <div id="status">저장됨</div>
   </div>
   <div id="editorWrap">
     <textarea id="editor" placeholder="여기에 글을 쓰세요..."></textarea>
     <div id="empty" style="display:none;">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>
   </div>
+  <div id="pageFooter">- <span id="pageNumFooter">-</span> -</div>
 </div>
 
 <script>
@@ -114,7 +136,7 @@ function persist(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); }catch(e){}
 }
 function newPage(){
-  const p = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:"", content:"", updated: Date.now() };
+  const p = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:"", content:"", created: Date.now(), updated: Date.now() };
   pages.unshift(p);
   currentId = p.id;
   persist();
@@ -155,16 +177,27 @@ function renderList(){
     ul.appendChild(li);
   });
 }
+function orderedPages(){
+  return pages.slice().sort((a,b)=>(a.created||a.updated||0)-(b.created||b.updated||0));
+}
 function renderEditor(){
   const titleInput = document.getElementById("titleInput");
   const editor = document.getElementById("editor");
   const empty = document.getElementById("empty");
+  const pageNumLabel = document.getElementById("pageNumLabel");
+  const pageNumFooter = document.getElementById("pageNumFooter");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
   const p = pages.find(p=>p.id===currentId);
   if(!p){
     editor.style.display = "none";
     empty.style.display = "block";
     titleInput.value = "";
     titleInput.disabled = true;
+    pageNumLabel.textContent = "-";
+    pageNumFooter.textContent = "-";
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
     return;
   }
   editor.style.display = "block";
@@ -172,6 +205,15 @@ function renderEditor(){
   titleInput.disabled = false;
   titleInput.value = p.title;
   editor.value = p.content;
+
+  const order = orderedPages();
+  const idx = order.findIndex(x=>x.id===currentId);
+  const num = idx+1;
+  const total = order.length;
+  pageNumLabel.textContent = num + " / " + total;
+  pageNumFooter.textContent = num + " / " + total;
+  prevBtn.disabled = idx<=0;
+  nextBtn.disabled = idx>=total-1;
 }
 function onEdit(){
   const p = pages.find(p=>p.id===currentId);
@@ -195,6 +237,16 @@ renderList();
 // wire up editor area (must exist in DOM already)
 document.getElementById("newBtn").onclick = newPage;
 document.getElementById("menuBtn").onclick = ()=>document.getElementById("sidebar").classList.toggle("open");
+document.getElementById("prevBtn").onclick = ()=>{
+  const order = orderedPages();
+  const idx = order.findIndex(x=>x.id===currentId);
+  if(idx>0) selectPage(order[idx-1].id);
+};
+document.getElementById("nextBtn").onclick = ()=>{
+  const order = orderedPages();
+  const idx = order.findIndex(x=>x.id===currentId);
+  if(idx<order.length-1) selectPage(order[idx+1].id);
+};
 
 renderEditor();
 
