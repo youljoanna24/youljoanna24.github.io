@@ -191,7 +191,7 @@ body{
     <div id="status">저장됨</div>
     <span id="charCount">0자</span>
     <button id="txtBtn" title="TXT로 내보내기">TXT 저장</button>
-    <button id="pdfBtn" title="PDF로 저장">PDF 저장</button>
+    <button id="pdfBtn" title="현재 페이지를 PDF로 저장">PDF 저장</button>
   </div>
   <div id="editorWrap">
     <div id="page">
@@ -393,8 +393,8 @@ function splitIntoPages(text, widthPx, firstMaxH, restMaxH, font, size){
   return pages;
 }
 function exportPDF(){
-  const order = orderedPages();
-  if(!order.length){ alert("저장할 페이지가 없어요. 먼저 페이지를 만들어주세요."); return; }
+  const p = pages.find(p=>p.id===currentId);
+  if(!p){ alert("저장할 페이지가 없어요. 먼저 페이지를 선택하거나 만들어주세요."); return; }
   const cs = getComputedStyle(document.documentElement);
   const font = cs.getPropertyValue("--editor-font").trim();
   const size = cs.getPropertyValue("--editor-size").trim();
@@ -402,23 +402,21 @@ function exportPDF(){
   const restMaxH = 900;
   const firstMaxH = 840;
   const area = document.getElementById("printArea");
+  const title = escapeHtml(p.title || "제목 없음");
+  const chunks = splitIntoPages(p.content||"", contentWidthPx, firstMaxH, restMaxH, font, size);
   let html = "";
   let pageNum = 0;
-  order.forEach(p=>{
-    const title = escapeHtml(p.title || "제목 없음");
-    const chunks = splitIntoPages(p.content||"", contentWidthPx, firstMaxH, restMaxH, font, size);
-    if(chunks.length===0){
-      pageNum++;
-      html += '<div class="print-page"><h1>'+title+'</h1><div class="print-footer">- '+pageNum+' -</div></div>';
-      return;
-    }
+  if(chunks.length===0){
+    pageNum++;
+    html += '<div class="print-page"><h1>'+title+'</h1><div class="print-footer">- '+pageNum+' -</div></div>';
+  } else {
     chunks.forEach((chunk, idx)=>{
       pageNum++;
       const contentHtml = escapeHtml(chunk).replace(/\n/g,"<br>");
       const titleHtml = idx===0 ? ('<h1>'+title+'</h1>') : '';
       html += '<div class="print-page">'+titleHtml+'<div class="print-content">'+contentHtml+'</div><div class="print-footer">- '+pageNum+' -</div></div>';
     });
-  });
+  }
   area.innerHTML = html;
   window.print();
 }
