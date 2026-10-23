@@ -1,1071 +1,1141 @@
 <!DOCTYPE html>
-<html lang="ko" class="h-full" style="--bg-main: #fff5f7; --bg-panel: #ffffff; --bg-sidebar: #fff0f5; --text-main: #4a353b; --border-color: #f7cad0; --selection-bg: #fbcfe8;"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>나의 글쓰기 &amp; 발췌 노트</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- html2canvas for Quote Card Image Download -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
-  <!-- Google Fonts for Literary Aesthetics -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Nanum+Myeongjo:wght@400;700;800&amp;family=Pretendard:wght@300;400;500;600;700&amp;family=Song+Myung&amp;display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            pinkmode: {
-              50: '#fff0f3',
-              100: '#ffe3e8',
-              200: '#fcccd4',
-              300: '#f8a3b3',
-              400: '#f36e88',
-              500: '#e83e63',
-              600: '#d42148',
-              700: '#b21537',
-              800: '#941531',
-              900: '#7d172e',
-              bg: '#fff5f7',
-              panel: '#ffffff',
-              sidebar: '#fff0f3'
-            }
-          },
-          fontFamily: {
-            sans: ['Pretendard', 'sans-serif'],
-            serif: ['Gowun Batang', 'Nanum Myeongjo', 'serif'],
-            myeongjo: ['Nanum Myeongjo', 'serif'],
-            song: ['Song Myung', 'serif']
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    /* Custom CSS Theme Variables */
-    :root {
-      --bg-main: #fff5f7;
-      --bg-panel: #ffffff;
-      --bg-sidebar: #fff0f5;
-      --text-main: #4a353b;
-      --text-muted: #8c6d75;
-      --border-color: #f7cad0;
-      --accent-color: #f472b6;
-      --accent-hover: #e83e63;
-      --accent-light: #ffe4e8;
-      --selection-bg: #fbcfe8;
-      --font-body: 'Gowun Batang', 'Nanum Myeongjo', serif;
-    }
-
-    body {
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      font-family: var(--font-body);
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .editor-area {
-      font-family: var(--font-body);
-      line-height: 1.85;
-    }
-
-    ::selection {
-      background-color: var(--selection-bg);
-      color: #701a75;
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(244, 114, 182, 0.3);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(244, 114, 182, 0.6);
-    }
-
-    /* Floating selection popup menu */
-    #selectionPopup {
-      transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
-    }
-
-    /* Card background themes for quote generation */
-    .quote-theme-pink { background: linear-gradient(135deg, #fff0f5 0%, #fbcfe8 100%); color: #4a1525; }
-    .quote-theme-cream { background: linear-gradient(135deg, #fdfbf7 0%, #f3ece0 100%); color: #2d2823; }
-    .quote-theme-sunset { background: linear-gradient(135deg, #fef3c7 0%, #fca5a5 100%); color: #451a03; }
-    .quote-theme-forest { background: linear-gradient(135deg, #1d2a22 0%, #0f1712 100%); color: #e2e8f0; }
-    .quote-theme-lavender { background: linear-gradient(135deg, #f3e8ff 0%, #ddd6fe 100%); color: #3b0764; }
-    .quote-theme-indigo { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #e0e7ff; }
-
-    /* Focus Mode Overlay Effect */
-    .focus-mode-active #sidebar,
-    .focus-mode-active #mainHeader,
-    .focus-mode-active #editorFooter {
-      display: none !important;
-    }
-    .focus-mode-active #editorContainer {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-  </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Pretendard, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.bottom-full{bottom:100%}.left-0{left:0px}.left-3{left:0.75rem}.right-0{right:0px}.right-5{right:1.25rem}.top-3{top:0.75rem}.top-5{top:1.25rem}.top-full{top:100%}.right-2{right:0.5rem}.top-2{top:0.5rem}.z-20{z-index:20}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.m-3{margin:0.75rem}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-1{margin-left:0.25rem}.mt-1{margin-top:0.25rem}.mb-3{margin-bottom:0.75rem}.line-clamp-3{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-3{height:0.75rem}.h-4{height:1rem}.h-full{height:100%}.max-h-\[90vh\]{max-height:90vh}.min-h-0{min-height:0px}.min-h-\[260px\]{min-height:260px}.min-h-\[400px\]{min-height:400px}.w-3{width:0.75rem}.w-36{width:9rem}.w-48{width:12rem}.w-72{width:18rem}.w-full{width:100%}.w-px{width:1px}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-md{max-width:28rem}.max-w-\[120px\]{max-width:120px}.flex-1{flex:1 1 0%}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-x-full{--tw-translate-x:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-full{--tw-translate-y:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-black\/5{border-color:rgb(0 0 0 / 0.05)}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.border-pink-100{--tw-border-opacity:1;border-color:rgb(252 231 243 / var(--tw-border-opacity, 1))}.border-pink-200{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.bg-amber-200{--tw-bg-opacity:1;background-color:rgb(253 230 138 / var(--tw-bg-opacity, 1))}.bg-black\/40{background-color:rgb(0 0 0 / 0.4)}.bg-black\/5{background-color:rgb(0 0 0 / 0.05)}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-gray-300{--tw-bg-opacity:1;background-color:rgb(209 213 219 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-gray-700{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.bg-pink-400{--tw-bg-opacity:1;background-color:rgb(244 114 182 / var(--tw-bg-opacity, 1))}.bg-pink-50{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.bg-pink-50\/50{background-color:rgb(253 242 248 / 0.5)}.bg-pink-500{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.bg-purple-400{--tw-bg-opacity:1;background-color:rgb(192 132 252 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/40{background-color:rgb(255 255 255 / 0.4)}.bg-white\/60{background-color:rgb(255 255 255 / 0.6)}.bg-white\/70{background-color:rgb(255 255 255 / 0.7)}.bg-white\/80{background-color:rgb(255 255 255 / 0.8)}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-rose-400{--tw-gradient-to:#fb7185 var(--tw-gradient-to-position)}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-2{padding-bottom:0.5rem}.pb-3{padding-bottom:0.75rem}.pl-8{padding-left:2rem}.pr-3{padding-right:0.75rem}.pt-4{padding-top:1rem}.pr-2{padding-right:0.5rem}.pt-2{padding-top:0.5rem}.text-left{text-align:left}.text-justify{text-align:justify}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Pretendard, sans-serif}.font-serif{font-family:Gowun Batang, Nanum Myeongjo, serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-pink-300{--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.text-pink-500{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.placeholder-pink-300\/70::placeholder{color:rgb(249 168 212 / 0.7)}.opacity-0{opacity:0}.opacity-30{opacity:0.3}.opacity-75{opacity:0.75}.opacity-70{opacity:0.7}.opacity-80{opacity:0.8}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-150{transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.selection\:bg-pink-200 *::selection{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.selection\:bg-pink-200::selection{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.hover\:border-pink-200:hover{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.hover\:border-pink-400:hover{--tw-border-opacity:1;border-color:rgb(244 114 182 / var(--tw-border-opacity, 1))}.hover\:bg-amber-50:hover{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-800:hover{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-100:hover{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-50:hover{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-600:hover{--tw-bg-opacity:1;background-color:rgb(219 39 119 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-600\/80:hover{background-color:rgb(219 39 119 / 0.8)}.hover\:bg-purple-50:hover{--tw-bg-opacity:1;background-color:rgb(250 245 255 / var(--tw-bg-opacity, 1))}.hover\:bg-white:hover{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.hover\:bg-white\/50:hover{background-color:rgb(255 255 255 / 0.5)}.hover\:from-pink-600:hover{--tw-gradient-from:#db2777 var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 39 119 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:to-rose-500:hover{--tw-gradient-to:#f43f5e var(--tw-gradient-to-position)}.hover\:text-gray-600:hover{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.hover\:text-pink-500:hover{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.hover\:text-pink-600:hover{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:text-pink-200:hover{--tw-text-opacity:1;color:rgb(251 207 232 / var(--tw-text-opacity, 1))}.hover\:text-red-300:hover{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity, 1))}.hover\:text-red-500:hover{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow:hover{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-md:hover{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-pink-400:focus{--tw-border-opacity:1;border-color:rgb(244 114 182 / var(--tw-border-opacity, 1))}.focus\:text-gray-700:focus{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-1:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-pink-400:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(244 114 182 / var(--tw-ring-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.active\:scale-\[0\.99\]:active{--tw-scale-x:0.99;--tw-scale-y:0.99;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:block{display:block}.group:hover .group-hover\:opacity-100{opacity:1}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:flex{display:flex}}@media (min-width: 768px){.md\:relative{position:relative}.md\:col-span-2{grid-column:span 2 / span 2}.md\:hidden{display:none}.md\:w-80{width:20rem}.md\:translate-x-0{--tw-translate-x:0px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:px-16{padding-left:4rem;padding-right:4rem}.md\:py-12{padding-top:3rem;padding-bottom:3rem}.md\:text-3xl{font-size:1.875rem;line-height:2.25rem}.md\:text-lg{font-size:1.125rem;line-height:1.75rem}}@media (min-width: 1024px){.lg\:inline{display:inline}}</style></head>
-
-<body class="h-full flex flex-col antialiased selection:bg-pink-200">
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- Mobile Drawer Overlay -->
-  <div id="mobileOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden md:hidden" onclick="toggleMobileSidebar()"></div>
-
-  <!-- Main Container -->
-  <div class="flex-1 flex overflow-hidden">
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 글쓰기 & 발췌 노트</title>
     
-    <!-- LEFT SIDEBAR -->
-    <aside id="sidebar" class="w-72 md:w-80 border-r flex flex-col z-40 transition-all duration-300 absolute md:relative h-full -translate-x-full md:translate-x-0" style="background-color: var(--bg-sidebar); border-color: var(--border-color);">
-      <!-- Sidebar Header -->
-      <div class="p-4 border-b flex items-center justify-between" style="border-color: var(--border-color);">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-feather-pointed text-pink-500 text-xl"></i>
-          <h1 class="font-bold text-lg tracking-tight font-sans">나의 글쓰기 &amp; 발췌</h1>
-        </div>
-        <button onclick="toggleMobileSidebar()" class="md:hidden p-1.5 text-gray-500 hover:text-pink-500 rounded-lg">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Gowun Batang & Pretendard CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-      <!-- Navigation Tabs (글 목록 / 발췌 보관함) -->
-      <div class="grid grid-cols-2 p-2 gap-1 bg-black/5 m-3 rounded-xl font-sans text-sm font-medium">
-        <button id="tabBtnPages" onclick="switchSidebarTab('pages')" class="py-2 rounded-lg transition-all flex items-center justify-center gap-2 bg-white shadow-sm text-pink-600 font-semibold">
-          <i class="fa-solid fa-book-open"></i> 글 목록
-        </button>
-        <button id="tabBtnExcerpts" onclick="switchSidebarTab('excerpts')" class="py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-pink-500">
-          <i class="fa-solid fa-quote-right"></i> 발췌 보관함 (<span id="excerptCountBadge">1</span>)
-        </button>
-      </div>
+    <!-- html2canvas for Image Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-      <!-- PAGE LIST TAB CONTENT -->
-      <div id="tabContentPages" class="flex-1 flex flex-col min-h-0">
-        <!-- Search & New Page Button -->
-        <div class="p-3 space-y-2">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-gray-400"></i>
-            <input type="text" id="searchInput" oninput="filterPages()" placeholder="글 제목 검색..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 font-sans">
-          </div>
-          <button onclick="addNewPage()" class="w-full py-2.5 px-4 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-sans text-sm font-medium flex items-center justify-center gap-2 transition shadow-sm hover:shadow active:scale-[0.99]">
-            <i class="fa-solid fa-plus text-xs"></i> 새 글 작성하기
-          </button>
-        </div>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff5f7',
+                            100: '#ffe3ec',
+                            200: '#fccada',
+                            300: '#f9a1be',
+                            400: '#f46c96',
+                            500: '#eb3f73',
+                            600: '#d92255',
+                            700: '#b71642',
+                            800: '#98153a',
+                            900: '#801635',
+                        }
+                    },
+                    fontFamily: {
+                        batang: ['"Gowun Batang"', 'serif'],
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
-        <!-- Page List Container -->
-        <div id="pageList" class="flex-1 overflow-y-auto px-3 py-1 space-y-1 font-sans"><div class="p-3 rounded-xl cursor-pointer transition flex items-center justify-between group bg-pink-500 text-white shadow-sm font-medium">
-          <div class="min-w-0 flex-1 pr-2">
-            <div class="truncate text-xs font-semibold">핑크빛 문장들 속에서</div>
-            <div class="text-[10px] opacity-70 truncate">📖 생각의 정원</div>
-          </div>
-          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-            <button onclick="duplicatePage(event, 'page_1792742696383')" title="복사" class="p-1 hover:text-pink-200">
-              <i class="fa-regular fa-copy text-xs"></i>
-            </button>
-            <button onclick="deletePage(event, 'page_1792742696383')" title="삭제" class="p-1 hover:text-red-300">
-              <i class="fa-regular fa-trash-can text-xs"></i>
-            </button>
-          </div>
-        </div></div>
-      </div>
+    <style>
+        /* CSS Animations & Custom Styling */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            50% { opacity: 0.8; transform: scale(1.05); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        }
+        .active-dot-pulse {
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
 
-      <!-- EXCERPT LIST TAB CONTENT -->
-      <div id="tabContentExcerpts" class="flex-1 flex flex-col min-h-0 hidden">
-        <div class="p-3 flex items-center justify-between border-b text-xs font-sans text-gray-500" style="border-color: var(--border-color);">
-          <span>저장된 문장 카드</span>
-          <button onclick="openExcerptModal()" class="text-pink-600 hover:underline flex items-center gap-1 font-medium">
-            <i class="fa-solid fa-plus"></i> 수동 등록
-          </button>
-        </div>
-        <div id="excerptList" class="flex-1 overflow-y-auto p-3 space-y-3 font-sans"><div class="quote-theme-pink p-4 rounded-xl shadow-sm relative group border border-black/5 transition hover:shadow-md">
-          <p class="font-serif text-xs leading-relaxed mb-3 line-clamp-3">"글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간."</p>
-          <div class="flex items-center justify-between text-[10px] opacity-80 font-sans border-t border-current/10 pt-2">
-            <span class="font-semibold truncate max-w-[120px]">생각의 정원</span>
-            <span>#글쓰기</span>
-          </div>
-          <button onclick="deleteExcerpt('exc_1792742696390')" class="absolute top-2 right-2 p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-500 transition">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div></div>
-      </div>
+        .font-batang { font-family: 'Gowun Batang', serif; }
+        .font-sans { font-family: 'Noto Sans KR', sans-serif; }
 
-      <!-- Sidebar Footer (Theme & Backup Options) -->
-      <div class="p-3 border-t font-sans flex items-center justify-between text-xs" style="border-color: var(--border-color);">
-        <div class="relative group">
-          <button class="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border bg-white/70 hover:bg-white text-gray-700 shadow-sm transition">
-            <i class="fa-solid fa-palette text-pink-500"></i>
-            <span id="currentThemeLabel">핑크 모드</span>
-          </button>
-          <!-- Theme selector dropdown -->
-          <div class="absolute bottom-full left-0 mb-1 w-36 bg-white rounded-xl shadow-lg border p-1 hidden group-hover:block z-50">
-            <button onclick="setTheme('pink')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-pink-50 flex items-center gap-2 text-xs">
-              <span class="w-3 h-3 rounded-full bg-pink-400"></span> 핑크 모드
-            </button>
-            <button onclick="setTheme('light')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-gray-100 flex items-center gap-2 text-xs">
-              <span class="w-3 h-3 rounded-full bg-gray-300"></span> 클래식 라이트
-            </button>
-            <button onclick="setTheme('dark')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-gray-100 flex items-center gap-2 text-xs">
-              <span class="w-3 h-3 rounded-full bg-gray-800"></span> 소프트 다크
-            </button>
-            <button onclick="setTheme('lavender')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-purple-50 flex items-center gap-2 text-xs">
-              <span class="w-3 h-3 rounded-full bg-purple-400"></span> 라벤더
-            </button>
-            <button onclick="setTheme('cream')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-amber-50 flex items-center gap-2 text-xs">
-              <span class="w-3 h-3 rounded-full bg-amber-200"></span> 웜 크림
-            </button>
-          </div>
-        </div>
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 0.6); }
 
-        <div class="flex items-center gap-1">
-          <button onclick="exportJSONBackup()" title="데이터 백업" class="p-2 text-gray-500 hover:text-pink-600 rounded-lg hover:bg-white/50">
-            <i class="fa-solid fa-download"></i>
-          </button>
-          <label title="데이터 복원" class="p-2 text-gray-500 hover:text-pink-600 rounded-lg hover:bg-white/50 cursor-pointer">
-            <i class="fa-solid fa-upload"></i>
-            <input type="file" accept=".json" onchange="importJSONBackup(event)" class="hidden">
-          </label>
-        </div>
-      </div>
-    </aside>
+        /* Editor Placeholder */
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            cursor: text;
+        }
 
-    <!-- RIGHT MAIN EDITOR WORKSPACE -->
-    <main class="flex-1 flex flex-col min-w-0 bg-white/40 relative">
-      
-      <!-- TOP TOOLBAR -->
-      <header id="mainHeader" class="px-4 py-2.5 border-b flex items-center justify-between gap-2 z-20 backdrop-blur-md bg-white/70 font-sans" style="border-color: var(--border-color);">
-        <div class="flex items-center gap-2">
-          <button onclick="toggleMobileSidebar()" class="md:hidden p-2 text-gray-600 hover:text-pink-600 rounded-lg">
-            <i class="fa-solid fa-bars text-lg"></i>
-          </button>
+        /* Themes setup */
+        .theme-cotton {
+            --bg-main: #fff5f7;
+            --bg-editor: #ffffff;
+            --text-main: #374151;
+            --accent: #f46c96;
+            --sidebar-bg: #fce8ef;
+            --border-color: #fbcfe8;
+        }
 
-          <!-- EXPLICIT EXCERPT BUTTON (상단 툴바 발췌 버튼) -->
-          <button onclick="triggerExcerptFromSelection()" title="선택한 텍스트를 발췌 카드로 생성합니다" class="px-3 py-1.5 bg-gradient-to-r from-pink-500 to-rose-400 hover:from-pink-600 hover:to-rose-500 text-white font-medium text-xs rounded-xl shadow-sm hover:shadow flex items-center gap-1.5 active:scale-95 transition">
-            <i class="fa-solid fa-quote-left text-xs"></i>
-            <span>✨ 선택 문장 발췌</span>
-          </button>
+        .theme-cream {
+            --bg-main: #fdfbf7;
+            --bg-editor: #ffffff;
+            --text-main: #2d2a26;
+            --accent: #d97706;
+            --sidebar-bg: #f5efe6;
+            --border-color: #e7dfd5;
+        }
 
-          <!-- Alignment Buttons -->
-          <div class="hidden sm:flex items-center border rounded-lg overflow-hidden bg-white/80" style="border-color: var(--border-color);">
-            <button onclick="setTextAlign('left')" id="btnAlignLeft" class="p-1.5 text-xs text-pink-600 bg-pink-50 hover:bg-pink-100" title="왼쪽 정렬">
-              <i class="fa-solid fa-align-left"></i>
-            </button>
-            <button onclick="setTextAlign('center')" id="btnAlignCenter" class="p-1.5 text-xs text-gray-500 hover:bg-pink-100" title="중앙 정렬">
-              <i class="fa-solid fa-align-center"></i>
-            </button>
-          </div>
+        .theme-lavender {
+            --bg-main: #f8f7ff;
+            --bg-editor: #ffffff;
+            --text-main: #2e2a47;
+            --accent: #8b5cf6;
+            --sidebar-bg: #eee8f8;
+            --border-color: #ddd6fe;
+        }
 
-          <!-- Font Family Selector for Editor -->
-          <select id="editorFontSelect" onchange="changeEditorFont(this.value)" class="text-xs bg-white border border-pink-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-pink-400">
-            <option value="font-serif">바탕/명조체</option>
-            <option value="font-sans">고딕체 (Pretendard)</option>
-            <option value="font-song">송명체</option>
-          </select>
-        </div>
+        .theme-paper {
+            --bg-main: #f4f4f5;
+            --bg-editor: #ffffff;
+            --text-main: #18181b;
+            --accent: #52525b;
+            --sidebar-bg: #e4e4e7;
+            --border-color: #d4d4d8;
+        }
 
-        <!-- RIGHT SIDE TOOLBAR CONTROLS (TIMER, FOCUS, EXPORT) -->
-        <div class="flex items-center gap-2">
-          <!-- Timer Widget -->
-          <div class="flex items-center gap-1 bg-white border border-pink-200 rounded-xl px-2.5 py-1 shadow-sm text-xs text-gray-700">
-            <button onclick="toggleTimer()" id="timerToggleBtn" class="text-pink-500 hover:text-pink-600 transition">
-              <i class="fa-solid fa-play" id="timerIcon"></i>
-            </button>
-            <span id="timerDisplay" class="font-mono font-medium tracking-tight">00:00:00</span>
-            <button onclick="resetTimer()" title="타이머 초기화" class="text-gray-400 hover:text-gray-600 ml-1">
-              <i class="fa-solid fa-rotate-right text-[10px]"></i>
-            </button>
-          </div>
+        .theme-dark {
+            --bg-main: #121214;
+            --bg-editor: #18181b;
+            --text-main: #f4f4f5;
+            --accent: #f46c96;
+            --sidebar-bg: #09090b;
+            --border-color: #27272a;
+        }
+    </style>
+</head>
+<body class="theme-cotton font-sans min-h-screen transition-colors duration-300 overflow-x-hidden" style="background-color: var(--bg-main); color: var(--text-main);">
 
-          <!-- Save status indicator -->
-          <div id="saveStatus" class="text-xs text-gray-400 flex items-center gap-1 px-1"><i class="fa-solid fa-circle-check text-green-500"></i><span class="hidden lg:inline">저장됨</span></div>
-
-          <!-- Focus Mode Toggle -->
-          <button onclick="toggleFocusMode()" class="p-2 text-gray-600 hover:text-pink-600 hover:bg-white rounded-lg transition" title="몰입 모드 (Alt+F)">
-            <i class="fa-solid fa-expand"></i>
-          </button>
-
-          <!-- File Export Dropdown -->
-          <div class="relative group">
-            <button class="px-3 py-1.5 bg-white border border-pink-200 rounded-xl text-xs font-medium text-gray-700 hover:border-pink-400 flex items-center gap-1 shadow-sm transition">
-              <span>내보내기</span>
-              <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
-            </button>
-            <div class="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-xl border p-1 hidden group-hover:block z-50 font-sans">
-              <button onclick="exportCurrentPageTXT()" class="w-full text-left px-3 py-1.5 rounded-lg hover:bg-pink-50 text-xs text-gray-700 flex items-center gap-2">
-                <i class="fa-regular fa-file-lines text-pink-500"></i> TXT 파일 저장
-              </button>
-              <button onclick="copyToClipboard()" class="w-full text-left px-3 py-1.5 rounded-lg hover:bg-pink-50 text-xs text-gray-700 flex items-center gap-2">
-                <i class="fa-regular fa-copy text-pink-500"></i> 전체 클립보드 복사
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- EDITOR CANVAS AREA -->
-      <div id="editorContainer" class="flex-1 overflow-y-auto px-6 py-8 md:px-16 md:py-12 flex flex-col items-center">
-        <div class="w-full max-w-3xl flex flex-col flex-1">
-          <!-- Page Title Input -->
-          <input type="text" id="pageTitleInput" oninput="handleTitleInput()" placeholder="제목을 입력하세요..." class="w-full text-2xl md:text-3xl font-bold bg-transparent border-b border-transparent hover:border-pink-200 focus:border-pink-400 focus:outline-none pb-3 mb-6 transition placeholder-pink-300/70">
-
-          <!-- Page Metadata / Source Book -->
-          <div class="flex items-center gap-3 text-xs text-gray-400 mb-6 font-sans border-b pb-2" style="border-color: var(--border-color);">
-            <div class="flex items-center gap-1">
-              <i class="fa-regular fa-calendar"></i>
-              <span id="pageCreatedAt">2026. 10. 23.</span>
-            </div>
-            <span>•</span>
-            <div class="flex items-center gap-1">
-              <i class="fa-solid fa-book"></i>
-              <input type="text" id="pageSourceInput" onchange="handleSourceInput()" placeholder="출처/도서명 (선택)" class="bg-transparent focus:outline-none focus:text-gray-700 hover:underline border-b border-dashed border-gray-300 text-xs w-48">
-            </div>
-          </div>
-
-          <!-- Main Content Editable Container -->
-          <div id="editorContent" contenteditable="true" oninput="handleContentInput()" onmouseup="handleTextSelection()" onkeyup="handleTextSelection()" class="editor-area flex-1 w-full outline-none text-base md:text-lg min-h-[400px] text-justify leading-relaxed" placeholder="이곳에 글을 써 내려가세요. 문장을 드래그하여 선택하거나 상단의 '✨ 선택 문장 발췌' 버튼을 누르면 아름다운 발췌 카드를 바로 만들 수 있습니다."><p>글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간.ㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹ</p><p>좋은 문장을 읽고 발췌하는 순간, 타인의 깊은 고독과 지혜가 나에게 온전히 전해진다.ㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹ</p></div>
-        </div>
-      </div>
-
-      <!-- FOOTER STATS BAR -->
-      <footer id="editorFooter" class="px-6 py-2 border-t text-xs font-sans text-gray-500 flex items-center justify-between backdrop-blur-md bg-white/60" style="border-color: var(--border-color);">
-        <div class="flex items-center gap-4">
-          <span>공백 포함 <strong id="charCountWithSpace" class="text-pink-600 font-semibold">125</strong>자</span>
-          <span>공백 제외 <strong id="charCountNoSpace" class="text-pink-600 font-semibold">100</strong>자</span>
-          <span class="hidden sm:inline">단어 수 <strong id="wordCount" class="text-gray-700">25</strong>개</span>
-        </div>
-        <div>
-          <span id="readTimeEstimate" class="text-gray-400">예상 읽기 시간 1분</span>
-        </div>
-      </footer>
-    </main>
-  </div>
-
-  <!-- FLOATING SELECTION POPUP MENU -->
-  <div id="selectionPopup" class="fixed z-50 transform -translate-x-1/2 -translate-y-full mb-2 transition-all duration-150 opacity-0 pointer-events-none" style="left: 594.444px; top: 244.722px;">
-    <div class="bg-gray-900 text-white rounded-xl shadow-2xl px-2 py-1.5 flex items-center gap-1 border border-gray-700 font-sans text-xs">
-      <button onclick="triggerExcerptFromSelection()" class="px-2.5 py-1 hover:bg-pink-600/80 rounded-lg flex items-center gap-1.5 text-pink-300 hover:text-white font-medium transition">
-        <i class="fa-solid fa-quote-left"></i>
-        <span>발췌하기</span>
-      </button>
-      <div class="w-px h-4 bg-gray-700"></div>
-      <button onclick="copySelectedText()" class="px-2 py-1 hover:bg-gray-800 rounded-lg text-gray-300 hover:text-white">
-        <i class="fa-regular fa-copy"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- EXCERPT CARD CREATION & EDIT MODAL -->
-  <div id="excerptModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-pink-100 font-sans animate-in fade-in zoom-in-95 duration-200">
-      
-      <!-- Modal Header -->
-      <div class="px-6 py-4 border-b flex items-center justify-between bg-pink-50/50">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-quote-right text-pink-500"></i>
-          <h3 class="font-bold text-gray-800 text-base">발췌 카드 만들기</h3>
-        </div>
-        <button onclick="closeExcerptModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <!-- Modal Body (Preview & Customization) -->
-      <div class="p-6 overflow-y-auto flex-1 space-y-6">
+    <div id="app" class="flex h-screen overflow-hidden">
         
-        <!-- CARD PREVIEW DISPLAY -->
-        <div class="flex justify-center">
-          <div id="quoteCardPreview" class="quote-theme-pink w-full max-w-md p-8 rounded-2xl shadow-lg relative flex flex-col justify-between min-h-[260px] border border-black/5 transition-all">
-            <i class="fa-solid fa-quote-left text-2xl opacity-30 mb-4"></i>
-            <p id="modalQuoteText" class="text-base md:text-lg font-serif leading-relaxed mb-6 whitespace-pre-wrap">라는 이름의 꽃으로 피워내는 시간.<br><br>좋은 문장을 읽고 발췌하는 순간, 타인의 깊은 고독과 지혜가 나에게 온전히 전해진다.</p>
-            
-            <div class="border-t border-current/10 pt-4 flex items-end justify-between text-xs">
-              <div>
-                <div id="modalQuoteBook" class="font-bold font-sans">생각의 정원</div>
-                <div id="modalQuoteAuthor" class="opacity-75 font-sans">작자 미상</div>
-              </div>
-              <div id="modalQuoteTag" class="px-2.5 py-1 rounded-full bg-current/10 text-[11px] font-medium">#발췌</div>
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="w-72 flex-shrink-0 flex flex-col border-r transition-all duration-300 z-30 fixed inset-y-0 left-0 lg:static -translate-x-full lg:translate-x-0" style="background-color: var(--sidebar-bg); border-color: var(--border-color);">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b flex items-center justify-between" style="border-color: var(--border-color);">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-brand-400 flex items-center justify-center text-white font-bold shadow-sm">
+                        <i data-lucide="feather" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-batang font-bold text-lg tracking-tight">글쓰기 노트</span>
+                </div>
+                <button id="close-sidebar-btn" class="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-black/5">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-          </div>
-        </div>
 
-        <!-- CUSTOMIZATION CONTROLS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <!-- Text Quote Input -->
-          <div class="md:col-span-2 space-y-1">
-            <label class="font-semibold text-gray-700">발췌 문장 내용</label>
-            <textarea id="modalInputContent" oninput="updateCardPreview()" rows="3" class="w-full p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 font-serif text-sm"></textarea>
-          </div>
+            <!-- Main Navigation Tabs -->
+            <div class="p-3 border-b flex space-x-1" style="border-color: var(--border-color);">
+                <button id="tab-notes-btn" onclick="switchMainTab('notes')" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 bg-white/70 shadow-sm border border-black/5 text-gray-800">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                    <span>내 글로구</span>
+                </button>
+                <button id="tab-excerpts-btn" onclick="switchMainTab('excerpts')" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 text-gray-600 hover:bg-white/50">
+                    <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+                    <span>발췌 보관함</span>
+                </button>
+            </div>
 
-          <!-- Book Title -->
-          <div class="space-y-1">
-            <label class="font-semibold text-gray-700">출처 / 도서명</label>
-            <input type="text" id="modalInputBook" oninput="updateCardPreview()" placeholder="예: 시선으로부터" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400">
-          </div>
+            <!-- Search & New Page Controls (Visible in Notes Tab) -->
+            <div id="notes-sidebar-controls" class="p-3 space-y-2">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-gray-400"></i>
+                    <input type="text" id="search-input" placeholder="글 제목, 내용 검색..." oninput="renderPagesList()" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border focus:outline-none focus:ring-1 focus:ring-brand-400 bg-white/60 dark:bg-zinc-800/60" style="border-color: var(--border-color);">
+                </div>
+                <button onclick="createNewPage()" class="w-full py-2 px-3 rounded-lg bg-brand-400 hover:bg-brand-500 text-white font-medium text-xs flex items-center justify-center space-x-1.5 shadow-sm transition-all hover:shadow">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>새 글 작성하기</span>
+                </button>
+            </div>
 
-          <!-- Author -->
-          <div class="space-y-1">
-            <label class="font-semibold text-gray-700">저자</label>
-            <input type="text" id="modalInputAuthor" oninput="updateCardPreview()" placeholder="예: 정세랑" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400">
-          </div>
+            <!-- Page List Container -->
+            <div id="pages-container" class="flex-1 overflow-y-auto p-3 space-y-1">
+                <!-- Dynamically populated page list -->
+            </div>
 
-          <!-- Tag -->
-          <div class="space-y-1">
-            <label class="font-semibold text-gray-700">태그</label>
-            <input type="text" id="modalInputTag" oninput="updateCardPreview()" placeholder="#소설, #영감" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400">
-          </div>
+            <!-- Sidebar Footer Stats -->
+            <div class="p-3 border-t text-xs text-gray-500 flex items-center justify-between" style="border-color: var(--border-color);">
+                <span id="page-count-display">글 0개</span>
+                <span id="total-words-display">0 자</span>
+            </div>
+        </aside>
 
-          <!-- Theme Select -->
-          <div class="space-y-1">
-            <label class="font-semibold text-gray-700">카드 디자인 테마</label>
-            <select id="modalThemeSelect" onchange="updateCardPreview()" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white">
-              <option value="quote-theme-pink">코튼 핑크 (Cotton Pink)</option>
-              <option value="quote-theme-cream">크림 페이퍼 (Cream Paper)</option>
-              <option value="quote-theme-sunset">선셋 샌드 (Sunset Sand)</option>
-              <option value="quote-theme-lavender">라벤더 드림 (Lavender)</option>
-              <option value="quote-theme-forest">다크 포레스트 (Dark Forest)</option>
-              <option value="quote-theme-indigo">인디고 나이트 (Indigo)</option>
-            </select>
-          </div>
-        </div>
+        <!-- MAIN WORKSPACE -->
+        <main class="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative" style="background-color: var(--bg-main);">
+            
+            <!-- TOP BAR HEADER -->
+            <header id="top-bar" class="h-14 border-b flex items-center justify-between px-4 transition-all z-20" style="border-color: var(--border-color); background-color: var(--bg-main);">
+                <div class="flex items-center space-x-2">
+                    <button id="open-sidebar-btn" onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-black/5">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    
+                    <!-- Font Selector Toggle -->
+                    <div class="flex items-center bg-black/5 dark:bg-white/10 rounded-lg p-0.5 text-xs">
+                        <button id="font-batang-btn" onclick="setFontFamily('batang')" class="px-2.5 py-1 rounded-md font-batang transition-all font-semibold bg-white dark:bg-zinc-800 shadow-sm">바탕</button>
+                        <button id="font-sans-btn" onclick="setFontFamily('sans')" class="px-2.5 py-1 rounded-md font-sans text-gray-500 transition-all">고딕</button>
+                    </div>
 
-      </div>
+                    <!-- Alignment Control -->
+                    <div class="hidden sm:flex items-center bg-black/5 dark:bg-white/10 rounded-lg p-0.5 text-xs ml-2">
+                        <button id="align-left-btn" onclick="setTextAlign('left')" class="p-1 rounded text-gray-700 bg-white dark:bg-zinc-800 shadow-sm"><i data-lucide="align-left" class="w-3.5 h-3.5"></i></button>
+                        <button id="align-center-btn" onclick="setTextAlign('center')" class="p-1 rounded text-gray-500 hover:text-gray-700"><i data-lucide="align-center" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
 
-      <!-- Modal Footer -->
-      <div class="px-6 py-3 border-t bg-gray-50 flex items-center justify-between">
-        <button onclick="downloadQuoteCardImage()" class="px-4 py-2 border border-pink-200 bg-white text-pink-600 rounded-xl font-medium text-xs hover:bg-pink-50 flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-image"></i> 이미지 다운로드
-        </button>
-        <div class="flex items-center gap-2">
-          <button onclick="closeExcerptModal()" class="px-4 py-2 text-gray-500 hover:bg-gray-200 rounded-xl font-medium text-xs">취소</button>
-          <button onclick="saveExcerptCard()" class="px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-medium text-xs shadow-sm hover:shadow transition">
-            보관함에 저장하기
-          </button>
-        </div>
-      </div>
+                <!-- Center/Right Controls: Timer & Menu -->
+                <div class="flex items-center space-x-2">
+                    <!-- Automatic Timer Display -->
+                    <button onclick="openTimerModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer">
+                        <span id="active-pulse-dot" class="w-2.5 h-2.5 rounded-full bg-green-500 active-dot-pulse" title="자동 작업 시간 측정 중"></span>
+                        <span class="text-xs font-mono font-medium" id="page-timer-display">⏱ 00:00</span>
+                    </button>
 
+                    <!-- Extract Highlight Button -->
+                    <button onclick="createExcerptFromSelection()" title="선택 문장 발췌 저장" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 text-xs font-medium hover:bg-brand-200 transition-all">
+                        <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+                        <span>선택 발췌</span>
+                    </button>
+
+                    <!-- Theme Selector Menu -->
+                    <div class="relative inline-block text-left">
+                        <button onclick="toggleDropdown('theme-dropdown')" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5">
+                            <i data-lucide="palette" class="w-4 h-4"></i>
+                        </button>
+                        <div id="theme-dropdown" class="hidden absolute right-0 mt-2 w-40 rounded-xl bg-white dark:bg-zinc-800 shadow-xl border border-black/10 dark:border-white/10 p-1.5 z-50 text-xs space-y-1">
+                            <button onclick="setTheme('theme-cotton')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-pink-50 dark:hover:bg-zinc-700">
+                                <span>코튼 핑크</span>
+                                <span class="w-3 h-3 rounded-full bg-pink-400"></span>
+                            </button>
+                            <button onclick="setTheme('theme-cream')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-amber-50 dark:hover:bg-zinc-700">
+                                <span>소프트 크림</span>
+                                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                            </button>
+                            <button onclick="setTheme('theme-lavender')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-purple-50 dark:hover:bg-zinc-700">
+                                <span>라벤더 드림</span>
+                                <span class="w-3 h-3 rounded-full bg-purple-400"></span>
+                            </button>
+                            <button onclick="setTheme('theme-paper')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-gray-100 dark:hover:bg-zinc-700">
+                                <span>페이퍼 라이트</span>
+                                <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+                            </button>
+                            <button onclick="setTheme('theme-dark')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-zinc-100 dark:hover:bg-zinc-700">
+                                <span>다크 모드</span>
+                                <span class="w-3 h-3 rounded-full bg-zinc-800"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Export & Storage Dropdown -->
+                    <div class="relative inline-block text-left">
+                        <button onclick="toggleDropdown('export-dropdown')" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                        </button>
+                        <div id="export-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-zinc-800 shadow-xl border border-black/10 dark:border-white/10 p-1.5 z-50 text-xs space-y-1">
+                            <button onclick="exportAsTxt()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                                <i data-lucide="file-text" class="w-3.5 h-3.5 text-gray-500"></i>
+                                <span>TXT 파일로 내보내기</span>
+                            </button>
+                            <button onclick="exportQuoteCardPNG()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                                <i data-lucide="image" class="w-3.5 h-3.5 text-gray-500"></i>
+                                <span>이미지 카드로 저장 (PNG)</span>
+                            </button>
+                            <div class="border-t border-gray-200 dark:border-zinc-700 my-1"></div>
+                            <button onclick="downloadBackupJSON()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700">
+                                <i data-lucide="database" class="w-3.5 h-3.5 text-gray-500"></i>
+                                <span>전체 백업 파일 다운로드</span>
+                            </button>
+                            <button onclick="triggerRestoreJSON()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700 text-brand-600 dark:text-brand-400">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                <span>백업 데이터 불러오기</span>
+                            </button>
+                            <input type="file" id="restore-file-input" accept=".json" class="hidden" onchange="handleRestoreJSON(event)">
+                        </div>
+                    </div>
+
+                    <!-- Focus Mode Toggle -->
+                    <button onclick="toggleFocusMode()" title="몰입 모드 (Alt+F)" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5">
+                        <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- WORKSPACE CONTENT: EDITOR TAB -->
+            <div id="notes-view" class="flex-1 overflow-y-auto p-4 md:p-10 flex justify-center">
+                <div class="w-full max-w-3xl min-h-[80vh] flex flex-col rounded-2xl shadow-sm p-6 sm:p-12 transition-all" style="background-color: var(--bg-editor); border: 1px solid var(--border-color);">
+                    
+                    <!-- Title Input -->
+                    <input type="text" id="editor-title" placeholder="제목을 입력하세요..." oninput="onEditorTitleInput()" class="text-2xl sm:text-3xl font-batang font-bold bg-transparent border-b border-transparent hover:border-gray-200 focus:border-brand-300 focus:outline-none pb-3 mb-6 transition-colors" style="color: var(--text-main);">
+
+                    <!-- Metadata Bar -->
+                    <div class="flex items-center justify-between text-xs text-gray-400 pb-6 mb-6 border-b border-gray-100 dark:border-zinc-800">
+                        <div class="flex items-center space-x-3">
+                            <span id="editor-date-display">2026. 10. 23</span>
+                            <span>•</span>
+                            <span id="editor-time-spent">작업 시간: 00:00</span>
+                        </div>
+                        <div id="editor-char-count">0 글자</div>
+                    </div>
+
+                    <!-- Main Editable Body -->
+                    <div id="editor-content" contenteditable="true" data-placeholder="여기에 생각이나 이야기를 자유롭게 적어보세요..." oninput="onEditorContentInput()" class="flex-1 font-batang text-base sm:text-lg leading-relaxed focus:outline-none min-h-[50vh] whitespace-pre-wrap" style="color: var(--text-main);"></div>
+                </div>
+            </div>
+
+            <!-- WORKSPACE CONTENT: EXCERPT GALLERY TAB -->
+            <div id="excerpts-view" class="flex-1 overflow-y-auto p-6 hidden">
+                <div class="max-w-5xl mx-auto space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-batang font-bold">✨ 발췌 보관함</h2>
+                            <p class="text-xs text-gray-500 mt-1">기록하며 마음에 남았던 문장들을 모아두는 공간입니다.</p>
+                        </div>
+                        <button onclick="switchMainTab('notes')" class="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
+                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                            <span>노트로 돌아가기</span>
+                        </button>
+                    </div>
+
+                    <!-- Excerpts Grid -->
+                    <div id="excerpts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Dynamically populated excerpt cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Selection Toolbar (Pop-up on text highlight) -->
+            <div id="selection-popup" class="hidden absolute z-50 bg-gray-900 text-white text-xs rounded-xl shadow-2xl py-1.5 px-3 flex items-center space-x-2 transition-all transform -translate-x-1/2">
+                <button onclick="createExcerptFromSelection()" class="hover:text-brand-300 font-medium flex items-center space-x-1">
+                    <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+                    <span>문장 발췌 저장</span>
+                </button>
+            </div>
+
+            <!-- Toast Notification Container -->
+            <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
+
+        </main>
     </div>
-  </div>
 
-  <!-- JAVASCRIPT APP LOGIC -->
-  <script>
-    // App State Management
-    let pages = [];
-    let excerpts = [];
-    let currentPageId = null;
-    let selectedTextForExcerpt = "";
-    let lastDeletedPage = null;
-    let undoTimeout = null;
+    <!-- TIMER DETAILED STATS MODAL -->
+    <div id="timer-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-5 border border-black/10 dark:border-white/10">
+            <div class="flex items-center justify-between border-b pb-3 dark:border-zinc-700">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 active-dot-pulse"></span>
+                    <h3 class="font-bold text-sm">작업 시간 통계</h3>
+                </div>
+                <button onclick="closeTimerModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
 
-    // Writing Timer State
-    let timerInterval = null;
-    let timerSeconds = 0;
-    let isTimerRunning = false;
-    let lastActivityTime = Date.now();
+            <div class="space-y-3">
+                <div class="bg-gray-50 dark:bg-zinc-700/50 p-3 rounded-xl flex justify-between items-center">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">현재 글 작성 시간</span>
+                    <span class="font-mono font-bold text-base text-brand-600 dark:text-brand-400" id="modal-current-time">00:00:00</span>
+                </div>
+                <div class="bg-gray-50 dark:bg-zinc-700/50 p-3 rounded-xl flex justify-between items-center">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">오늘 누적 몰입 시간</span>
+                    <span class="font-mono font-bold text-base" id="modal-today-time">00:00:00</span>
+                </div>
+                <div class="bg-gray-50 dark:bg-zinc-700/50 p-3 rounded-xl flex justify-between items-center">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">전체 총 작성 시간</span>
+                    <span class="font-mono font-bold text-base" id="modal-all-time">00:00:00</span>
+                </div>
+            </div>
 
-    // Default Themes Config
-    const themes = {
-      pink: { label: '핑크 모드', main: '#fff5f7', panel: '#ffffff', sidebar: '#fff0f5', text: '#4a353b', border: '#f7cad0', selection: '#fbcfe8' },
-      light: { label: '클래식 라이트', main: '#f8fafc', panel: '#ffffff', sidebar: '#f1f5f9', text: '#1e293b', border: '#e2e8f0', selection: '#cbd5e1' },
-      dark: { label: '소프트 다크', main: '#121316', panel: '#1a1b1e', sidebar: '#16171a', text: '#e2e8f0', border: '#2e3035', selection: '#475569' },
-      lavender: { label: '라벤더', main: '#faf5ff', panel: '#ffffff', sidebar: '#f3e8ff', text: '#3b0764', border: '#e9d5ff', selection: '#d8b4fe' },
-      cream: { label: '웜 크림', main: '#fefcbf', panel: '#fffbeb', sidebar: '#fef3c7', text: '#451a03', border: '#fde68a', selection: '#fef08a' }
-    };
+            <div class="text-[11px] text-gray-400 bg-black/5 dark:bg-white/5 p-3 rounded-xl leading-relaxed">
+                💡 <b>자동 측정 안내:</b> 화면을 조작하거나 키보드를 칠 때만 자동으로 시간이 측정됩니다. 45초 동안 아무 반응이 없거나 탭을 이탈하면 타이머가 자동으로 정지됩니다.
+            </div>
 
-    // Initialize App on DOM Load
-    window.onload = function() {
-      loadLocalStorageData();
-      if (pages.length === 0) {
-        createInitialSampleData();
-      }
-      renderPageList();
-      renderExcerptList();
-      if (pages.length > 0) {
-        loadPage(pages[0].id);
-      }
-      setupAutoSave();
-      setupInactivityTimer();
-    };
-
-    // Load Local Storage Data
-    function loadLocalStorageData() {
-      const savedPages = localStorage.getItem('my_writing_pages');
-      const savedExcerpts = localStorage.getItem('my_writing_excerpts');
-      const savedTheme = localStorage.getItem('my_writing_theme') || 'pink';
-
-      if (savedPages) pages = JSON.parse(savedPages);
-      if (savedExcerpts) excerpts = JSON.parse(savedExcerpts);
-      setTheme(savedTheme);
-    }
-
-    // Save Data to Local Storage
-    function saveData() {
-      localStorage.setItem('my_writing_pages', JSON.stringify(pages));
-      localStorage.setItem('my_writing_excerpts', JSON.stringify(excerpts));
-      
-      const statusEl = document.getElementById('saveStatus');
-      statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-green-500"></i><span class="hidden lg:inline">저장됨</span>`;
-    }
-
-    // Initial Sample Data Generation
-    function createInitialSampleData() {
-      const samplePage = {
-        id: 'page_' + Date.now(),
-        title: '핑크빛 문장들 속에서',
-        content: '<p>글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간.</p><p>좋은 문장을 읽고 발췌하는 순간, 타인의 깊은 고독과 지혜가 나에게 온전히 전해진다.</p>',
-        source: '생각의 정원',
-        createdAt: new Date().toLocaleDateString('ko-KR')
-      };
-      pages.push(samplePage);
-
-      excerpts.push({
-        id: 'exc_' + Date.now(),
-        text: '글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간.',
-        book: '생각의 정원',
-        author: '작자미상',
-        tag: '#글쓰기',
-        theme: 'quote-theme-pink',
-        createdAt: new Date().toLocaleDateString('ko-KR')
-      });
-
-      saveData();
-    }
-
-    // Switch Left Sidebar Tab
-    function switchSidebarTab(tab) {
-      const pageTab = document.getElementById('tabContentPages');
-      const excerptTab = document.getElementById('tabContentExcerpts');
-      const btnPages = document.getElementById('tabBtnPages');
-      const btnExcerpts = document.getElementById('tabBtnExcerpts');
-
-      if (tab === 'pages') {
-        pageTab.classList.remove('hidden');
-        excerptTab.classList.add('hidden');
-        btnPages.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 bg-white shadow-sm text-pink-600 font-semibold";
-        btnExcerpts.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-pink-500";
-      } else {
-        pageTab.classList.add('hidden');
-        excerptTab.classList.remove('hidden');
-        btnExcerpts.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 bg-white shadow-sm text-pink-600 font-semibold";
-        btnPages.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-pink-500";
-      }
-    }
-
-    // PAGE MANAGEMENT LOGIC
-    function renderPageList(filteredPages = null) {
-      const listEl = document.getElementById('pageList');
-      const targetPages = filteredPages || pages;
-      listEl.innerHTML = '';
-
-      if (targetPages.length === 0) {
-        listEl.innerHTML = `<div class="text-center py-8 text-xs text-gray-400">작성된 글이 없습니다.</div>`;
-        return;
-      }
-
-      targetPages.forEach(page => {
-        const isActive = page.id === currentPageId;
-        const item = document.createElement('div');
-        item.className = `p-3 rounded-xl cursor-pointer transition flex items-center justify-between group ${isActive ? 'bg-pink-500 text-white shadow-sm font-medium' : 'hover:bg-white/60 text-gray-700'}`;
-        item.onclick = () => loadPage(page.id);
-
-        item.innerHTML = `
-          <div class="min-w-0 flex-1 pr-2">
-            <div class="truncate text-xs font-semibold">${page.title || '제목 없는 글'}</div>
-            <div class="text-[10px] opacity-70 truncate">${page.source ? '📖 ' + page.source : page.createdAt}</div>
-          </div>
-          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-            <button onclick="duplicatePage(event, '${page.id}')" title="복사" class="p-1 hover:text-pink-200">
-              <i class="fa-regular fa-copy text-xs"></i>
+            <button onclick="closeTimerModal()" class="w-full py-2 bg-brand-400 text-white rounded-xl font-medium text-xs hover:bg-brand-500">
+                확인
             </button>
-            <button onclick="deletePage(event, '${page.id}')" title="삭제" class="p-1 hover:text-red-300">
-              <i class="fa-regular fa-trash-can text-xs"></i>
-            </button>
-          </div>
-        `;
-        listEl.appendChild(item);
-      });
-    }
-
-    function addNewPage() {
-      const newPage = {
-        id: 'page_' + Date.now(),
-        title: '',
-        content: '',
-        source: '',
-        createdAt: new Date().toLocaleDateString('ko-KR')
-      };
-      pages.unshift(newPage);
-      saveData();
-      renderPageList();
-      loadPage(newPage.id);
-      document.getElementById('pageTitleInput').focus();
-      showToast("새 글이 생성되었습니다.");
-    }
-
-    function loadPage(id) {
-      const page = pages.find(p => p.id === id);
-      if (!page) return;
-
-      currentPageId = id;
-      document.getElementById('pageTitleInput').value = page.title || '';
-      document.getElementById('editorContent').innerHTML = page.content || '';
-      document.getElementById('pageSourceInput').value = page.source || '';
-      document.getElementById('pageCreatedAt').innerText = page.createdAt || new Date().toLocaleDateString('ko-KR');
-
-      updateCharCount();
-      renderPageList();
-    }
-
-    function duplicatePage(e, id) {
-      e.stopPropagation();
-      const origin = pages.find(p => p.id === id);
-      if (!origin) return;
-
-      const copy = {
-        ...origin,
-        id: 'page_' + Date.now(),
-        title: origin.title + ' (복사본)',
-        createdAt: new Date().toLocaleDateString('ko-KR')
-      };
-      pages.unshift(copy);
-      saveData();
-      renderPageList();
-      showToast("글이 복사되었습니다.");
-    }
-
-    function deletePage(e, id) {
-      e.stopPropagation();
-      const index = pages.findIndex(p => p.id === id);
-      if (index === -1) return;
-
-      lastDeletedPage = { page: pages[index], index };
-      pages.splice(index, 1);
-      saveData();
-
-      if (currentPageId === id) {
-        if (pages.length > 0) {
-          loadPage(pages[0].id);
-        } else {
-          addNewPage();
-        }
-      } else {
-        renderPageList();
-      }
-
-      showUndoToast("글이 삭제되었습니다.");
-    }
-
-    function filterPages() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = pages.filter(p => p.title.toLowerCase().includes(query) || p.content.toLowerCase().includes(query));
-      renderPageList(filtered);
-    }
-
-    // EDITOR INPUT HANDLERS & STATS
-    function handleTitleInput() {
-      const page = pages.find(p => p.id === currentPageId);
-      if (page) {
-        page.title = document.getElementById('pageTitleInput').value;
-        saveData();
-        renderPageList();
-      }
-    }
-
-    function handleContentInput() {
-      const page = pages.find(p => p.id === currentPageId);
-      if (page) {
-        page.content = document.getElementById('editorContent').innerHTML;
-        saveData();
-        updateCharCount();
-      }
-    }
-
-    function handleSourceInput() {
-      const page = pages.find(p => p.id === currentPageId);
-      if (page) {
-        page.source = document.getElementById('pageSourceInput').value;
-        saveData();
-        renderPageList();
-      }
-    }
-
-    function updateCharCount() {
-      const content = document.getElementById('editorContent').innerText || '';
-      const charWithSpace = content.length;
-      const charNoSpace = content.replace(/\s/g, '').length;
-      const words = content.trim() ? content.trim().split(/\s+/).length : 0;
-      const readTime = Math.ceil(charNoSpace / 500);
-
-      document.getElementById('charCountWithSpace').innerText = charWithSpace.toLocaleString();
-      document.getElementById('charCountNoSpace').innerText = charNoSpace.toLocaleString();
-      document.getElementById('wordCount').innerText = words.toLocaleString();
-      document.getElementById('readTimeEstimate').innerText = `예상 읽기 시간 ${readTime}분`;
-    }
-
-    // EXCERPT FEATURE LOGIC
-    function handleTextSelection() {
-      const selection = window.getSelection();
-      const selectedStr = selection.toString().trim();
-      const popup = document.getElementById('selectionPopup');
-
-      if (selectedStr.length > 0) {
-        selectedTextForExcerpt = selectedStr;
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-
-        popup.style.left = `${rect.left + (rect.width / 2)}px`;
-        popup.style.top = `${rect.top - 10}px`;
-        popup.classList.remove('opacity-0', 'pointer-events-none');
-      } else {
-        popup.classList.add('opacity-0', 'pointer-events-none');
-      }
-    }
-
-    function triggerExcerptFromSelection() {
-      const selection = window.getSelection();
-      const text = selection.toString().trim() || selectedTextForExcerpt;
-
-      if (!text) {
-        showToast("발췌할 문장을 먼저 드래그하여 선택해주세요.");
-        return;
-      }
-
-      openExcerptModal(text);
-      document.getElementById('selectionPopup').classList.add('opacity-0', 'pointer-events-none');
-    }
-
-    function openExcerptModal(initialText = "") {
-      const modal = document.getElementById('excerptModal');
-      const currentPage = pages.find(p => p.id === currentPageId);
-
-      document.getElementById('modalInputContent').value = initialText || selectedTextForExcerpt || "";
-      document.getElementById('modalInputBook').value = currentPage ? currentPage.source || currentPage.title : "";
-      document.getElementById('modalInputAuthor').value = "";
-      document.getElementById('modalInputTag').value = "#발췌";
-
-      updateCardPreview();
-      modal.classList.remove('hidden');
-    }
-
-    function closeExcerptModal() {
-      document.getElementById('excerptModal').classList.add('hidden');
-    }
-
-    function updateCardPreview() {
-      const text = document.getElementById('modalInputContent').value || "선택한 문장이 이곳에 표시됩니다.";
-      const book = document.getElementById('modalInputBook').value || "출처 미상";
-      const author = document.getElementById('modalInputAuthor').value || "작자 미상";
-      const tag = document.getElementById('modalInputTag').value || "#발췌";
-      const themeClass = document.getElementById('modalThemeSelect').value;
-
-      document.getElementById('modalQuoteText').innerText = text;
-      document.getElementById('modalQuoteBook').innerText = book;
-      document.getElementById('modalQuoteAuthor').innerText = author;
-      document.getElementById('modalQuoteTag').innerText = tag;
-
-      const card = document.getElementById('quoteCardPreview');
-      card.className = `${themeClass} w-full max-w-md p-8 rounded-2xl shadow-lg relative flex flex-col justify-between min-h-[260px] border border-black/5 transition-all`;
-    }
-
-    function saveExcerptCard() {
-      const text = document.getElementById('modalInputContent').value.trim();
-      if (!text) {
-        showToast("발췌 문장을 입력해주세요.");
-        return;
-      }
-
-      const newExcerpt = {
-        id: 'exc_' + Date.now(),
-        text: text,
-        book: document.getElementById('modalInputBook').value || "출처 미상",
-        author: document.getElementById('modalInputAuthor').value || "작자 미상",
-        tag: document.getElementById('modalInputTag').value || "#발췌",
-        theme: document.getElementById('modalThemeSelect').value,
-        createdAt: new Date().toLocaleDateString('ko-KR')
-      };
-
-      excerpts.unshift(newExcerpt);
-      saveData();
-      renderExcerptList();
-      closeExcerptModal();
-      showToast("발췌 보관함에 저장되었습니다!");
-    }
-
-    function renderExcerptList() {
-      const listEl = document.getElementById('excerptList');
-      document.getElementById('excerptCountBadge').innerText = excerpts.length;
-      listEl.innerHTML = '';
-
-      if (excerpts.length === 0) {
-        listEl.innerHTML = `<div class="text-center py-8 text-xs text-gray-400">저장된 발췌 카드가 없습니다.</div>`;
-        return;
-      }
-
-      excerpts.forEach(item => {
-        const card = document.createElement('div');
-        card.className = `${item.theme} p-4 rounded-xl shadow-sm relative group border border-black/5 transition hover:shadow-md`;
-        card.innerHTML = `
-          <p class="font-serif text-xs leading-relaxed mb-3 line-clamp-3">"${item.text}"</p>
-          <div class="flex items-center justify-between text-[10px] opacity-80 font-sans border-t border-current/10 pt-2">
-            <span class="font-semibold truncate max-w-[120px]">${item.book}</span>
-            <span>${item.tag}</span>
-          </div>
-          <button onclick="deleteExcerpt('${item.id}')" class="absolute top-2 right-2 p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-500 transition">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        `;
-        listEl.appendChild(card);
-      });
-    }
-
-    function deleteExcerpt(id) {
-      excerpts = excerpts.filter(e => e.id !== id);
-      saveData();
-      renderExcerptList();
-      showToast("발췌 카드가 삭제되었습니다.");
-    }
-
-    function downloadQuoteCardImage() {
-      const target = document.getElementById('quoteCardPreview');
-      html2canvas(target, { scale: 2 }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `quote-card-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        showToast("발췌 카드가 이미지로 저장되었습니다!");
-      });
-    }
-
-    // TIMER LOGIC
-    function toggleTimer() {
-      if (isTimerRunning) {
-        pauseTimer();
-      } else {
-        startTimer();
-      }
-    }
-
-    function startTimer() {
-      isTimerRunning = true;
-      document.getElementById('timerIcon').className = "fa-solid fa-pause";
-      timerInterval = setInterval(() => {
-        timerSeconds++;
-        updateTimerDisplay();
-      }, 1000);
-    }
-
-    function pauseTimer() {
-      isTimerRunning = false;
-      document.getElementById('timerIcon').className = "fa-solid fa-play";
-      clearInterval(timerInterval);
-    }
-
-    function resetTimer() {
-      pauseTimer();
-      timerSeconds = 0;
-      updateTimerDisplay();
-    }
-
-    function updateTimerDisplay() {
-      const hrs = Math.floor(timerSeconds / 3600).toString().padStart(2, '0');
-      const mins = Math.floor((timerSeconds % 3600) / 60).toString().padStart(2, '0');
-      const secs = (timerSeconds % 60).toString().padStart(2, '0');
-      document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
-    }
-
-    function setupInactivityTimer() {
-      document.addEventListener('mousemove', resetActivity);
-      document.addEventListener('keypress', resetActivity);
-    }
-
-    function resetActivity() {
-      lastActivityTime = Date.now();
-    }
-
-    // Auto-pause timer if inactive for 5 minutes
-    setInterval(() => {
-      if (isTimerRunning && Date.now() - lastActivityTime > 300000) {
-        pauseTimer();
-        showToast("3분 이상 활동이 없어 타이머가 일시정지되었습니다.");
-      }
-    }, 10000);
-
-    // THEME SWITCHER
-    function setTheme(themeKey) {
-      const t = themes[themeKey] || themes.pink;
-      const root = document.documentElement;
-
-      root.style.setProperty('--bg-main', t.main);
-      root.style.setProperty('--bg-panel', t.panel);
-      root.style.setProperty('--bg-sidebar', t.sidebar);
-      root.style.setProperty('--text-main', t.text);
-      root.style.setProperty('--border-color', t.border);
-      root.style.setProperty('--selection-bg', t.selection);
-
-      document.getElementById('currentThemeLabel').innerText = t.label;
-      localStorage.setItem('my_writing_theme', themeKey);
-    }
-
-    // FORMATTING & UTILS
-    function setTextAlign(align) {
-      document.getElementById('editorContent').style.textAlign = align;
-      if (align === 'left') {
-        document.getElementById('btnAlignLeft').className = "p-1.5 text-xs text-pink-600 bg-pink-50 hover:bg-pink-100";
-        document.getElementById('btnAlignCenter').className = "p-1.5 text-xs text-gray-500 hover:bg-pink-100";
-      } else {
-        document.getElementById('btnAlignCenter').className = "p-1.5 text-xs text-pink-600 bg-pink-50 hover:bg-pink-100";
-        document.getElementById('btnAlignLeft').className = "p-1.5 text-xs text-gray-500 hover:bg-pink-100";
-      }
-    }
-
-    function changeEditorFont(fontClass) {
-      const editor = document.getElementById('editorContent');
-      editor.className = `editor-area flex-1 w-full outline-none text-base md:text-lg min-h-[400px] text-justify leading-relaxed ${fontClass}`;
-    }
-
-    function toggleFocusMode() {
-      document.body.classList.toggle('focus-mode-active');
-      showToast(document.body.classList.contains('focus-mode-active') ? "몰입 모드 활성화" : "몰입 모드 해제");
-    }
-
-    function toggleMobileSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileOverlay');
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    }
-
-    function copyToClipboard() {
-      const text = document.getElementById('editorContent').innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast("전체 글이 클립보드에 복사되었습니다.");
-      });
-    }
-
-    function copySelectedText() {
-      if (selectedTextForExcerpt) {
-        navigator.clipboard.writeText(selectedTextForExcerpt);
-        showToast("선택 문장이 복사되었습니다.");
-      }
-    }
-
-    function exportCurrentPageTXT() {
-      const page = pages.find(p => p.id === currentPageId);
-      if (!page) return;
-
-      const content = `${page.title}\n출처: ${page.source || '없음'}\n작성일: ${page.createdAt}\n\n${document.getElementById('editorContent').innerText}`;
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `${page.title || '글쓰기노트'}.txt`;
-      link.click();
-    }
-
-    function exportJSONBackup() {
-      const backupData = { pages, excerpts };
-      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `writing-notes-backup-${Date.now()}.json`;
-      link.click();
-      showToast("전체 백업 파일이 다운로드 되었습니다.");
-    }
-
-    function importJSONBackup(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (data.pages && data.excerpts) {
-            pages = data.pages;
-            excerpts = data.excerpts;
-            saveData();
-            renderPageList();
-            renderExcerptList();
-            if (pages.length > 0) loadPage(pages[0].id);
-            showToast("데이터 복원이 완료되었습니다!");
-          }
-        } catch (err) {
-          showToast("올바르지 않은 백업 파일 형식입니다.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    // TOAST NOTIFICATIONS & UNDO
-    function showToast(msg) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = "bg-gray-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-sans flex items-center gap-2 pointer-events-auto animate-in fade-in slide-in-from-top-2";
-      toast.innerHTML = `<i class="fa-solid fa-circle-info text-pink-400"></i> ${msg}`;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
-    }
-
-    function showUndoToast(msg) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = "bg-gray-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-sans flex items-center justify-between gap-4 pointer-events-auto animate-in fade-in slide-in-from-top-2";
-      toast.innerHTML = `
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-trash text-pink-400"></i>
-          <span>${msg}</span>
         </div>
-        <button onclick="undoDeletePage(this)" class="text-pink-400 font-bold hover:underline">실행 취소 (7초)</button>
-      `;
-      container.appendChild(toast);
+    </div>
 
-      undoTimeout = setTimeout(() => {
-        toast.remove();
-        lastDeletedPage = null;
-      }, 7000);
-    }
+    <!-- EXCERPT CARD EDIT & PREVIEW MODAL -->
+    <div id="excerpt-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 dark:border-zinc-700">
+                <h3 class="font-bold text-sm flex items-center space-x-1.5">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-brand-400"></i>
+                    <span>발췌 카드 만들기</span>
+                </h3>
+                <button onclick="closeExcerptModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
 
-    function undoDeletePage(btnEl) {
-      if (lastDeletedPage) {
-        pages.splice(lastDeletedPage.index, 0, lastDeletedPage.page);
-        saveData();
-        renderPageList();
-        loadPage(lastDeletedPage.page.id);
-        clearTimeout(undoTimeout);
-        btnEl.parentElement.remove();
-        showToast("글 삭제가 취소되었습니다.");
-      }
-    }
+            <!-- Card Preview Area (Target for html2canvas) -->
+            <div id="quote-card-preview" class="p-8 rounded-2xl shadow-lg transition-all text-center flex flex-col justify-between min-h-[260px] bg-gradient-to-br from-pink-100 to-rose-50 text-gray-800 font-batang relative overflow-hidden">
+                <div class="text-3xl opacity-20 text-left font-serif">“</div>
+                <div id="preview-quote-text" class="text-lg leading-relaxed font-medium px-4 my-auto whitespace-pre-wrap">
+                    발췌할 문장이 여기에 들어갑니다.
+                </div>
+                <div class="text-3xl opacity-20 text-right font-serif">”</div>
+                <div class="mt-4 pt-4 border-t border-black/10 text-xs flex justify-between items-end opacity-80">
+                    <div class="text-left">
+                        <div id="preview-author-display" class="font-bold">작자 미상 / 출처</div>
+                        <div id="preview-tags-display" class="text-[10px] opacity-70 mt-0.5">#글귀 #발췌</div>
+                    </div>
+                    <div class="text-[10px] opacity-60">나의 글쓰기 노트</div>
+                </div>
+            </div>
 
-    function setupAutoSave() {
-      // Auto save triggered on keypress with debounce
-      let saveTimer;
-      document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-          e.preventDefault();
-          saveData();
-          showToast("수동 저장되었습니다.");
+            <!-- Styling Controls -->
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium mb-1.5">카드 테마 선택</label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <button onclick="setCardTheme('pink')" class="h-8 rounded-lg bg-gradient-to-br from-pink-100 to-rose-100 border border-pink-300"></button>
+                        <button onclick="setCardTheme('sunset')" class="h-8 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-300"></button>
+                        <button onclick="setCardTheme('forest')" class="h-8 rounded-lg bg-gradient-to-br from-emerald-800 to-teal-900 text-white border border-emerald-700"></button>
+                        <button onclick="setCardTheme('lavender')" class="h-8 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-300"></button>
+                        <button onclick="setCardTheme('cream')" class="h-8 rounded-lg bg-gradient-to-br from-stone-100 to-amber-50 border border-stone-300"></button>
+                        <button onclick="setCardTheme('midnight')" class="h-8 rounded-lg bg-gradient-to-br from-gray-900 to-zinc-800 text-white border border-gray-700"></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium mb-1">출처 / 작가</label>
+                        <input type="text" id="excerpt-author-input" oninput="updateCardPreview()" placeholder="예: [글제목] 또는 저자명" class="w-full px-3 py-1.5 rounded-lg border dark:bg-zinc-700 dark:border-zinc-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">해시태그</label>
+                        <input type="text" id="excerpt-tags-input" oninput="updateCardPreview()" placeholder="#감성 #생각" class="w-full px-3 py-1.5 rounded-lg border dark:bg-zinc-700 dark:border-zinc-600 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="saveExcerptToStorage()" class="flex-1 py-2.5 bg-brand-400 hover:bg-brand-500 text-white font-medium rounded-xl text-xs shadow transition-all">
+                    보관함에 저장하기
+                </button>
+                <button onclick="downloadExcerptPNG()" class="px-4 py-2.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl text-xs flex items-center space-x-1.5 shadow transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>PNG 다운로드</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION LOGIC -->
+    <script>
+        // --- DATA STRUCTURE & STATE ---
+        const STORAGE_KEY = 'writing_notebook_app_data_v2';
+        let appState = {
+            pages: [],
+            excerpts: [],
+            activePageId: null,
+            theme: 'theme-cotton',
+            fontFamily: 'batang',
+            textAlign: 'left',
+            todayTimeSeconds: 0,
+            allTimeSeconds: 0,
+            lastActiveDate: new Date().toISOString().slice(0, 10)
+        };
+
+        // Automatic Time Tracking Variables
+        let isUserActive = false;
+        let lastInteractionTime = Date.now();
+        const IDLE_TIMEOUT_MS = 45000; // 45 seconds automatic idle cutoff
+        let timerInterval = null;
+        let currentExcerptTemp = '';
+        let currentCardTheme = 'pink';
+
+        // Undo Delete State
+        let deletedPageBackup = null;
+        let undoToastTimeout = null;
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            loadFromLocalStorage();
+            setupAutoTimer();
+            setupEventListeners();
+            lucide.createIcons();
+            
+            // Check daily reset for today's timer
+            const today = new Date().toISOString().slice(0, 10);
+            if (appState.lastActiveDate !== today) {
+                appState.todayTimeSeconds = 0;
+                appState.lastActiveDate = today;
+                saveToLocalStorage();
+            }
+
+            renderPagesList();
+            renderExcerptsGrid();
+            applyTheme(appState.theme);
+            
+            if (appState.pages.length === 0) {
+                createNewPage('첫 번째 글쓰기', '이곳에 글을 써보세요. 작업을 시작하면 상단 타이머가 자동으로 작동합니다.');
+            } else {
+                selectPage(appState.activePageId || appState.pages[0].id);
+            }
+        };
+
+        // --- LOCAL STORAGE MANAGER ---
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error("Storage save failed", e);
+            }
         }
-      });
-    }
-  </script>
 
-</body></html>
+        function loadFromLocalStorage() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    appState = { ...appState, ...parsed };
+                } catch (e) {
+                    console.error("Storage parse failed", e);
+                }
+            }
+        }
+
+        // --- AUTOMATIC WRITING TIMER SYSTEM ---
+        function setupAutoTimer() {
+            // Track activity events across the app
+            const activityEvents = ['mousemove', 'keydown', 'keypress', 'mousedown', 'touchstart', 'scroll'];
+            activityEvents.forEach(evt => {
+                window.addEventListener(evt, recordUserInteraction, { passive: true });
+            });
+
+            // Handle visibility change (tab change / minimize)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    isUserActive = false;
+                    updateTimerUIIndicator(false);
+                } else {
+                    recordUserInteraction();
+                }
+            });
+
+            // Master 1-second tick loop
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(timerTick, 1000);
+        }
+
+        function recordUserInteraction() {
+            lastInteractionTime = Date.now();
+            if (!isUserActive) {
+                isUserActive = true;
+                updateTimerUIIndicator(true);
+            }
+        }
+
+        function timerTick() {
+            const now = Date.now();
+            
+            // Check idle condition (over 45s without activity)
+            if (now - lastInteractionTime > IDLE_TIMEOUT_MS) {
+                if (isUserActive) {
+                    isUserActive = false;
+                    updateTimerUIIndicator(false);
+                }
+            }
+
+            // If active and on active page, increment counters
+            if (isUserActive && appState.activePageId) {
+                const currentPage = appState.pages.find(p => p.id === appState.activePageId);
+                if (currentPage) {
+                    currentPage.timeSpentSeconds = (currentPage.timeSpentSeconds || 0) + 1;
+                    appState.todayTimeSeconds = (appState.todayTimeSeconds || 0) + 1;
+                    appState.allTimeSeconds = (appState.allTimeSeconds || 0) + 1;
+                    
+                    updateTimerDisplays(currentPage.timeSpentSeconds);
+                    saveToLocalStorage();
+                }
+            }
+        }
+
+        function updateTimerUIIndicator(active) {
+            const dot = document.getElementById('active-pulse-dot');
+            if (dot) {
+                if (active) {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-green-500 active-dot-pulse';
+                    dot.title = '자동 작업 시간 측정 중';
+                } else {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-zinc-600';
+                    dot.title = '자동 측정 정지됨 (대기 중)';
+                }
+            }
+        }
+
+        function updateTimerDisplays(pageSeconds) {
+            const display = document.getElementById('page-timer-display');
+            const editorSpentDisplay = document.getElementById('editor-time-spent');
+            
+            const formatted = formatSeconds(pageSeconds);
+            if (display) display.innerText = `⏱ ${formatted}`;
+            if (editorSpentDisplay) editorSpentDisplay.innerText = `작업 시간: ${formatted}`;
+        }
+
+        function formatSeconds(totalSeconds) {
+            const hrs = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+            if (hrs > 0) {
+                return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // --- PAGE MANAGEMENT ---
+        function createNewPage(title = '제목 없는 글', content = '') {
+            const newPage = {
+                id: 'page_' + Date.now(),
+                title: title,
+                content: content,
+                updatedAt: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                timeSpentSeconds: 0
+            };
+            appState.pages.unshift(newPage);
+            appState.activePageId = newPage.id;
+            saveToLocalStorage();
+            renderPagesList();
+            selectPage(newPage.id);
+            showToast('새 글이 생성되었습니다.');
+        }
+
+        function selectPage(pageId) {
+            appState.activePageId = pageId;
+            const page = appState.pages.find(p => p.id === pageId);
+            if (!page) return;
+
+            document.getElementById('editor-title').value = page.title;
+            document.getElementById('editor-content').innerText = page.content;
+            
+            const dateStr = new Date(page.updatedAt).toLocaleDateString('ko-KR', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('editor-date-display').innerText = dateStr;
+            
+            updateTimerDisplays(page.timeSpentSeconds || 0);
+            updateCharCount();
+            renderPagesList();
+            saveToLocalStorage();
+        }
+
+        function duplicatePage(pageId, e) {
+            if (e) e.stopPropagation();
+            const original = appState.pages.find(p => p.id === pageId);
+            if (!original) return;
+
+            const copy = {
+                ...original,
+                id: 'page_' + Date.now(),
+                title: `${original.title} (사본)`,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            const index = appState.pages.findIndex(p => p.id === pageId);
+            appState.pages.splice(index + 1, 0, copy);
+            saveToLocalStorage();
+            renderPagesList();
+            showToast('글이 복사되었습니다.');
+        }
+
+        function deletePage(pageId, e) {
+            if (e) e.stopPropagation();
+            const index = appState.pages.findIndex(p => p.id === pageId);
+            if (index === -1) return;
+
+            deletedPageBackup = { page: appState.pages[index], index };
+            appState.pages.splice(index, 1);
+
+            if (appState.activePageId === pageId) {
+                appState.activePageId = appState.pages.length > 0 ? appState.pages[0].id : null;
+            }
+
+            saveToLocalStorage();
+            renderPagesList();
+
+            if (appState.activePageId) {
+                selectPage(appState.activePageId);
+            } else {
+                createNewPage();
+            }
+
+            showUndoToast('글이 삭제되었습니다.');
+        }
+
+        function undoDelete() {
+            if (!deletedPageBackup) return;
+            appState.pages.splice(deletedPageBackup.index, 0, deletedPageBackup.page);
+            appState.activePageId = deletedPageBackup.page.id;
+            deletedPageBackup = null;
+            saveToLocalStorage();
+            renderPagesList();
+            selectPage(appState.activePageId);
+            showToast('삭제가 취소되었습니다.');
+        }
+
+        function renderPagesList() {
+            const container = document.getElementById('pages-container');
+            const searchQuery = (document.getElementById('search-input')?.value || '').toLowerCase();
+            container.innerHTML = '';
+
+            const filteredPages = appState.pages.filter(p => 
+                p.title.toLowerCase().includes(searchQuery) || 
+                p.content.toLowerCase().includes(searchQuery)
+            );
+
+            filteredPages.forEach(page => {
+                const isActive = page.id === appState.activePageId;
+                const div = document.createElement('div');
+                div.className = `group p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                    isActive 
+                        ? 'bg-white dark:bg-zinc-800 shadow-sm border border-black/5 font-medium' 
+                        : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-600 dark:text-gray-300'
+                }`;
+                div.onclick = () => selectPage(page.id);
+
+                div.innerHTML = `
+                    <div class="min-w-0 flex-1 pr-2">
+                        <div class="text-xs truncate font-batang ${isActive ? 'text-brand-600 dark:text-brand-400 font-bold' : ''}">${escapeHtml(page.title || '제목 없음')}</div>
+                        <div class="text-[10px] text-gray-400 truncate mt-0.5">${escapeHtml(page.content.substring(0, 30) || '내용 없음')}</div>
+                    </div>
+                    <div class="hidden group-hover:flex items-center space-x-1">
+                        <button onclick="duplicatePage('${page.id}', event)" title="복사" class="p-1 hover:text-brand-500 rounded"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="deletePage('${page.id}', event)" title="삭제" class="p-1 hover:text-red-500 rounded"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // Update bottom stats
+            document.getElementById('page-count-display').innerText = `글 ${appState.pages.length}개`;
+            const totalWords = appState.pages.reduce((acc, p) => acc + (p.content ? p.content.length : 0), 0);
+            document.getElementById('total-words-display').innerText = `${totalWords.toLocaleString()} 자`;
+            
+            lucide.createIcons();
+        }
+
+        // --- EDITOR INPUT HANDLERS ---
+        function onEditorTitleInput() {
+            const page = appState.pages.find(p => p.id === appState.activePageId);
+            if (!page) return;
+            page.title = document.getElementById('editor-title').value;
+            page.updatedAt = new Date().toISOString();
+            saveToLocalStorage();
+            renderPagesList();
+        }
+
+        function onEditorContentInput() {
+            const page = appState.pages.find(p => p.id === appState.activePageId);
+            if (!page) return;
+            page.content = document.getElementById('editor-content').innerText;
+            page.updatedAt = new Date().toISOString();
+            updateCharCount();
+            saveToLocalStorage();
+        }
+
+        function updateCharCount() {
+            const content = document.getElementById('editor-content').innerText || '';
+            document.getElementById('editor-char-count').innerText = `${content.length.toLocaleString()} 글자`;
+        }
+
+        // --- SELECTION EXCERPT SYSTEM ---
+        function setupEventListeners() {
+            const editor = document.getElementById('editor-content');
+            
+            // Show selection popup when text is highlighted
+            document.addEventListener('selectionchange', () => {
+                const selection = window.getSelection();
+                const selectedText = selection.toString().trim();
+                const popup = document.getElementById('selection-popup');
+
+                if (selectedText.length > 0 && editor.contains(selection.anchorNode)) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    
+                    popup.style.top = `${window.scrollY + rect.top - 40}px`;
+                    popup.style.left = `${window.scrollX + rect.left + (rect.width / 2)}px`;
+                    popup.classList.remove('hidden');
+                } else {
+                    popup.classList.add('hidden');
+                }
+            });
+        }
+
+        function createExcerptFromSelection() {
+            const selection = window.getSelection().toString().trim();
+            const currentPage = appState.pages.find(p => p.id === appState.activePageId);
+            const defaultAuthor = currentPage ? `${currentPage.title}` : '글쓰기 노트';
+
+            currentExcerptTemp = selection || currentPage?.content.substring(0, 100) || '선택된 문장이 없습니다.';
+            
+            document.getElementById('preview-quote-text').innerText = currentExcerptTemp;
+            document.getElementById('excerpt-author-input').value = defaultAuthor;
+            document.getElementById('excerpt-tags-input').value = '#글귀 #발췌';
+            
+            updateCardPreview();
+            openExcerptModal();
+        }
+
+        function updateCardPreview() {
+            const author = document.getElementById('excerpt-author-input').value || '작자 미상';
+            const tags = document.getElementById('excerpt-tags-input').value || '';
+            
+            document.getElementById('preview-author-display').innerText = author;
+            document.getElementById('preview-tags-display').innerText = tags;
+        }
+
+        function setCardTheme(theme) {
+            currentCardTheme = theme;
+            const card = document.getElementById('quote-card-preview');
+            
+            card.className = "p-8 rounded-2xl shadow-lg transition-all text-center flex flex-col justify-between min-h-[260px] font-batang relative overflow-hidden ";
+            
+            switch(theme) {
+                case 'pink':
+                    card.className += "bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 text-gray-800";
+                    break;
+                case 'sunset':
+                    card.className += "bg-gradient-to-br from-amber-100 via-orange-100 to-amber-200 text-amber-950";
+                    break;
+                case 'forest':
+                    card.className += "bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-emerald-100";
+                    break;
+                case 'lavender':
+                    card.className += "bg-gradient-to-br from-purple-100 via-indigo-50 to-purple-200 text-indigo-950";
+                    break;
+                case 'cream':
+                    card.className += "bg-gradient-to-br from-stone-100 via-amber-50 to-stone-200 text-stone-800";
+                    break;
+                case 'midnight':
+                    card.className += "bg-gradient-to-br from-gray-900 via-zinc-800 to-black text-gray-100";
+                    break;
+            }
+        }
+
+        function saveExcerptToStorage() {
+            const excerptObj = {
+                id: 'excerpt_' + Date.now(),
+                text: currentExcerptTemp,
+                author: document.getElementById('excerpt-author-input').value,
+                tags: document.getElementById('excerpt-tags-input').value,
+                theme: currentCardTheme,
+                createdAt: new Date().toISOString()
+            };
+
+            appState.excerpts.unshift(excerptObj);
+            saveToLocalStorage();
+            renderExcerptsGrid();
+            closeExcerptModal();
+            showToast('발췌 보관함에 저장되었습니다!');
+        }
+
+        function renderExcerptsGrid() {
+            const container = document.getElementById('excerpts-grid');
+            container.innerHTML = '';
+
+            if (appState.excerpts.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-400">
+                        <i data-lucide="bookmark" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+                        <p class="text-xs">저장된 발췌문이 없습니다.<br>글을 쓰다가 중요한 문장을 drag하여 발췌해 보세요.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            appState.excerpts.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "p-6 rounded-2xl shadow-sm border border-black/5 flex flex-col justify-between min-h-[200px] font-batang relative group transition-all hover:shadow-md";
+                
+                // Color mapping
+                let themeClasses = "bg-white text-gray-800";
+                if (item.theme === 'pink') themeClasses = "bg-gradient-to-br from-pink-50 to-rose-100 text-gray-800";
+                if (item.theme === 'sunset') themeClasses = "bg-gradient-to-br from-amber-50 to-orange-100 text-amber-900";
+                if (item.theme === 'forest') themeClasses = "bg-gradient-to-br from-emerald-900 to-teal-950 text-emerald-100";
+                if (item.theme === 'lavender') themeClasses = "bg-gradient-to-br from-purple-50 to-indigo-100 text-purple-950";
+                if (item.theme === 'cream') themeClasses = "bg-gradient-to-br from-stone-50 to-amber-50 text-stone-800";
+                if (item.theme === 'midnight') themeClasses = "bg-gradient-to-br from-zinc-900 to-black text-gray-100";
+
+                div.className += " " + themeClasses;
+
+                div.innerHTML = `
+                    <div class="text-xs leading-relaxed italic mb-4 font-medium">“${escapeHtml(item.text)}”</div>
+                    <div class="pt-3 border-t border-black/10 flex items-center justify-between text-[11px] opacity-80">
+                        <div>
+                            <div class="font-bold">${escapeHtml(item.author || '출처 미상')}</div>
+                            <div class="text-[9px] opacity-60">${escapeHtml(item.tags || '')}</div>
+                        </div>
+                        <button onclick="deleteExcerpt('${item.id}')" class="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            lucide.createIcons();
+        }
+
+        function deleteExcerpt(id) {
+            appState.excerpts = appState.excerpts.filter(e => e.id !== id);
+            saveToLocalStorage();
+            renderExcerptsGrid();
+            showToast('발췌문이 삭제되었습니다.');
+        }
+
+        function downloadExcerptPNG() {
+            const cardElement = document.getElementById('quote-card-preview');
+            html2canvas(cardElement, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `excerpt_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function exportQuoteCardPNG() {
+            createExcerptFromSelection();
+        }
+
+        // --- EXPORT & BACKUP SYSTEM ---
+        function exportAsTxt() {
+            const page = appState.pages.find(p => p.id === appState.activePageId);
+            if (!page) return;
+
+            const blob = new Blob([`${page.title}\n\n${page.content}`], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${page.title || '글쓰기'}.txt`;
+            link.click();
+        }
+
+        function downloadBackupJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `writing_notebook_backup_${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function triggerRestoreJSON() {
+            document.getElementById('restore-file-input').click();
+        }
+
+        function handleRestoreJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.pages) {
+                        appState = { ...appState, ...importedData };
+                        saveToLocalStorage();
+                        renderPagesList();
+                        renderExcerptsGrid();
+                        if (appState.pages.length > 0) selectPage(appState.pages[0].id);
+                        showToast('데이터가 성공적으로 복원되었습니다.');
+                    }
+                } catch (err) {
+                    showToast('유효하지 않은 백업 파일입니다.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- UI TOGGLES & THEMES ---
+        function switchMainTab(tab) {
+            const notesView = document.getElementById('notes-view');
+            const excerptsView = document.getElementById('excerpts-view');
+            const notesBtn = document.getElementById('tab-notes-btn');
+            const excerptsBtn = document.getElementById('tab-excerpts-btn');
+            const sidebarControls = document.getElementById('notes-sidebar-controls');
+
+            if (tab === 'notes') {
+                notesView.classList.remove('hidden');
+                excerptsView.classList.add('hidden');
+                notesBtn.className = "flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 bg-white/70 shadow-sm border border-black/5 text-gray-800";
+                excerptsBtn.className = "flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 text-gray-600 hover:bg-white/50";
+                sidebarControls.classList.remove('hidden');
+            } else {
+                notesView.classList.add('hidden');
+                excerptsView.classList.remove('hidden');
+                excerptsBtn.className = "flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 bg-white/70 shadow-sm border border-black/5 text-gray-800";
+                notesBtn.className = "flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 text-gray-600 hover:bg-white/50";
+                sidebarControls.classList.add('hidden');
+            }
+        }
+
+        function setTheme(themeName) {
+            appState.theme = themeName;
+            applyTheme(themeName);
+            saveToLocalStorage();
+            closeAllDropdowns();
+        }
+
+        function applyTheme(themeName) {
+            document.body.className = `${themeName} font-sans min-h-screen transition-colors duration-300 overflow-x-hidden`;
+            if (themeName === 'theme-dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        function setFontFamily(font) {
+            appState.fontFamily = font;
+            const titleEl = document.getElementById('editor-title');
+            const contentEl = document.getElementById('editor-content');
+            const fontBatangBtn = document.getElementById('font-batang-btn');
+            const fontSansBtn = document.getElementById('font-sans-btn');
+
+            if (font === 'batang') {
+                titleEl.className = titleEl.className.replace('font-sans', 'font-batang');
+                contentEl.className = contentEl.className.replace('font-sans', 'font-batang');
+                fontBatangBtn.className = "px-2.5 py-1 rounded-md font-batang transition-all font-semibold bg-white dark:bg-zinc-800 shadow-sm";
+                fontSansBtn.className = "px-2.5 py-1 rounded-md font-sans text-gray-500 transition-all";
+            } else {
+                titleEl.className = titleEl.className.replace('font-batang', 'font-sans');
+                contentEl.className = contentEl.className.replace('font-batang', 'font-sans');
+                fontSansBtn.className = "px-2.5 py-1 rounded-md font-sans transition-all font-semibold bg-white dark:bg-zinc-800 shadow-sm";
+                fontBatangBtn.className = "px-2.5 py-1 rounded-md font-batang text-gray-500 transition-all";
+            }
+            saveToLocalStorage();
+        }
+
+        function setTextAlign(align) {
+            appState.textAlign = align;
+            const contentEl = document.getElementById('editor-content');
+            contentEl.style.textAlign = align;
+
+            document.getElementById('align-left-btn').className = align === 'left' ? 'p-1 rounded text-gray-700 bg-white dark:bg-zinc-800 shadow-sm' : 'p-1 rounded text-gray-500 hover:text-gray-700';
+            document.getElementById('align-center-btn').className = align === 'center' ? 'p-1 rounded text-gray-700 bg-white dark:bg-zinc-800 shadow-sm' : 'p-1 rounded text-gray-500 hover:text-gray-700';
+            saveToLocalStorage();
+        }
+
+        function toggleFocusMode() {
+            const sidebar = document.getElementById('sidebar');
+            const topBar = document.getElementById('top-bar');
+            
+            sidebar.classList.toggle('hidden');
+            topBar.classList.toggle('opacity-30');
+            topBar.classList.toggle('hover:opacity-100');
+            showToast('몰입 모드 설정 (Alt+F로 해제)');
+        }
+
+        // Keyboard Shortcut for Focus Mode (Alt+F)
+        window.addEventListener('keydown', (e) => {
+            if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+                e.preventDefault();
+                toggleFocusMode();
+            }
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            const isHidden = el.classList.contains('hidden');
+            closeAllDropdowns();
+            if (isHidden) el.classList.remove('hidden');
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('#theme-dropdown, #export-dropdown').forEach(el => el.classList.add('hidden'));
+        }
+
+        // Close dropdowns on outside click
+        window.onclick = function(e) {
+            if (!e.target.closest('.relative')) {
+                closeAllDropdowns();
+            }
+        };
+
+        // --- MODALS & TOASTS ---
+        function openTimerModal() {
+            const currentPage = appState.pages.find(p => p.id === appState.activePageId);
+            document.getElementById('modal-current-time').innerText = formatSeconds(currentPage?.timeSpentSeconds || 0);
+            document.getElementById('modal-today-time').innerText = formatSeconds(appState.todayTimeSeconds || 0);
+            document.getElementById('modal-all-time').innerText = formatSeconds(appState.allTimeSeconds || 0);
+            document.getElementById('timer-modal').classList.remove('hidden');
+        }
+
+        function closeTimerModal() {
+            document.getElementById('timer-modal').classList.add('hidden');
+        }
+
+        function openExcerptModal() {
+            document.getElementById('excerpt-modal').classList.remove('hidden');
+        }
+
+        function closeExcerptModal() {
+            document.getElementById('excerpt-modal').classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center space-x-2 pointer-events-auto transition-all transform translate-y-2 opacity-0";
+            toast.innerHTML = `<span>${msg}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showUndoToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center justify-between space-x-4 pointer-events-auto transition-all";
+            toast.innerHTML = `
+                <span>${msg}</span>
+                <button onclick="undoDelete()" class="text-brand-300 hover:underline font-bold">실행 취소 (7초)</button>
+            `;
+            
+            container.appendChild(toast);
+
+            if (undoToastTimeout) clearTimeout(undoToastTimeout);
+            undoToastTimeout = setTimeout(() => {
+                toast.remove();
+                deletedPageBackup = null;
+            }, 7000);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>
