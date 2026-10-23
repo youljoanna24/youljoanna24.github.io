@@ -1,1162 +1,1071 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>나의 글쓰기 노트</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#fdf0f3; --panel:#fffafb; --border:#f3d3dc; --text:#4a2c36; --muted:#a8808e;
-  --accent:#e0678a; --accent-soft:#fbdde6;
-  --editor-font:'Georgia','Noto Serif KR',serif;
-  --editor-size:16px;
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
-}
-:root[data-palette="beige"]{
-  --bg:#faf8f4; --panel:#fff; --border:#e5e0d8; --text:#2b2620; --muted:#8a8175;
-  --accent:#a3673c; --accent-soft:#f1e4d6;
-}
-:root[data-palette="lavender"]{
-  --bg:#f4f0fb; --panel:#fcfaff; --border:#dcd2f0; --text:#35294d; --muted:#8d80a8;
-  --accent:#8f6bd6; --accent-soft:#e6dcf7;
-}
-:root[data-palette="mint"]{
-  --bg:#eef8f4; --panel:#fafffd; --border:#cfe8de; --text:#25423a; --muted:#7aa092;
-  --accent:#3fa583; --accent-soft:#d8f0e6;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#21171c; --panel:#2b1e24; --border:#4a3640; --text:#f6e6ec; --muted:#c4a1ae;
-    --accent:#f08cab; --accent-soft:#3d2a33;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#21171c; --panel:#2b1e24; --border:#4a3640; --text:#f6e6ec; --muted:#c4a1ae;
-  --accent:#f08cab; --accent-soft:#3d2a33;
-}
-*{box-sizing:border-box;}
-html,body{height:100%;}
-html{scroll-padding-top:env(safe-area-inset-top,0px);}
-body{
-  margin:0; background:var(--bg); color:var(--text);
-  font-family:'Georgia','Noto Serif KR',serif;
-  display:flex; height:100%;
-}
-#sidebar{
-  width:230px; min-width:230px; background:var(--panel); border-right:1px solid var(--border);
-  display:flex; flex-direction:column; padding:14px 10px;
-}
-#brand{font-size:15px; font-weight:bold; padding:6px 8px 14px; color:var(--accent); letter-spacing:.5px;}
-#newBtn{
-  border:1px solid var(--accent); color:var(--accent); background:transparent;
-  border-radius:8px; padding:9px; font-size:14px; cursor:pointer; margin-bottom:12px; font-family:inherit;
-}
-#newBtn:hover{background:var(--accent-soft);}
-#searchInput{
-  border:1px solid var(--border); background:var(--bg); color:var(--text);
-  border-radius:7px; padding:7px 9px; font-size:12.5px; font-family:inherit;
-  outline:none; margin-bottom:10px; width:100%;
-}
-#searchInput:focus{border-color:var(--accent);}
-#pageList{list-style:none; margin:0; padding:0; overflow-y:auto; flex:1;}
-#pageList li{
-  padding:10px 10px; border-radius:8px; cursor:pointer; margin-bottom:4px;
-  font-size:13.5px; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:6px;
-}
-#pageList li:hover{background:var(--accent-soft);}
-#pageList li.active{background:var(--accent-soft); color:var(--text); font-weight:bold;}
-#pageList li span.title{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;}
-#pageList li button{
-  background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; opacity:.6; flex-shrink:0;
-}
-#pageList li button:hover{opacity:1; color:#c0392b;}
-#main{flex:1; display:flex; flex-direction:column; min-width:0;}
-#topbar{
-  padding:14px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;
-  position:relative;
-}
-#stylePanel{
-  display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
-  background:var(--panel); border:1px solid var(--border); border-radius:10px;
-  padding:14px; width:240px; box-shadow:0 6px 20px rgba(0,0,0,.14);
-  flex-direction:column; gap:10px; font-size:12.5px;
-}
-#stylePanel.open{display:flex;}
-#stylePanel label{display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted);}
-#stylePanel select{
-  border:1px solid var(--border); background:var(--bg); color:var(--text);
-  border-radius:7px; padding:6px 8px; font-size:12px; font-family:inherit;
-}
-#stylePanel input[type=range]{width:110px; accent-color:var(--accent);}
-#stylePanel .tbBtn{margin-left:0; width:100%;}
-#titleInput{
-  font-size:22px; font-weight:bold; border:none; background:transparent; color:var(--text);
-  outline:none; width:100%; font-family:var(--editor-font);
-}
-#titleInput::placeholder{color:var(--muted);}
-#status{font-size:12px; color:var(--muted); white-space:nowrap; margin-left:16px;}
-#charCount{font-size:12px; color:var(--muted); white-space:nowrap; margin-left:10px;}
-#txtBtn{
-  margin-left:10px; border:1px solid var(--border); background:transparent; color:var(--text);
-  border-radius:7px; padding:7px 12px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:nowrap;
-}
-#txtBtn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
-.tbBtn{
-  margin-left:10px; border:1px solid var(--border); background:transparent; color:var(--text);
-  border-radius:7px; padding:7px 10px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:nowrap;
-}
-.tbBtn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
-#fontControls{display:flex; align-items:center; gap:6px; margin-left:12px; flex-shrink:0;}
-#fontControls select{
-  border:1px solid var(--border); background:var(--panel); color:var(--text);
-  border-radius:7px; padding:6px 8px; font-size:12px; cursor:pointer; font-family:inherit;
-}
-#fontControls select:hover{border-color:var(--accent);}
-#pdfBtn{
-  margin-left:12px; border:1px solid var(--border); background:transparent; color:var(--text);
-  border-radius:7px; padding:7px 12px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:nowrap;
-}
-#pdfBtn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
-#printArea{display:none;}
-#measureBox{
-  position:fixed; left:-9999px; top:0; visibility:hidden;
-  white-space:pre-wrap; word-break:break-word; margin:0; padding:0; line-height:1.9;
-}
-@media print{
-  @page{ size:A4; margin:0; }
-  body *{visibility:hidden;}
-  #printArea, #printArea *{visibility:visible;}
-  #printArea{display:block; position:absolute; top:0; left:0; width:100%;}
-  .print-page{
-    width:210mm; height:297mm; box-sizing:border-box;
-    page-break-after:always; padding:70px 60px; position:relative; overflow:hidden;
-    background-color:#fff; color:#222; background-size:cover; background-position:center;
-    -webkit-print-color-adjust:exact; print-color-adjust:exact;
-  }
-  .print-page:last-child{page-break-after:auto;}
-  .print-page h1{font-size:21px; margin:0 0 28px; font-family:var(--editor-font);}
-  .print-content{font-size:var(--editor-size); line-height:1.9; white-space:pre-wrap; font-family:var(--editor-font);}
-  .print-footer{position:absolute; bottom:28px; left:0; right:0; text-align:center; font-size:11px; color:#888; letter-spacing:1px;}
-}
-#editorWrap{
-  flex:1; overflow-y:auto; padding:32px 20px; display:flex; justify-content:center; align-items:flex-start;
-  background-color:var(--bg); background-size:cover; background-position:center; background-repeat:no-repeat;
-}
-#page{
-  width:100%; max-width:640px; aspect-ratio:210/297; margin:0 auto;
-  background:var(--panel);
-  background:color-mix(in srgb, var(--panel) var(--paper-alpha,100%), transparent);
-  border:1px solid var(--border); border-radius:2px;
-  box-shadow:0 2px 10px rgba(0,0,0,.06);
-  padding:56px 48px; position:relative; flex-shrink:0;
-}
-#page{background-size:cover; background-position:center; background-repeat:no-repeat;}
-#fgColor{width:44px; height:28px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent; cursor:pointer;}
-#timerBox{
-  display:flex; align-items:center; gap:6px; margin-left:12px; cursor:pointer; user-select:none;
-  font-size:12.5px; color:var(--muted); white-space:nowrap; flex-shrink:0;
-}
-#timerDot{width:7px; height:7px; border-radius:50%; background:var(--border);}
-#timerBox.on #timerDot{background:#3fb37f; box-shadow:0 0 0 3px rgba(63,179,127,.2);}
-#timerBox:hover #timerText{color:var(--accent);}
-#timerBtn{
-  display:none; border:1px solid var(--border); background:transparent; color:var(--text);
-  border-radius:6px; width:24px; height:24px; cursor:pointer; font-size:11px; padding:0;
-}
-#timerBox.manual #timerBtn{display:inline-block;}
-#timerPanel{
-  display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
-  background:var(--panel); border:1px solid var(--border); border-radius:10px;
-  padding:14px; width:250px; box-shadow:0 6px 20px rgba(0,0,0,.14);
-  flex-direction:column; gap:10px; font-size:12.5px;
-}
-#timerPanel.open{display:flex;}
-#timerPanel .tRow{display:flex; justify-content:space-between; align-items:center; gap:10px; color:var(--muted);}
-#timerPanel .tRow b{color:var(--text); font-weight:600;}
-#timerPanel .tbBtn{margin-left:0; width:100%;}
-#saveMenu{
-  display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
-  background:var(--panel); border:1px solid var(--border); border-radius:10px;
-  padding:10px; width:250px; box-shadow:0 6px 20px rgba(0,0,0,.14);
-  flex-direction:column; gap:6px;
-}
-#saveMenu.open{display:flex;}
-#saveMenu button{
-  margin:0; width:100%; text-align:left; border:1px solid var(--border); background:transparent; color:var(--text);
-  border-radius:7px; padding:8px 10px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:normal;
-}
-#saveMenu button:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
-#pageList li button.dup:hover{color:var(--accent);}
-#toast{
-  display:none; position:fixed; left:50%; bottom:72px; transform:translateX(-50%); z-index:50;
-  background:var(--text); color:var(--panel); padding:10px 14px; border-radius:10px; font-size:13px;
-  align-items:center; gap:12px; box-shadow:0 6px 20px rgba(0,0,0,.25); max-width:90vw;
-}
-#toast.show{display:flex;}
-#toast button{background:transparent; border:none; color:var(--accent-soft); text-decoration:underline; cursor:pointer; font-size:13px; font-family:inherit; padding:0;}
-#focusExit{
-  display:none; position:fixed; top:12px; right:14px; z-index:40; border:1px solid var(--border);
-  background:var(--panel); color:var(--muted); border-radius:20px; padding:6px 12px; font-size:12px;
-  cursor:pointer; font-family:inherit; opacity:.7;
-}
-#focusExit:hover{opacity:1;}
-body.focus #sidebar, body.focus #topbar, body.focus #pageFooter{display:none;}
-body.focus #focusExit{display:block;}
-.panelTitle{font-size:11.5px; color:var(--accent); font-weight:bold; margin-top:2px;}
-#editor{
-  width:100%; height:100%; min-height:520px; border:none; outline:none; resize:none;
-  background:transparent; color:var(--text); font-size:var(--editor-size); line-height:2; font-family:var(--editor-font);
-}
-#editor::placeholder{color:var(--muted);}
-#empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--muted); font-size:14px; padding:0 40px;}
-#pageNumOnPage{
-  position:absolute; bottom:20px; left:0; right:0; text-align:center;
-  font-size:13px; color:var(--muted); letter-spacing:1.5px;
-  font-family:var(--editor-font);
-}
-#pageFooter{
-  display:flex; align-items:center; justify-content:center; gap:14px;
-  padding:12px 0 calc(16px + env(safe-area-inset-bottom,0px));
-  font-size:13px; color:var(--muted); border-top:1px solid var(--border);
-  font-family:'Georgia','Noto Serif KR',serif; letter-spacing:1px;
-}
-#pageFooter button{
-  border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:13px; padding:4px 6px;
-}
-#pageFooter button:hover{color:var(--accent);}
-#pageFooter button:disabled{opacity:.25; cursor:default;}
-#pageFooter button:disabled:hover{color:var(--muted);}
-@media (max-width:640px){
-  #sidebar{position:fixed; z-index:10; height:100%; transform:translateX(-100%); transition:transform .2s;}
-  #sidebar.open{transform:translateX(0);}
-  #menuBtn{display:inline-block !important;}
-  #titleInput{font-size:19px;}
-  #status{display:none;}
-  #timerBox{margin-left:6px; font-size:11px;}
-  #charCount{display:none;}
-  .tbBtn{padding:6px 7px; font-size:11px; margin-left:6px;}
-  #txtBtn{padding:6px 8px; font-size:11px; margin-left:6px;}
-  #pdfBtn{padding:6px 8px; font-size:11px; margin-left:6px;}
-  #page{padding:32px 22px;}
-  #editorWrap{padding:16px 12px;}
-  #fontControls{margin-left:6px; gap:4px;}
-  #fontControls select{padding:5px 4px; font-size:11px;}
-}
-#menuBtn{display:none; border:none; background:none; font-size:20px; color:var(--text); cursor:pointer; margin-right:10px;}
-</style>
-</head>
-<body>
-<div id="sidebar">
-  <div id="brand">나의 글쓰기 노트</div>
-  <button id="newBtn">+ 새 페이지</button>
-  <input id="searchInput" type="text" placeholder="검색..." />
-  <ul id="pageList"></ul>
-</div>
-<div id="main">
-  <div id="topbar">
-    <div style="display:flex;align-items:center;flex:1;min-width:0;">
-      <button id="menuBtn">☰</button>
-      <input id="titleInput" placeholder="제목 없음" />
-    </div>
-    <div id="fontControls">
-      <select id="fontSelect" title="글꼴">
-        <option value="'Georgia','Noto Serif KR',serif">명조체</option>
-        <option value="'Noto Sans KR',-apple-system,sans-serif">고딕체</option>
-        <option value="'Gaegu',cursive">손글씨체</option>
-        <option value="'Nanum Gothic Coding','Courier New',monospace">타자기체</option>
-      </select>
-      <select id="sizeSelect" title="글자 크기">
-        <option value="14px">14</option>
-        <option value="16px" selected>16</option>
-        <option value="18px">18</option>
-        <option value="20px">20</option>
-        <option value="22px">22</option>
-        <option value="24px">24</option>
-      </select>
-    </div>
-    <div id="status">저장됨</div>
-    <span id="charCount">0자</span>
-    <div id="timerBox" title="작업 시간 (눌러서 자세히 보기)">
-      <span id="timerDot"></span><span id="timerText">⏱ 00:00</span><button id="timerBtn" type="button" title="시작 / 일시정지">▶</button>
-    </div>
-    <button id="styleBtn" class="tbBtn" title="색상·배경 꾸미기">🎨</button>
-    <button id="themeBtn" class="tbBtn" title="다크모드 켜기/끄기">🌙</button>
-    <button id="copyBtn" class="tbBtn" title="현재 페이지 글 복사">복사</button>
-    <button id="focusBtn" class="tbBtn" title="집중 모드 (Alt+F)">⛶</button>
-    <button id="saveBtn" class="tbBtn" title="저장 / 백업">💾 저장</button>
-    <div id="timerPanel">
-      <div class="panelTitle">작업 시간</div>
-      <div class="tRow"><span>오늘</span><b id="tToday">0초</b></div>
-      <div class="tRow"><span>이 페이지</span><b id="tPage">0초</b></div>
-      <div class="tRow"><span>전체 페이지 합계</span><b id="tTotal">0초</b></div>
-      <label class="tRow"><span>자동 측정<br>(글 쓸 때만 · 1분 쉬면 멈춤)</span><input id="timerAutoChk" type="checkbox" checked></label>
-      <button id="timerResetBtn" class="tbBtn" type="button">이 페이지 시간 초기화</button>
-    </div>
-    <div id="saveMenu">
-      <button id="imgBtn">🖼 이미지로 저장 (PNG, 현재 페이지)</button>
-      <button id="pdfBtn" title="현재 페이지를 PDF로 저장">📄 PDF로 저장 (현재 페이지)</button>
-      <button id="txtBtn" title="TXT로 내보내기">📝 TXT로 저장 (전체)</button>
-      <button id="backupBtn">💾 백업 저장 (전체, JSON)</button>
-      <button id="restoreBtn">📂 백업 불러오기</button>
-    </div>
-    <input id="restoreFile" type="file" accept=".json,application/json" style="display:none;">
-    <div id="stylePanel">
-      <label>화면 색상
-        <select id="paletteSelect">
-          <option value="pink">핑크</option>
-          <option value="lavender">라벤더</option>
-          <option value="mint">민트</option>
-          <option value="beige">베이지</option>
-        </select>
-      </label>
-      <div class="panelTitle">글 디자인 (지금 보는 페이지)</div>
-      <label>배경
-        <select id="designSelect">
-          <option value="none">없음</option>
-          <option value="sky">핑크 하늘</option>
-          <option value="sunset">노을</option>
-          <option value="lavender">라벤더 구름</option>
-          <option value="mint">민트 숨결</option>
-          <option value="photo" disabled>내 사진</option>
-        </select>
-      </label>
-      <label>글자색
-        <select id="fgSelect">
-          <option value="">기본</option>
-          <option value="#ffffff">흰색</option>
-          <option value="#2b2b2b">검정</option>
-          <option value="#7a2f4d">진한 핑크</option>
-          <option value="custom" disabled>직접 고른 색</option>
-        </select>
-      </label>
-      <label>글자색 직접 고르기
-        <input id="fgColor" type="color" value="#4a2c36">
-      </label>
-      <label>글 정렬
-        <select id="alignSelect">
-          <option value="left">왼쪽</option>
-          <option value="center">가운데</option>
-        </select>
-      </label>
-      <button id="bgUploadBtn" class="tbBtn">내 사진 넣기</button>
-      <button id="bgClearBtn" class="tbBtn">디자인 지우기</button>
-      <input id="bgFile" type="file" accept="image/*" style="display:none;">
-    </div>
-  </div>
-  <div id="editorWrap">
-    <div id="page">
-      <textarea id="editor" placeholder="여기에 글을 쓰세요..."></textarea>
-      <div id="empty" style="display:none;">왼쪽에서 "새 페이지"를 눌러 글쓰기를 시작하세요.</div>
-      <div id="pageNumOnPage">-</div>
-    </div>
-  </div>
-  <div id="pageFooter">
-    <button id="prevBtn" title="이전 페이지">◀</button>
-    <button id="nextBtn" title="다음 페이지">▶</button>
-  </div>
-</div>
-<div id="printArea"></div>
-<div id="measureBox"></div>
-<div id="toast"><span id="toastMsg"></span><button id="toastBtn" type="button"></button></div>
-<button id="focusExit" type="button">✕ 집중 모드 끝내기</button>
+<html lang="ko" class="h-full" style="--bg-main: #fff5f7; --bg-panel: #ffffff; --bg-sidebar: #fff0f5; --text-main: #4a353b; --border-color: #f7cad0; --selection-bg: #fbcfe8;"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 글쓰기 &amp; 발췌 노트</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html2canvas for Quote Card Image Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+  <!-- Google Fonts for Literary Aesthetics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Nanum+Myeongjo:wght@400;700;800&amp;family=Pretendard:wght@300;400;500;600;700&amp;family=Song+Myung&amp;display=swap" rel="stylesheet">
 
-<script>
-const STORAGE_KEY = "writing-site-pages-v1";
-let pages = [];
-let currentId = null;
-let saveTimer = null;
-
-function loadPages(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    pages = raw ? JSON.parse(raw) : [];
-  }catch(e){ pages = []; }
-}
-function persist(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); return true; }catch(e){ return false; }
-}
-function newPage(){
-  const p = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:"", content:"", created: Date.now(), updated: Date.now() };
-  pages.unshift(p);
-  currentId = p.id;
-  rememberLast();
-  persist();
-  renderList();
-  renderEditor();
-  document.getElementById("titleInput").focus();
-}
-function deletePage(id, e){
-  e.stopPropagation();
-  const removed = pages.find(p=>p.id===id);
-  if(!removed) return;
-  pages = pages.filter(p=>p.id!==id);
-  if(currentId===id){ currentId = pages.length ? pages[0].id : null; }
-  persist();
-  renderList();
-  renderEditor();
-  showToast("페이지를 삭제했어요", "되돌리기", ()=>{
-    pages.push(removed);
-    currentId = removed.id;
-    rememberLast();
-    persist();
-    renderList();
-    renderEditor();
-  }, 7000);
-}
-const LAST_KEY = "writing-site-last-v1";
-function rememberLast(){
-  try{ localStorage.setItem(LAST_KEY, currentId || ""); }catch(e){}
-}
-function selectPage(id){
-  currentId = id;
-  rememberLast();
-  renderList();
-  renderEditor();
-  if(window.innerWidth<=640) document.getElementById("sidebar").classList.remove("open");
-}
-function renderList(){
-  const ul = document.getElementById("pageList");
-  const q = (document.getElementById("searchInput").value||"").trim().toLowerCase();
-  ul.innerHTML = "";
-  pages.slice().sort((a,b)=>b.updated-a.updated)
-    .filter(p=> !q || (p.title||"").toLowerCase().includes(q) || (p.content||"").toLowerCase().includes(q))
-    .forEach(p=>{
-    const li = document.createElement("li");
-    li.className = p.id===currentId ? "active":"";
-    const span = document.createElement("span");
-    span.className = "title";
-    span.textContent = p.title || "제목 없음";
-    li.appendChild(span);
-    const dup = document.createElement("button");
-    dup.textContent = "⧉";
-    dup.className = "dup";
-    dup.title = "페이지 복제";
-    dup.onclick = (e)=>duplicatePage(p.id,e);
-    li.appendChild(dup);
-    const del = document.createElement("button");
-    del.textContent = "✕";
-    del.onclick = (e)=>deletePage(p.id,e);
-    li.appendChild(del);
-    li.onclick = ()=>selectPage(p.id);
-    ul.appendChild(li);
-  });
-}
-function orderedPages(){
-  return pages.slice().sort((a,b)=>(a.created||a.updated||0)-(b.created||b.updated||0));
-}
-function updateCharCount(){
-  const editor = document.getElementById("editor");
-  const charCount = document.getElementById("charCount");
-  const p = pages.find(p=>p.id===currentId);
-  if(!p){ charCount.textContent = "0자"; return; }
-  const len = (editor.value||"").replace(/\n/g,"").length;
-  const noSpace = (editor.value||"").replace(/\s/g,"").length;
-  charCount.textContent = len.toLocaleString() + "자 (공백 제외 " + noSpace.toLocaleString() + ")";
-}
-function renderEditor(){
-  const titleInput = document.getElementById("titleInput");
-  const editor = document.getElementById("editor");
-  const empty = document.getElementById("empty");
-  const pageNumOnPage = document.getElementById("pageNumOnPage");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const p = pages.find(p=>p.id===currentId);
-  if(!p){
-    editor.style.display = "none";
-    empty.style.display = "flex";
-    titleInput.value = "";
-    titleInput.disabled = true;
-    pageNumOnPage.textContent = "-";
-    prevBtn.disabled = true;
-    nextBtn.disabled = true;
-    updateCharCount();
-    applyDesign();
-    return;
-  }
-  editor.style.display = "block";
-  empty.style.display = "none";
-  titleInput.disabled = false;
-  titleInput.value = p.title;
-  editor.value = p.content;
-
-  const order = orderedPages();
-  const idx = order.findIndex(x=>x.id===currentId);
-  const num = idx+1;
-  pageNumOnPage.textContent = "- " + num + " -";
-  prevBtn.disabled = idx<=0;
-  nextBtn.disabled = idx>=order.length-1;
-  updateCharCount();
-  applyDesign();
-}
-function onEdit(){
-  const p = pages.find(p=>p.id===currentId);
-  if(!p) return;
-  p.title = document.getElementById("titleInput").value;
-  p.content = document.getElementById("editor").value;
-  p.updated = Date.now();
-  updateCharCount();
-  document.getElementById("status").textContent = "저장 중...";
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    persist();
-    renderList();
-    document.getElementById("status").textContent = "저장됨";
-  }, 400);
-}
-
-const FONT_KEY = "writing-site-font-v1";
-function loadFontSettings(){
-  let saved = {};
-  try{ saved = JSON.parse(localStorage.getItem(FONT_KEY) || "{}"); }catch(e){}
-  const fontSelect = document.getElementById("fontSelect");
-  const sizeSelect = document.getElementById("sizeSelect");
-  if(saved.font) fontSelect.value = saved.font;
-  if(saved.size) sizeSelect.value = saved.size;
-  applyFontSettings();
-}
-function applyFontSettings(){
-  const font = document.getElementById("fontSelect").value;
-  const size = document.getElementById("sizeSelect").value;
-  document.documentElement.style.setProperty("--editor-font", font);
-  document.documentElement.style.setProperty("--editor-size", size);
-  try{ localStorage.setItem(FONT_KEY, JSON.stringify({font, size})); }catch(e){}
-}
-document.getElementById("fontSelect").onchange = applyFontSettings;
-document.getElementById("sizeSelect").onchange = applyFontSettings;
-loadFontSettings();
-
-loadPages();
-if(pages.length){
-  let lastId = "";
-  try{ lastId = localStorage.getItem(LAST_KEY) || ""; }catch(e){}
-  currentId = pages.some(p=>p.id===lastId)
-    ? lastId
-    : pages.slice().sort((a,b)=>b.updated-a.updated)[0].id;
-}
-renderList();
-
-// wire up editor area (must exist in DOM already)
-document.getElementById("newBtn").onclick = newPage;
-document.getElementById("menuBtn").onclick = ()=>document.getElementById("sidebar").classList.toggle("open");
-function escapeHtml(s){
-  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-function splitIntoPages(text, widthPx, firstMaxH, restMaxH, font, size){
-  const measure = document.getElementById("measureBox");
-  measure.style.width = widthPx + "px";
-  measure.style.fontFamily = font;
-  measure.style.fontSize = size;
-  const pages = [];
-  if(!text) return pages;
-  let remaining = text;
-  let first = true;
-  let guard = 0;
-  while(remaining.length && guard < 500){
-    guard++;
-    const maxH = first ? firstMaxH : restMaxH;
-    measure.textContent = remaining;
-    if(measure.scrollHeight <= maxH){ pages.push(remaining); break; }
-    let lo=1, hi=remaining.length, best=1;
-    while(lo<=hi){
-      const mid=(lo+hi)>>1;
-      measure.textContent = remaining.slice(0,mid);
-      if(measure.scrollHeight <= maxH){ best=mid; lo=mid+1; } else { hi=mid-1; }
-    }
-    let cut = Math.max(best,1);
-    const backLimit = Math.max(0, cut-200);
-    let niceCut = -1;
-    for(let i=cut;i>backLimit;i--){ if(remaining[i-1]==="\n"){ niceCut=i; break; } }
-    if(niceCut===-1){ for(let i=cut;i>backLimit;i--){ if(remaining[i-1]===" "){ niceCut=i; break; } } }
-    if(niceCut>0) cut=niceCut;
-    pages.push(remaining.slice(0,cut));
-    remaining = remaining.slice(cut);
-    first = false;
-  }
-  return pages;
-}
-function exportPDF(){
-  const p = pages.find(p=>p.id===currentId);
-  if(!p){ alert("저장할 페이지가 없어요. 먼저 페이지를 선택하거나 만들어주세요."); return; }
-  const cs = getComputedStyle(document.documentElement);
-  const font = cs.getPropertyValue("--editor-font").trim();
-  const size = cs.getPropertyValue("--editor-size").trim();
-  const contentWidthPx = 670;
-  const restMaxH = 900;
-  const firstMaxH = 840;
-  const area = document.getElementById("printArea");
-  const title = escapeHtml(p.title || "제목 없음");
-  const chunks = splitIntoPages(p.content||"", contentWidthPx, firstMaxH, restMaxH, font, size);
-  let html = "";
-  let pageNum = 0;
-  if(chunks.length===0){
-    pageNum++;
-    html += '<div class="print-page"><h1>'+title+'</h1><div class="print-footer">- '+pageNum+' -</div></div>';
-  } else {
-    chunks.forEach((chunk, idx)=>{
-      pageNum++;
-      const contentHtml = escapeHtml(chunk).replace(/\n/g,"<br>");
-      const titleHtml = idx===0 ? ('<h1>'+title+'</h1>') : '';
-      html += '<div class="print-page">'+titleHtml+'<div class="print-content">'+contentHtml+'</div><div class="print-footer">- '+pageNum+' -</div></div>';
-    });
-  }
-  area.innerHTML = html;
-  area.querySelectorAll(".print-page").forEach(el=>{
-    el.style.textAlign = p.align==="center" ? "center" : "left";
-    if(p.bg) el.style.backgroundImage = p.bg;
-    if(p.fg){
-      el.style.color = p.fg;
-      const ft = el.querySelector(".print-footer");
-      if(ft) ft.style.color = p.fg;
-    }
-  });
-  window.print();
-}
-window.addEventListener("afterprint", ()=>{
-  document.getElementById("printArea").innerHTML = "";
-});
-function exportTXT(){
-  const order = orderedPages();
-  if(!order.length){ alert("저장할 페이지가 없어요. 먼저 페이지를 만들어주세요."); return; }
-  const text = order.map((p,i)=>{
-    const title = p.title || "제목 없음";
-    return title + "\n\n" + (p.content||"") + "\n\n- " + (i+1) + " -\n";
-  }).join("\n" + "-".repeat(20) + "\n\n");
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "글쓰기노트.txt";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-document.getElementById("txtBtn").onclick = exportTXT;
-document.getElementById("pdfBtn").onclick = exportPDF;
-document.getElementById("searchInput").oninput = renderList;
-document.getElementById("prevBtn").onclick = ()=>{
-  const order = orderedPages();
-  const idx = order.findIndex(x=>x.id===currentId);
-  if(idx>0) selectPage(order[idx-1].id);
-};
-document.getElementById("nextBtn").onclick = ()=>{
-  const order = orderedPages();
-  const idx = order.findIndex(x=>x.id===currentId);
-  if(idx<order.length-1) selectPage(order[idx+1].id);
-};
-
-// 꾸미기: 화면 색상 + 글(페이지)별 디자인
-const STYLE_KEY = "writing-site-style-v1";
-const DESIGNS = {
-  sky:     {css:"linear-gradient(165deg,#e9a3b8 0%,#c487b5 40%,#a98bc9 70%,#f4c3cf 100%)", fg:"#ffffff"},
-  sunset:  {css:"linear-gradient(180deg,#f7c1a3 0%,#f19bb0 50%,#b887c4 100%)", fg:"#ffffff"},
-  lavender:{css:"linear-gradient(160deg,#cdb9ee 0%,#e6c3dd 55%,#f8dbe4 100%)", fg:"#4a2c5a"},
-  mint:    {css:"linear-gradient(160deg,#bfe9dc 0%,#d7ecf2 55%,#f4e6f3 100%)", fg:"#25423a"}
-};
-function applyPalette(v){
-  if(v==="pink") document.documentElement.removeAttribute("data-palette");
-  else document.documentElement.setAttribute("data-palette", v);
-}
-(function initStyle(){
-  let saved = {};
-  try{ saved = JSON.parse(localStorage.getItem(STYLE_KEY) || "{}"); }catch(e){}
-  if(saved.palette) document.getElementById("paletteSelect").value = saved.palette;
-  applyPalette(document.getElementById("paletteSelect").value);
-  try{ localStorage.removeItem("writing-site-bg-v1"); }catch(e){}
-})();
-document.getElementById("paletteSelect").onchange = (e)=>{
-  applyPalette(e.target.value);
-  try{ localStorage.setItem(STYLE_KEY, JSON.stringify({palette:e.target.value})); }catch(err){}
-};
-function curPage(){ return pages.find(p=>p.id===currentId); }
-function applyDesign(){
-  const p = curPage();
-  const bg = p && p.bg ? p.bg : "";
-  const fg = p && p.fg ? p.fg : "";
-  document.getElementById("page").style.backgroundImage = bg;
-  document.getElementById("editor").style.color = fg;
-  document.getElementById("pageNumOnPage").style.color = fg;
-  const align = (p && p.align) || "left";
-  document.getElementById("editor").style.textAlign = align;
-  document.getElementById("alignSelect").value = align;
-  let key = "none";
-  if(bg){ key = Object.keys(DESIGNS).find(k=>DESIGNS[k].css===bg) || "photo"; }
-  const dsel = document.getElementById("designSelect");
-  const fsel = document.getElementById("fgSelect");
-  dsel.value = key;
-  const isPreset = Array.from(fsel.options).some(o=>o.value===fg && o.value!=="custom");
-  fsel.value = isPreset ? fg : "custom";
-  const m = getComputedStyle(document.getElementById("editor")).color.match(/\d+/g);
-  if(m){
-    document.getElementById("fgColor").value = "#" + m.slice(0,3).map(n=>(+n).toString(16).padStart(2,"0")).join("");
-  }
-  [dsel, fsel, document.getElementById("alignSelect"), document.getElementById("fgColor"), document.getElementById("bgUploadBtn"), document.getElementById("bgClearBtn")]
-    .forEach(el=>{ el.disabled = !p; });
-}
-function setDesign(bg, fg){
-  const p = curPage();
-  if(!p) return;
-  const prev = {bg:p.bg, fg:p.fg};
-  if(bg!==undefined) p.bg = bg;
-  if(fg!==undefined) p.fg = fg;
-  if(!persist()){
-    p.bg = prev.bg; p.fg = prev.fg;
-    applyDesign();
-    alert("사진이 커서 저장하지 못했어요. 더 작은 사진으로 해보세요.");
-    return;
-  }
-  applyDesign();
-}
-document.getElementById("designSelect").onchange = (e)=>{
-  const d = DESIGNS[e.target.value];
-  if(e.target.value==="none") setDesign("", "");
-  else if(d) setDesign(d.css, d.fg);
-};
-document.getElementById("fgSelect").onchange = (e)=>setDesign(undefined, e.target.value);
-document.getElementById("fgColor").oninput = (e)=>{
-  document.getElementById("editor").style.color = e.target.value;
-  document.getElementById("pageNumOnPage").style.color = e.target.value;
-};
-document.getElementById("fgColor").onchange = (e)=>setDesign(undefined, e.target.value);
-document.getElementById("bgClearBtn").onclick = ()=>setDesign("", "");
-document.getElementById("bgUploadBtn").onclick = ()=>document.getElementById("bgFile").click();
-document.getElementById("bgFile").onchange = (e)=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    const img = new Image();
-    img.onload = ()=>{
-      const max = 1200;
-      const scale = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * scale);
-      c.height = Math.round(img.height * scale);
-      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      const url = c.toDataURL("image/jpeg", 0.7);
-      const p = curPage();
-      setDesign('url("' + url + '")', (p && p.fg) || "#ffffff");
-    };
-    img.src = reader.result;
-  };
-  reader.readAsDataURL(f);
-  e.target.value = "";
-};
-const PANELS = ["stylePanel","saveMenu","timerPanel"];
-function togglePanel(id, e){
-  e.stopPropagation();
-  PANELS.forEach(pid=>{
-    const el = document.getElementById(pid);
-    if(pid===id) el.classList.toggle("open"); else el.classList.remove("open");
-  });
-}
-document.getElementById("styleBtn").onclick = (e)=>togglePanel("stylePanel", e);
-document.getElementById("saveBtn").onclick = (e)=>togglePanel("saveMenu", e);
-document.addEventListener("click", (e)=>{
-  PANELS.forEach(pid=>{
-    const el = document.getElementById(pid);
-    if(el.classList.contains("open") && !el.contains(e.target)) el.classList.remove("open");
-  });
-});
-document.getElementById("saveMenu").addEventListener("click", (e)=>{
-  if(e.target.closest("button")) document.getElementById("saveMenu").classList.remove("open");
-});
-
-// ===== 편의 기능 모음 =====
-let toastTimer = null;
-function showToast(msg, label, fn, ms){
-  const t = document.getElementById("toast");
-  const b = document.getElementById("toastBtn");
-  document.getElementById("toastMsg").textContent = msg;
-  if(label){
-    b.style.display = "inline-block";
-    b.textContent = label;
-    b.onclick = ()=>{ t.classList.remove("show"); if(fn) fn(); };
-  } else {
-    b.style.display = "none";
-  }
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove("show"), ms || 3500);
-}
-function downloadBlob(blob, name){
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-}
-function safeName(s){ return (s||"글쓰기노트").replace(/[\\/:*?"<>|]/g,"_").trim() || "글쓰기노트"; }
-
-// 페이지 복제
-function duplicatePage(id, e){
-  e.stopPropagation();
-  const src = pages.find(p=>p.id===id);
-  if(!src) return;
-  const copy = Object.assign({}, src, {
-    id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
-    title: (src.title || "제목 없음") + " (복사)",
-    created: Date.now(), updated: Date.now(), time: 0
-  });
-  pages.unshift(copy);
-  currentId = copy.id;
-  rememberLast();
-  persist();
-  renderList();
-  renderEditor();
-  showToast("페이지를 복제했어요");
-}
-
-// 글 정렬
-document.getElementById("alignSelect").onchange = (e)=>{
-  const p = curPage();
-  if(!p) return;
-  p.align = e.target.value;
-  persist();
-  applyDesign();
-};
-
-// 백업 저장 / 불러오기
-function exportBackup(){
-  if(!pages.length){ alert("백업할 페이지가 없어요."); return; }
-  const data = {app:"writing-site", version:1, exportedAt:Date.now(), pages:pages};
-  downloadBlob(new Blob([JSON.stringify(data)], {type:"application/json"}), "글쓰기노트-백업.json");
-}
-function importBackup(file){
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    let data;
-    try{ data = JSON.parse(reader.result); }catch(e){ alert("백업 파일을 읽을 수 없어요."); return; }
-    const list = Array.isArray(data) ? data : (data && data.pages);
-    if(!Array.isArray(list)){ alert("백업 파일 형식이 맞지 않아요."); return; }
-    let added = 0, updated = 0;
-    list.forEach(raw=>{
-      if(!raw || typeof raw.id !== "string") return;
-      const item = Object.assign({}, raw, {
-        title: typeof raw.title === "string" ? raw.title : "",
-        content: typeof raw.content === "string" ? raw.content : "",
-        created: raw.created || raw.updated || Date.now(),
-        updated: raw.updated || Date.now()
-      });
-      const idx = pages.findIndex(p=>p.id===item.id);
-      if(idx<0){ pages.push(item); added++; }
-      else if((item.updated||0) > (pages[idx].updated||0)){ pages[idx] = item; updated++; }
-    });
-    if(!currentId && pages.length) currentId = pages[0].id;
-    persist();
-    renderList();
-    renderEditor();
-    showToast("불러오기 완료: 새 페이지 " + added + "개, 갱신 " + updated + "개", null, null, 4500);
-  };
-  reader.readAsText(file);
-}
-document.getElementById("backupBtn").onclick = exportBackup;
-document.getElementById("restoreBtn").onclick = ()=>document.getElementById("restoreFile").click();
-document.getElementById("restoreFile").onchange = (e)=>{
-  const f = e.target.files[0];
-  if(f) importBackup(f);
-  e.target.value = "";
-};
-
-// 이미지로 저장 (PNG)
-function loadImg(src){
-  return new Promise((res, rej)=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = rej; i.src = src; });
-}
-function wrapText(ctx, text, maxW){
-  const out = [];
-  text.split("\n").forEach(par=>{
-    if(par===""){ out.push(""); return; }
-    let line = "", lastSpace = -1;
-    for(const ch of par){
-      const test = line + ch;
-      if(ctx.measureText(test).width > maxW && line !== ""){
-        if(lastSpace > 0){
-          out.push(line.slice(0, lastSpace));
-          line = line.slice(lastSpace+1) + ch;
-        } else {
-          out.push(line);
-          line = ch;
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pinkmode: {
+              50: '#fff0f3',
+              100: '#ffe3e8',
+              200: '#fcccd4',
+              300: '#f8a3b3',
+              400: '#f36e88',
+              500: '#e83e63',
+              600: '#d42148',
+              700: '#b21537',
+              800: '#941531',
+              900: '#7d172e',
+              bg: '#fff5f7',
+              panel: '#ffffff',
+              sidebar: '#fff0f3'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'sans-serif'],
+            serif: ['Gowun Batang', 'Nanum Myeongjo', 'serif'],
+            myeongjo: ['Nanum Myeongjo', 'serif'],
+            song: ['Song Myung', 'serif']
+          }
         }
-        lastSpace = line.lastIndexOf(" ");
-      } else {
-        line = test;
-        if(ch===" ") lastSpace = line.length - 1;
       }
     }
-    out.push(line);
-  });
-  return out;
-}
-function drawGradient(ctx, css, W, H){
-  const m = css.match(/linear-gradient\(\s*(-?[\d.]+)deg\s*,(.*)\)$/);
-  if(!m){ ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,W,H); return; }
-  const ang = parseFloat(m[1]) * Math.PI / 180;
-  const len = Math.abs(W*Math.sin(ang)) + Math.abs(H*Math.cos(ang));
-  const cx = W/2, cy = H/2, dx = Math.sin(ang)*len/2, dy = -Math.cos(ang)*len/2;
-  const g = ctx.createLinearGradient(cx-dx, cy-dy, cx+dx, cy+dy);
-  m[2].split(",").forEach(s=>{
-    const parts = s.trim().split(/\s+/);
-    if(parts.length>=2) g.addColorStop(parseFloat(parts[1])/100, parts[0]);
-  });
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,W,H);
-}
-async function exportPNG(){
-  const p = curPage();
-  if(!p){ alert("저장할 페이지가 없어요. 먼저 페이지를 선택하거나 만들어주세요."); return; }
-  const rootCs = getComputedStyle(document.documentElement);
-  const family = rootCs.getPropertyValue("--editor-font").trim();
-  const sizePx = parseFloat(rootCs.getPropertyValue("--editor-size")) || 16;
-  const W = 1080, baseH = Math.round(W*297/210), k = W/640;
-  const fs = sizePx*k, lh = fs*2;
-  const padX = 48*k, padTop = 56*k, padBottom = 76*k;
-  const fg = p.fg || getComputedStyle(document.getElementById("editor")).color;
-  try{ await document.fonts.load(fs + "px " + family); await document.fonts.load("bold " + fs + "px " + family); }catch(e){}
-  const tmp = document.createElement("canvas").getContext("2d");
-  tmp.font = fs + "px " + family;
-  const lines = wrapText(tmp, p.content||"", W - padX*2);
-  const titleFs = fs*1.35, titleLH = titleFs*1.6;
-  const titleBlock = p.title ? titleLH + fs*0.6 : 0;
-  const H = Math.max(baseH, Math.ceil(padTop + titleBlock + lines.length*lh + padBottom));
-  const c = document.createElement("canvas");
-  c.width = W; c.height = H;
-  const ctx = c.getContext("2d");
-  // 배경
-  if(p.bg && p.bg.indexOf("linear-gradient")===0){
-    drawGradient(ctx, p.bg, W, H);
-  } else if(p.bg && p.bg.indexOf("url(")===0){
-    try{
-      const img = await loadImg(p.bg.replace(/^url\("?/, "").replace(/"?\)$/, ""));
-      const sc = Math.max(W/img.width, H/img.height);
-      const dw = img.width*sc, dh = img.height*sc;
-      ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
-    }catch(e){ ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,W,H); }
-  } else {
-    ctx.fillStyle = rootCs.getPropertyValue("--panel").trim() || "#ffffff";
-    ctx.fillRect(0,0,W,H);
-  }
-  // 글
-  const center = p.align==="center";
-  ctx.fillStyle = fg;
-  ctx.textAlign = center ? "center" : "left";
-  ctx.textBaseline = "middle";
-  const x = center ? W/2 : padX;
-  let y = padTop;
-  if(p.title){
-    ctx.font = "bold " + titleFs + "px " + family;
-    ctx.fillText(p.title, x, y + titleLH/2, W - padX*2);
-    y += titleBlock;
-  }
-  ctx.font = fs + "px " + family;
-  lines.forEach((ln, i)=>{ if(ln) ctx.fillText(ln, x, y + i*lh + lh/2); });
-  // 페이지 번호
-  const num = orderedPages().findIndex(x=>x.id===p.id) + 1;
-  ctx.globalAlpha = 0.75;
-  ctx.textAlign = "center";
-  ctx.font = (fs*0.8) + "px " + family;
-  ctx.fillText("- " + num + " -", W/2, H - 36*k);
-  ctx.globalAlpha = 1;
-  c.toBlob(blob=>{
-    if(!blob){ alert("이미지를 만들지 못했어요."); return; }
-    downloadBlob(blob, safeName(p.title) + ".png");
-    showToast("이미지로 저장했어요");
-  }, "image/png");
-}
-document.getElementById("imgBtn").onclick = exportPNG;
+  </script>
 
-// 집중 모드
-function toggleFocus(){ document.body.classList.toggle("focus"); }
-document.getElementById("focusBtn").onclick = toggleFocus;
-document.getElementById("focusExit").onclick = toggleFocus;
+  <style>
+    /* Custom CSS Theme Variables */
+    :root {
+      --bg-main: #fff5f7;
+      --bg-panel: #ffffff;
+      --bg-sidebar: #fff0f5;
+      --text-main: #4a353b;
+      --text-muted: #8c6d75;
+      --border-color: #f7cad0;
+      --accent-color: #f472b6;
+      --accent-hover: #e83e63;
+      --accent-light: #ffe4e8;
+      --selection-bg: #fbcfe8;
+      --font-body: 'Gowun Batang', 'Nanum Myeongjo', serif;
+    }
 
-// 추가 단축키: Alt+F 집중 모드, Esc 닫기, Ctrl/Cmd+S 안내
-document.addEventListener("keydown", (e)=>{
-  if(e.altKey && !e.ctrlKey && !e.metaKey && (e.code==="KeyF")){ e.preventDefault(); toggleFocus(); }
-  if(e.key==="Escape"){
-    document.body.classList.remove("focus");
-    PANELS.forEach(pid=>document.getElementById(pid).classList.remove("open"));
-  }
-  if((e.ctrlKey || e.metaKey) && (e.key==="s" || e.key==="S")){
-    e.preventDefault();
-    showToast("자동 저장되고 있어요. 파일로 받으려면 💾 저장 메뉴를 쓰세요.");
-  }
-});
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-// ===== 작업 시간 측정 =====
-const TIMER_KEY = "writing-site-timer-v1";
-const LOG_KEY = "writing-site-timelog-v1";
-const IDLE_MS = 60000;
-let timerAuto = true, timerRunning = false;
-let lastActivity = 0, lastTick = Date.now(), lastSave = Date.now(), timerDirty = false;
-let timeLog = {};
-try{ const s = JSON.parse(localStorage.getItem(TIMER_KEY) || "{}"); if(s.auto === false) timerAuto = false; }catch(e){}
-try{ timeLog = JSON.parse(localStorage.getItem(LOG_KEY) || "{}") || {}; }catch(e){ timeLog = {}; }
-function todayKey(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
-}
-function pad2(n){ return String(n).padStart(2,"0"); }
-function fmtClock(sec){
-  const s = Math.floor(sec), h = Math.floor(s/3600), m = Math.floor(s%3600/60), r = s%60;
-  return h>0 ? h + ":" + pad2(m) + ":" + pad2(r) : pad2(m) + ":" + pad2(r);
-}
-function fmtKo(sec){
-  const s = Math.floor(sec);
-  if(s < 60) return s + "초";
-  const m = Math.floor(s/60);
-  if(m < 60) return m + "분";
-  return Math.floor(m/60) + "시간 " + (m%60) + "분";
-}
-function flushTimer(){
-  if(!timerDirty) return;
-  persist();
-  try{ localStorage.setItem(LOG_KEY, JSON.stringify(timeLog)); }catch(e){}
-  timerDirty = false;
-  lastSave = Date.now();
-}
-function updateTimerPanel(){
-  const p = curPage();
-  document.getElementById("tToday").textContent = fmtKo(timeLog[todayKey()] || 0);
-  document.getElementById("tPage").textContent = fmtKo(p ? (p.time||0) : 0);
-  document.getElementById("tTotal").textContent = fmtKo(pages.reduce((a,x)=>a+(x.time||0), 0));
-}
-function updateTimerUI(counting){
-  const p = curPage();
-  const box = document.getElementById("timerBox");
-  document.getElementById("timerText").textContent = "⏱ " + fmtClock(p ? (p.time||0) : 0);
-  box.classList.toggle("on", !!counting);
-  box.classList.toggle("manual", !timerAuto);
-  document.getElementById("timerBtn").textContent = timerRunning ? "⏸" : "▶";
-  if(document.getElementById("timerPanel").classList.contains("open")) updateTimerPanel();
-}
-setInterval(()=>{
-  const now = Date.now();
-  const delta = (now - lastTick) / 1000;
-  lastTick = now;
-  const p = curPage();
-  const counting = !!p && (timerAuto ? (now - lastActivity <= IDLE_MS) : timerRunning);
-  if(counting && delta > 0 && delta <= 65){
-    p.time = Math.round(((p.time||0) + delta) * 100) / 100;
-    const k = todayKey();
-    timeLog[k] = Math.round(((timeLog[k]||0) + delta) * 100) / 100;
-    timerDirty = true;
-  }
-  updateTimerUI(counting);
-  if(timerDirty && now - lastSave > 15000) flushTimer();
-}, 1000);
-function markActivity(e){
-  if(e.target && (e.target.id==="editor" || e.target.id==="titleInput")) lastActivity = Date.now();
-}
-document.addEventListener("input", markActivity);
-document.addEventListener("keydown", markActivity);
-window.addEventListener("beforeunload", flushTimer);
-document.addEventListener("visibilitychange", ()=>{ if(document.hidden) flushTimer(); });
+    .editor-area {
+      font-family: var(--font-body);
+      line-height: 1.85;
+    }
 
-document.getElementById("timerBox").onclick = (e)=>{
-  togglePanel("timerPanel", e);
-  updateTimerPanel();
-};
-document.getElementById("timerBtn").onclick = (e)=>{
-  e.stopPropagation();
-  timerRunning = !timerRunning;
-  lastTick = Date.now();
-  updateTimerUI(timerRunning);
-};
-const autoChk = document.getElementById("timerAutoChk");
-autoChk.checked = timerAuto;
-autoChk.onchange = ()=>{
-  timerAuto = autoChk.checked;
-  timerRunning = false;
-  try{ localStorage.setItem(TIMER_KEY, JSON.stringify({auto:timerAuto})); }catch(e){}
-  updateTimerUI(false);
-};
-document.getElementById("timerResetBtn").onclick = ()=>{
-  const p = curPage();
-  if(!p){ return; }
-  if(!confirm("이 페이지의 작업 시간을 0으로 초기화할까요?")) return;
-  p.time = 0;
-  persist();
-  updateTimerUI(false);
-  updateTimerPanel();
-};
-updateTimerUI(false);
+    ::selection {
+      background-color: var(--selection-bg);
+      color: #701a75;
+    }
 
-// 다크모드 토글 (선택값 기억)
-const THEME_KEY = "writing-site-theme-v1";
-function isDarkNow(){
-  const t = document.documentElement.getAttribute("data-theme");
-  if(t) return t==="dark";
-  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-function updateThemeBtn(){
-  document.getElementById("themeBtn").textContent = isDarkNow() ? "☀️" : "🌙";
-}
-try{
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
-}catch(e){}
-document.getElementById("themeBtn").onclick = ()=>{
-  const next = isDarkNow() ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
-  updateThemeBtn();
-};
-updateThemeBtn();
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(244, 114, 182, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(244, 114, 182, 0.6);
+    }
 
-// 현재 페이지 글 복사
-document.getElementById("copyBtn").onclick = async ()=>{
-  const p = pages.find(p=>p.id===currentId);
-  const btn = document.getElementById("copyBtn");
-  if(!p){ alert("복사할 페이지가 없어요."); return; }
-  const text = (p.title ? p.title + "\n\n" : "") + (p.content||"");
-  try{
-    await navigator.clipboard.writeText(text);
-  }catch(e){
-    const editor = document.getElementById("editor");
-    editor.focus(); editor.select(); document.execCommand("copy");
-  }
-  btn.textContent = "복사됨 ✓";
-  setTimeout(()=>{ btn.textContent = "복사"; }, 1200);
-};
+    /* Floating selection popup menu */
+    #selectionPopup {
+      transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+    }
 
-// 단축키: Alt+N 새 페이지, Alt+←/→ 페이지 이동, Ctrl/Cmd+P 현재 페이지 PDF
-document.addEventListener("keydown", (e)=>{
-  if(e.altKey && !e.ctrlKey && !e.metaKey){
-    if(e.key==="n" || e.key==="N" || e.code==="KeyN"){ e.preventDefault(); newPage(); }
-    else if(e.key==="ArrowLeft"){ e.preventDefault(); document.getElementById("prevBtn").click(); }
-    else if(e.key==="ArrowRight"){ e.preventDefault(); document.getElementById("nextBtn").click(); }
-  }
-  if((e.ctrlKey || e.metaKey) && (e.key==="p" || e.key==="P")){
-    e.preventDefault();
-    exportPDF();
-  }
-});
+    /* Card background themes for quote generation */
+    .quote-theme-pink { background: linear-gradient(135deg, #fff0f5 0%, #fbcfe8 100%); color: #4a1525; }
+    .quote-theme-cream { background: linear-gradient(135deg, #fdfbf7 0%, #f3ece0 100%); color: #2d2823; }
+    .quote-theme-sunset { background: linear-gradient(135deg, #fef3c7 0%, #fca5a5 100%); color: #451a03; }
+    .quote-theme-forest { background: linear-gradient(135deg, #1d2a22 0%, #0f1712 100%); color: #e2e8f0; }
+    .quote-theme-lavender { background: linear-gradient(135deg, #f3e8ff 0%, #ddd6fe 100%); color: #3b0764; }
+    .quote-theme-indigo { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #e0e7ff; }
 
-// Tab 키로 문단 들여쓰기 (전각 공백 2칸)
-document.getElementById("editor").addEventListener("keydown", (e)=>{
-  if(e.key==="Tab" && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey){
-    e.preventDefault();
-    const ta = e.target;
-    const s = ta.selectionStart, en = ta.selectionEnd;
-    const indent = "\u3000\u3000";
-    ta.value = ta.value.slice(0,s) + indent + ta.value.slice(en);
-    ta.selectionStart = ta.selectionEnd = s + indent.length;
-    onEdit();
-  }
-});
+    /* Focus Mode Overlay Effect */
+    .focus-mode-active #sidebar,
+    .focus-mode-active #mainHeader,
+    .focus-mode-active #editorFooter {
+      display: none !important;
+    }
+    .focus-mode-active #editorContainer {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Pretendard, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.bottom-full{bottom:100%}.left-0{left:0px}.left-3{left:0.75rem}.right-0{right:0px}.right-5{right:1.25rem}.top-3{top:0.75rem}.top-5{top:1.25rem}.top-full{top:100%}.right-2{right:0.5rem}.top-2{top:0.5rem}.z-20{z-index:20}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.m-3{margin:0.75rem}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-1{margin-left:0.25rem}.mt-1{margin-top:0.25rem}.mb-3{margin-bottom:0.75rem}.line-clamp-3{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-3{height:0.75rem}.h-4{height:1rem}.h-full{height:100%}.max-h-\[90vh\]{max-height:90vh}.min-h-0{min-height:0px}.min-h-\[260px\]{min-height:260px}.min-h-\[400px\]{min-height:400px}.w-3{width:0.75rem}.w-36{width:9rem}.w-48{width:12rem}.w-72{width:18rem}.w-full{width:100%}.w-px{width:1px}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-md{max-width:28rem}.max-w-\[120px\]{max-width:120px}.flex-1{flex:1 1 0%}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-x-full{--tw-translate-x:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-full{--tw-translate-y:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-black\/5{border-color:rgb(0 0 0 / 0.05)}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.border-pink-100{--tw-border-opacity:1;border-color:rgb(252 231 243 / var(--tw-border-opacity, 1))}.border-pink-200{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.bg-amber-200{--tw-bg-opacity:1;background-color:rgb(253 230 138 / var(--tw-bg-opacity, 1))}.bg-black\/40{background-color:rgb(0 0 0 / 0.4)}.bg-black\/5{background-color:rgb(0 0 0 / 0.05)}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-gray-300{--tw-bg-opacity:1;background-color:rgb(209 213 219 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-gray-700{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.bg-pink-400{--tw-bg-opacity:1;background-color:rgb(244 114 182 / var(--tw-bg-opacity, 1))}.bg-pink-50{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.bg-pink-50\/50{background-color:rgb(253 242 248 / 0.5)}.bg-pink-500{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.bg-purple-400{--tw-bg-opacity:1;background-color:rgb(192 132 252 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/40{background-color:rgb(255 255 255 / 0.4)}.bg-white\/60{background-color:rgb(255 255 255 / 0.6)}.bg-white\/70{background-color:rgb(255 255 255 / 0.7)}.bg-white\/80{background-color:rgb(255 255 255 / 0.8)}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-rose-400{--tw-gradient-to:#fb7185 var(--tw-gradient-to-position)}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-2{padding-bottom:0.5rem}.pb-3{padding-bottom:0.75rem}.pl-8{padding-left:2rem}.pr-3{padding-right:0.75rem}.pt-4{padding-top:1rem}.pr-2{padding-right:0.5rem}.pt-2{padding-top:0.5rem}.text-left{text-align:left}.text-justify{text-align:justify}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Pretendard, sans-serif}.font-serif{font-family:Gowun Batang, Nanum Myeongjo, serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-pink-300{--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.text-pink-500{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.placeholder-pink-300\/70::placeholder{color:rgb(249 168 212 / 0.7)}.opacity-0{opacity:0}.opacity-30{opacity:0.3}.opacity-75{opacity:0.75}.opacity-70{opacity:0.7}.opacity-80{opacity:0.8}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-150{transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.selection\:bg-pink-200 *::selection{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.selection\:bg-pink-200::selection{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.hover\:border-pink-200:hover{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.hover\:border-pink-400:hover{--tw-border-opacity:1;border-color:rgb(244 114 182 / var(--tw-border-opacity, 1))}.hover\:bg-amber-50:hover{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-800:hover{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-100:hover{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-50:hover{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-600:hover{--tw-bg-opacity:1;background-color:rgb(219 39 119 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-600\/80:hover{background-color:rgb(219 39 119 / 0.8)}.hover\:bg-purple-50:hover{--tw-bg-opacity:1;background-color:rgb(250 245 255 / var(--tw-bg-opacity, 1))}.hover\:bg-white:hover{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.hover\:bg-white\/50:hover{background-color:rgb(255 255 255 / 0.5)}.hover\:from-pink-600:hover{--tw-gradient-from:#db2777 var(--tw-gradient-from-position);--tw-gradient-to:rgb(219 39 119 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:to-rose-500:hover{--tw-gradient-to:#f43f5e var(--tw-gradient-to-position)}.hover\:text-gray-600:hover{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.hover\:text-pink-500:hover{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.hover\:text-pink-600:hover{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:text-pink-200:hover{--tw-text-opacity:1;color:rgb(251 207 232 / var(--tw-text-opacity, 1))}.hover\:text-red-300:hover{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity, 1))}.hover\:text-red-500:hover{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow:hover{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-md:hover{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-pink-400:focus{--tw-border-opacity:1;border-color:rgb(244 114 182 / var(--tw-border-opacity, 1))}.focus\:text-gray-700:focus{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-1:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-pink-400:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(244 114 182 / var(--tw-ring-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.active\:scale-\[0\.99\]:active{--tw-scale-x:0.99;--tw-scale-y:0.99;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:block{display:block}.group:hover .group-hover\:opacity-100{opacity:1}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:flex{display:flex}}@media (min-width: 768px){.md\:relative{position:relative}.md\:col-span-2{grid-column:span 2 / span 2}.md\:hidden{display:none}.md\:w-80{width:20rem}.md\:translate-x-0{--tw-translate-x:0px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:px-16{padding-left:4rem;padding-right:4rem}.md\:py-12{padding-top:3rem;padding-bottom:3rem}.md\:text-3xl{font-size:1.875rem;line-height:2.25rem}.md\:text-lg{font-size:1.125rem;line-height:1.75rem}}@media (min-width: 1024px){.lg\:inline{display:inline}}</style></head>
 
-renderEditor();
+<body class="h-full flex flex-col antialiased selection:bg-pink-200">
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-document.addEventListener("input", (e)=>{
-  if(e.target.id==="titleInput" || e.target.id==="editor") onEdit();
-});
-</script>
-</body>
-</html>
+  <!-- Mobile Drawer Overlay -->
+  <div id="mobileOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden md:hidden" onclick="toggleMobileSidebar()"></div>
+
+  <!-- Main Container -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside id="sidebar" class="w-72 md:w-80 border-r flex flex-col z-40 transition-all duration-300 absolute md:relative h-full -translate-x-full md:translate-x-0" style="background-color: var(--bg-sidebar); border-color: var(--border-color);">
+      <!-- Sidebar Header -->
+      <div class="p-4 border-b flex items-center justify-between" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-feather-pointed text-pink-500 text-xl"></i>
+          <h1 class="font-bold text-lg tracking-tight font-sans">나의 글쓰기 &amp; 발췌</h1>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="md:hidden p-1.5 text-gray-500 hover:text-pink-500 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs (글 목록 / 발췌 보관함) -->
+      <div class="grid grid-cols-2 p-2 gap-1 bg-black/5 m-3 rounded-xl font-sans text-sm font-medium">
+        <button id="tabBtnPages" onclick="switchSidebarTab('pages')" class="py-2 rounded-lg transition-all flex items-center justify-center gap-2 bg-white shadow-sm text-pink-600 font-semibold">
+          <i class="fa-solid fa-book-open"></i> 글 목록
+        </button>
+        <button id="tabBtnExcerpts" onclick="switchSidebarTab('excerpts')" class="py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-pink-500">
+          <i class="fa-solid fa-quote-right"></i> 발췌 보관함 (<span id="excerptCountBadge">1</span>)
+        </button>
+      </div>
+
+      <!-- PAGE LIST TAB CONTENT -->
+      <div id="tabContentPages" class="flex-1 flex flex-col min-h-0">
+        <!-- Search & New Page Button -->
+        <div class="p-3 space-y-2">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-gray-400"></i>
+            <input type="text" id="searchInput" oninput="filterPages()" placeholder="글 제목 검색..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white/80 font-sans">
+          </div>
+          <button onclick="addNewPage()" class="w-full py-2.5 px-4 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-sans text-sm font-medium flex items-center justify-center gap-2 transition shadow-sm hover:shadow active:scale-[0.99]">
+            <i class="fa-solid fa-plus text-xs"></i> 새 글 작성하기
+          </button>
+        </div>
+
+        <!-- Page List Container -->
+        <div id="pageList" class="flex-1 overflow-y-auto px-3 py-1 space-y-1 font-sans"><div class="p-3 rounded-xl cursor-pointer transition flex items-center justify-between group bg-pink-500 text-white shadow-sm font-medium">
+          <div class="min-w-0 flex-1 pr-2">
+            <div class="truncate text-xs font-semibold">핑크빛 문장들 속에서</div>
+            <div class="text-[10px] opacity-70 truncate">📖 생각의 정원</div>
+          </div>
+          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+            <button onclick="duplicatePage(event, 'page_1792742696383')" title="복사" class="p-1 hover:text-pink-200">
+              <i class="fa-regular fa-copy text-xs"></i>
+            </button>
+            <button onclick="deletePage(event, 'page_1792742696383')" title="삭제" class="p-1 hover:text-red-300">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- EXCERPT LIST TAB CONTENT -->
+      <div id="tabContentExcerpts" class="flex-1 flex flex-col min-h-0 hidden">
+        <div class="p-3 flex items-center justify-between border-b text-xs font-sans text-gray-500" style="border-color: var(--border-color);">
+          <span>저장된 문장 카드</span>
+          <button onclick="openExcerptModal()" class="text-pink-600 hover:underline flex items-center gap-1 font-medium">
+            <i class="fa-solid fa-plus"></i> 수동 등록
+          </button>
+        </div>
+        <div id="excerptList" class="flex-1 overflow-y-auto p-3 space-y-3 font-sans"><div class="quote-theme-pink p-4 rounded-xl shadow-sm relative group border border-black/5 transition hover:shadow-md">
+          <p class="font-serif text-xs leading-relaxed mb-3 line-clamp-3">"글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간."</p>
+          <div class="flex items-center justify-between text-[10px] opacity-80 font-sans border-t border-current/10 pt-2">
+            <span class="font-semibold truncate max-w-[120px]">생각의 정원</span>
+            <span>#글쓰기</span>
+          </div>
+          <button onclick="deleteExcerpt('exc_1792742696390')" class="absolute top-2 right-2 p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-500 transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div></div>
+      </div>
+
+      <!-- Sidebar Footer (Theme & Backup Options) -->
+      <div class="p-3 border-t font-sans flex items-center justify-between text-xs" style="border-color: var(--border-color);">
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border bg-white/70 hover:bg-white text-gray-700 shadow-sm transition">
+            <i class="fa-solid fa-palette text-pink-500"></i>
+            <span id="currentThemeLabel">핑크 모드</span>
+          </button>
+          <!-- Theme selector dropdown -->
+          <div class="absolute bottom-full left-0 mb-1 w-36 bg-white rounded-xl shadow-lg border p-1 hidden group-hover:block z-50">
+            <button onclick="setTheme('pink')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-pink-50 flex items-center gap-2 text-xs">
+              <span class="w-3 h-3 rounded-full bg-pink-400"></span> 핑크 모드
+            </button>
+            <button onclick="setTheme('light')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-gray-100 flex items-center gap-2 text-xs">
+              <span class="w-3 h-3 rounded-full bg-gray-300"></span> 클래식 라이트
+            </button>
+            <button onclick="setTheme('dark')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-gray-100 flex items-center gap-2 text-xs">
+              <span class="w-3 h-3 rounded-full bg-gray-800"></span> 소프트 다크
+            </button>
+            <button onclick="setTheme('lavender')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-purple-50 flex items-center gap-2 text-xs">
+              <span class="w-3 h-3 rounded-full bg-purple-400"></span> 라벤더
+            </button>
+            <button onclick="setTheme('cream')" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-amber-50 flex items-center gap-2 text-xs">
+              <span class="w-3 h-3 rounded-full bg-amber-200"></span> 웜 크림
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button onclick="exportJSONBackup()" title="데이터 백업" class="p-2 text-gray-500 hover:text-pink-600 rounded-lg hover:bg-white/50">
+            <i class="fa-solid fa-download"></i>
+          </button>
+          <label title="데이터 복원" class="p-2 text-gray-500 hover:text-pink-600 rounded-lg hover:bg-white/50 cursor-pointer">
+            <i class="fa-solid fa-upload"></i>
+            <input type="file" accept=".json" onchange="importJSONBackup(event)" class="hidden">
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN EDITOR WORKSPACE -->
+    <main class="flex-1 flex flex-col min-w-0 bg-white/40 relative">
+      
+      <!-- TOP TOOLBAR -->
+      <header id="mainHeader" class="px-4 py-2.5 border-b flex items-center justify-between gap-2 z-20 backdrop-blur-md bg-white/70 font-sans" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-2">
+          <button onclick="toggleMobileSidebar()" class="md:hidden p-2 text-gray-600 hover:text-pink-600 rounded-lg">
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+
+          <!-- EXPLICIT EXCERPT BUTTON (상단 툴바 발췌 버튼) -->
+          <button onclick="triggerExcerptFromSelection()" title="선택한 텍스트를 발췌 카드로 생성합니다" class="px-3 py-1.5 bg-gradient-to-r from-pink-500 to-rose-400 hover:from-pink-600 hover:to-rose-500 text-white font-medium text-xs rounded-xl shadow-sm hover:shadow flex items-center gap-1.5 active:scale-95 transition">
+            <i class="fa-solid fa-quote-left text-xs"></i>
+            <span>✨ 선택 문장 발췌</span>
+          </button>
+
+          <!-- Alignment Buttons -->
+          <div class="hidden sm:flex items-center border rounded-lg overflow-hidden bg-white/80" style="border-color: var(--border-color);">
+            <button onclick="setTextAlign('left')" id="btnAlignLeft" class="p-1.5 text-xs text-pink-600 bg-pink-50 hover:bg-pink-100" title="왼쪽 정렬">
+              <i class="fa-solid fa-align-left"></i>
+            </button>
+            <button onclick="setTextAlign('center')" id="btnAlignCenter" class="p-1.5 text-xs text-gray-500 hover:bg-pink-100" title="중앙 정렬">
+              <i class="fa-solid fa-align-center"></i>
+            </button>
+          </div>
+
+          <!-- Font Family Selector for Editor -->
+          <select id="editorFontSelect" onchange="changeEditorFont(this.value)" class="text-xs bg-white border border-pink-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-pink-400">
+            <option value="font-serif">바탕/명조체</option>
+            <option value="font-sans">고딕체 (Pretendard)</option>
+            <option value="font-song">송명체</option>
+          </select>
+        </div>
+
+        <!-- RIGHT SIDE TOOLBAR CONTROLS (TIMER, FOCUS, EXPORT) -->
+        <div class="flex items-center gap-2">
+          <!-- Timer Widget -->
+          <div class="flex items-center gap-1 bg-white border border-pink-200 rounded-xl px-2.5 py-1 shadow-sm text-xs text-gray-700">
+            <button onclick="toggleTimer()" id="timerToggleBtn" class="text-pink-500 hover:text-pink-600 transition">
+              <i class="fa-solid fa-play" id="timerIcon"></i>
+            </button>
+            <span id="timerDisplay" class="font-mono font-medium tracking-tight">00:00:00</span>
+            <button onclick="resetTimer()" title="타이머 초기화" class="text-gray-400 hover:text-gray-600 ml-1">
+              <i class="fa-solid fa-rotate-right text-[10px]"></i>
+            </button>
+          </div>
+
+          <!-- Save status indicator -->
+          <div id="saveStatus" class="text-xs text-gray-400 flex items-center gap-1 px-1"><i class="fa-solid fa-circle-check text-green-500"></i><span class="hidden lg:inline">저장됨</span></div>
+
+          <!-- Focus Mode Toggle -->
+          <button onclick="toggleFocusMode()" class="p-2 text-gray-600 hover:text-pink-600 hover:bg-white rounded-lg transition" title="몰입 모드 (Alt+F)">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+
+          <!-- File Export Dropdown -->
+          <div class="relative group">
+            <button class="px-3 py-1.5 bg-white border border-pink-200 rounded-xl text-xs font-medium text-gray-700 hover:border-pink-400 flex items-center gap-1 shadow-sm transition">
+              <span>내보내기</span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+            </button>
+            <div class="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-xl border p-1 hidden group-hover:block z-50 font-sans">
+              <button onclick="exportCurrentPageTXT()" class="w-full text-left px-3 py-1.5 rounded-lg hover:bg-pink-50 text-xs text-gray-700 flex items-center gap-2">
+                <i class="fa-regular fa-file-lines text-pink-500"></i> TXT 파일 저장
+              </button>
+              <button onclick="copyToClipboard()" class="w-full text-left px-3 py-1.5 rounded-lg hover:bg-pink-50 text-xs text-gray-700 flex items-center gap-2">
+                <i class="fa-regular fa-copy text-pink-500"></i> 전체 클립보드 복사
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- EDITOR CANVAS AREA -->
+      <div id="editorContainer" class="flex-1 overflow-y-auto px-6 py-8 md:px-16 md:py-12 flex flex-col items-center">
+        <div class="w-full max-w-3xl flex flex-col flex-1">
+          <!-- Page Title Input -->
+          <input type="text" id="pageTitleInput" oninput="handleTitleInput()" placeholder="제목을 입력하세요..." class="w-full text-2xl md:text-3xl font-bold bg-transparent border-b border-transparent hover:border-pink-200 focus:border-pink-400 focus:outline-none pb-3 mb-6 transition placeholder-pink-300/70">
+
+          <!-- Page Metadata / Source Book -->
+          <div class="flex items-center gap-3 text-xs text-gray-400 mb-6 font-sans border-b pb-2" style="border-color: var(--border-color);">
+            <div class="flex items-center gap-1">
+              <i class="fa-regular fa-calendar"></i>
+              <span id="pageCreatedAt">2026. 10. 23.</span>
+            </div>
+            <span>•</span>
+            <div class="flex items-center gap-1">
+              <i class="fa-solid fa-book"></i>
+              <input type="text" id="pageSourceInput" onchange="handleSourceInput()" placeholder="출처/도서명 (선택)" class="bg-transparent focus:outline-none focus:text-gray-700 hover:underline border-b border-dashed border-gray-300 text-xs w-48">
+            </div>
+          </div>
+
+          <!-- Main Content Editable Container -->
+          <div id="editorContent" contenteditable="true" oninput="handleContentInput()" onmouseup="handleTextSelection()" onkeyup="handleTextSelection()" class="editor-area flex-1 w-full outline-none text-base md:text-lg min-h-[400px] text-justify leading-relaxed" placeholder="이곳에 글을 써 내려가세요. 문장을 드래그하여 선택하거나 상단의 '✨ 선택 문장 발췌' 버튼을 누르면 아름다운 발췌 카드를 바로 만들 수 있습니다."><p>글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간.ㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹ</p><p>좋은 문장을 읽고 발췌하는 순간, 타인의 깊은 고독과 지혜가 나에게 온전히 전해진다.ㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹ</p></div>
+        </div>
+      </div>
+
+      <!-- FOOTER STATS BAR -->
+      <footer id="editorFooter" class="px-6 py-2 border-t text-xs font-sans text-gray-500 flex items-center justify-between backdrop-blur-md bg-white/60" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-4">
+          <span>공백 포함 <strong id="charCountWithSpace" class="text-pink-600 font-semibold">125</strong>자</span>
+          <span>공백 제외 <strong id="charCountNoSpace" class="text-pink-600 font-semibold">100</strong>자</span>
+          <span class="hidden sm:inline">단어 수 <strong id="wordCount" class="text-gray-700">25</strong>개</span>
+        </div>
+        <div>
+          <span id="readTimeEstimate" class="text-gray-400">예상 읽기 시간 1분</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- FLOATING SELECTION POPUP MENU -->
+  <div id="selectionPopup" class="fixed z-50 transform -translate-x-1/2 -translate-y-full mb-2 transition-all duration-150 opacity-0 pointer-events-none" style="left: 594.444px; top: 244.722px;">
+    <div class="bg-gray-900 text-white rounded-xl shadow-2xl px-2 py-1.5 flex items-center gap-1 border border-gray-700 font-sans text-xs">
+      <button onclick="triggerExcerptFromSelection()" class="px-2.5 py-1 hover:bg-pink-600/80 rounded-lg flex items-center gap-1.5 text-pink-300 hover:text-white font-medium transition">
+        <i class="fa-solid fa-quote-left"></i>
+        <span>발췌하기</span>
+      </button>
+      <div class="w-px h-4 bg-gray-700"></div>
+      <button onclick="copySelectedText()" class="px-2 py-1 hover:bg-gray-800 rounded-lg text-gray-300 hover:text-white">
+        <i class="fa-regular fa-copy"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- EXCERPT CARD CREATION & EDIT MODAL -->
+  <div id="excerptModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-pink-100 font-sans animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b flex items-center justify-between bg-pink-50/50">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-quote-right text-pink-500"></i>
+          <h3 class="font-bold text-gray-800 text-base">발췌 카드 만들기</h3>
+        </div>
+        <button onclick="closeExcerptModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Preview & Customization) -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-6">
+        
+        <!-- CARD PREVIEW DISPLAY -->
+        <div class="flex justify-center">
+          <div id="quoteCardPreview" class="quote-theme-pink w-full max-w-md p-8 rounded-2xl shadow-lg relative flex flex-col justify-between min-h-[260px] border border-black/5 transition-all">
+            <i class="fa-solid fa-quote-left text-2xl opacity-30 mb-4"></i>
+            <p id="modalQuoteText" class="text-base md:text-lg font-serif leading-relaxed mb-6 whitespace-pre-wrap">라는 이름의 꽃으로 피워내는 시간.<br><br>좋은 문장을 읽고 발췌하는 순간, 타인의 깊은 고독과 지혜가 나에게 온전히 전해진다.</p>
+            
+            <div class="border-t border-current/10 pt-4 flex items-end justify-between text-xs">
+              <div>
+                <div id="modalQuoteBook" class="font-bold font-sans">생각의 정원</div>
+                <div id="modalQuoteAuthor" class="opacity-75 font-sans">작자 미상</div>
+              </div>
+              <div id="modalQuoteTag" class="px-2.5 py-1 rounded-full bg-current/10 text-[11px] font-medium">#발췌</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUSTOMIZATION CONTROLS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Text Quote Input -->
+          <div class="md:col-span-2 space-y-1">
+            <label class="font-semibold text-gray-700">발췌 문장 내용</label>
+            <textarea id="modalInputContent" oninput="updateCardPreview()" rows="3" class="w-full p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 font-serif text-sm"></textarea>
+          </div>
+
+          <!-- Book Title -->
+          <div class="space-y-1">
+            <label class="font-semibold text-gray-700">출처 / 도서명</label>
+            <input type="text" id="modalInputBook" oninput="updateCardPreview()" placeholder="예: 시선으로부터" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400">
+          </div>
+
+          <!-- Author -->
+          <div class="space-y-1">
+            <label class="font-semibold text-gray-700">저자</label>
+            <input type="text" id="modalInputAuthor" oninput="updateCardPreview()" placeholder="예: 정세랑" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400">
+          </div>
+
+          <!-- Tag -->
+          <div class="space-y-1">
+            <label class="font-semibold text-gray-700">태그</label>
+            <input type="text" id="modalInputTag" oninput="updateCardPreview()" placeholder="#소설, #영감" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400">
+          </div>
+
+          <!-- Theme Select -->
+          <div class="space-y-1">
+            <label class="font-semibold text-gray-700">카드 디자인 테마</label>
+            <select id="modalThemeSelect" onchange="updateCardPreview()" class="w-full p-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white">
+              <option value="quote-theme-pink">코튼 핑크 (Cotton Pink)</option>
+              <option value="quote-theme-cream">크림 페이퍼 (Cream Paper)</option>
+              <option value="quote-theme-sunset">선셋 샌드 (Sunset Sand)</option>
+              <option value="quote-theme-lavender">라벤더 드림 (Lavender)</option>
+              <option value="quote-theme-forest">다크 포레스트 (Dark Forest)</option>
+              <option value="quote-theme-indigo">인디고 나이트 (Indigo)</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t bg-gray-50 flex items-center justify-between">
+        <button onclick="downloadQuoteCardImage()" class="px-4 py-2 border border-pink-200 bg-white text-pink-600 rounded-xl font-medium text-xs hover:bg-pink-50 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-image"></i> 이미지 다운로드
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="closeExcerptModal()" class="px-4 py-2 text-gray-500 hover:bg-gray-200 rounded-xl font-medium text-xs">취소</button>
+          <button onclick="saveExcerptCard()" class="px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-medium text-xs shadow-sm hover:shadow transition">
+            보관함에 저장하기
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    // App State Management
+    let pages = [];
+    let excerpts = [];
+    let currentPageId = null;
+    let selectedTextForExcerpt = "";
+    let lastDeletedPage = null;
+    let undoTimeout = null;
+
+    // Writing Timer State
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isTimerRunning = false;
+    let lastActivityTime = Date.now();
+
+    // Default Themes Config
+    const themes = {
+      pink: { label: '핑크 모드', main: '#fff5f7', panel: '#ffffff', sidebar: '#fff0f5', text: '#4a353b', border: '#f7cad0', selection: '#fbcfe8' },
+      light: { label: '클래식 라이트', main: '#f8fafc', panel: '#ffffff', sidebar: '#f1f5f9', text: '#1e293b', border: '#e2e8f0', selection: '#cbd5e1' },
+      dark: { label: '소프트 다크', main: '#121316', panel: '#1a1b1e', sidebar: '#16171a', text: '#e2e8f0', border: '#2e3035', selection: '#475569' },
+      lavender: { label: '라벤더', main: '#faf5ff', panel: '#ffffff', sidebar: '#f3e8ff', text: '#3b0764', border: '#e9d5ff', selection: '#d8b4fe' },
+      cream: { label: '웜 크림', main: '#fefcbf', panel: '#fffbeb', sidebar: '#fef3c7', text: '#451a03', border: '#fde68a', selection: '#fef08a' }
+    };
+
+    // Initialize App on DOM Load
+    window.onload = function() {
+      loadLocalStorageData();
+      if (pages.length === 0) {
+        createInitialSampleData();
+      }
+      renderPageList();
+      renderExcerptList();
+      if (pages.length > 0) {
+        loadPage(pages[0].id);
+      }
+      setupAutoSave();
+      setupInactivityTimer();
+    };
+
+    // Load Local Storage Data
+    function loadLocalStorageData() {
+      const savedPages = localStorage.getItem('my_writing_pages');
+      const savedExcerpts = localStorage.getItem('my_writing_excerpts');
+      const savedTheme = localStorage.getItem('my_writing_theme') || 'pink';
+
+      if (savedPages) pages = JSON.parse(savedPages);
+      if (savedExcerpts) excerpts = JSON.parse(savedExcerpts);
+      setTheme(savedTheme);
+    }
+
+    // Save Data to Local Storage
+    function saveData() {
+      localStorage.setItem('my_writing_pages', JSON.stringify(pages));
+      localStorage.setItem('my_writing_excerpts', JSON.stringify(excerpts));
+      
+      const statusEl = document.getElementById('saveStatus');
+      statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-green-500"></i><span class="hidden lg:inline">저장됨</span>`;
+    }
+
+    // Initial Sample Data Generation
+    function createInitialSampleData() {
+      const samplePage = {
+        id: 'page_' + Date.now(),
+        title: '핑크빛 문장들 속에서',
+        content: '<p>글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간.</p><p>좋은 문장을 읽고 발췌하는 순간, 타인의 깊은 고독과 지혜가 나에게 온전히 전해진다.</p>',
+        source: '생각의 정원',
+        createdAt: new Date().toLocaleDateString('ko-KR')
+      };
+      pages.push(samplePage);
+
+      excerpts.push({
+        id: 'exc_' + Date.now(),
+        text: '글쓰기는 마음의 정원을 가꾸는 일과 같다. 흩어지는 생각을 문장이라는 이름의 꽃으로 피워내는 시간.',
+        book: '생각의 정원',
+        author: '작자미상',
+        tag: '#글쓰기',
+        theme: 'quote-theme-pink',
+        createdAt: new Date().toLocaleDateString('ko-KR')
+      });
+
+      saveData();
+    }
+
+    // Switch Left Sidebar Tab
+    function switchSidebarTab(tab) {
+      const pageTab = document.getElementById('tabContentPages');
+      const excerptTab = document.getElementById('tabContentExcerpts');
+      const btnPages = document.getElementById('tabBtnPages');
+      const btnExcerpts = document.getElementById('tabBtnExcerpts');
+
+      if (tab === 'pages') {
+        pageTab.classList.remove('hidden');
+        excerptTab.classList.add('hidden');
+        btnPages.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 bg-white shadow-sm text-pink-600 font-semibold";
+        btnExcerpts.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-pink-500";
+      } else {
+        pageTab.classList.add('hidden');
+        excerptTab.classList.remove('hidden');
+        btnExcerpts.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 bg-white shadow-sm text-pink-600 font-semibold";
+        btnPages.className = "py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-pink-500";
+      }
+    }
+
+    // PAGE MANAGEMENT LOGIC
+    function renderPageList(filteredPages = null) {
+      const listEl = document.getElementById('pageList');
+      const targetPages = filteredPages || pages;
+      listEl.innerHTML = '';
+
+      if (targetPages.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-8 text-xs text-gray-400">작성된 글이 없습니다.</div>`;
+        return;
+      }
+
+      targetPages.forEach(page => {
+        const isActive = page.id === currentPageId;
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-xl cursor-pointer transition flex items-center justify-between group ${isActive ? 'bg-pink-500 text-white shadow-sm font-medium' : 'hover:bg-white/60 text-gray-700'}`;
+        item.onclick = () => loadPage(page.id);
+
+        item.innerHTML = `
+          <div class="min-w-0 flex-1 pr-2">
+            <div class="truncate text-xs font-semibold">${page.title || '제목 없는 글'}</div>
+            <div class="text-[10px] opacity-70 truncate">${page.source ? '📖 ' + page.source : page.createdAt}</div>
+          </div>
+          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+            <button onclick="duplicatePage(event, '${page.id}')" title="복사" class="p-1 hover:text-pink-200">
+              <i class="fa-regular fa-copy text-xs"></i>
+            </button>
+            <button onclick="deletePage(event, '${page.id}')" title="삭제" class="p-1 hover:text-red-300">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function addNewPage() {
+      const newPage = {
+        id: 'page_' + Date.now(),
+        title: '',
+        content: '',
+        source: '',
+        createdAt: new Date().toLocaleDateString('ko-KR')
+      };
+      pages.unshift(newPage);
+      saveData();
+      renderPageList();
+      loadPage(newPage.id);
+      document.getElementById('pageTitleInput').focus();
+      showToast("새 글이 생성되었습니다.");
+    }
+
+    function loadPage(id) {
+      const page = pages.find(p => p.id === id);
+      if (!page) return;
+
+      currentPageId = id;
+      document.getElementById('pageTitleInput').value = page.title || '';
+      document.getElementById('editorContent').innerHTML = page.content || '';
+      document.getElementById('pageSourceInput').value = page.source || '';
+      document.getElementById('pageCreatedAt').innerText = page.createdAt || new Date().toLocaleDateString('ko-KR');
+
+      updateCharCount();
+      renderPageList();
+    }
+
+    function duplicatePage(e, id) {
+      e.stopPropagation();
+      const origin = pages.find(p => p.id === id);
+      if (!origin) return;
+
+      const copy = {
+        ...origin,
+        id: 'page_' + Date.now(),
+        title: origin.title + ' (복사본)',
+        createdAt: new Date().toLocaleDateString('ko-KR')
+      };
+      pages.unshift(copy);
+      saveData();
+      renderPageList();
+      showToast("글이 복사되었습니다.");
+    }
+
+    function deletePage(e, id) {
+      e.stopPropagation();
+      const index = pages.findIndex(p => p.id === id);
+      if (index === -1) return;
+
+      lastDeletedPage = { page: pages[index], index };
+      pages.splice(index, 1);
+      saveData();
+
+      if (currentPageId === id) {
+        if (pages.length > 0) {
+          loadPage(pages[0].id);
+        } else {
+          addNewPage();
+        }
+      } else {
+        renderPageList();
+      }
+
+      showUndoToast("글이 삭제되었습니다.");
+    }
+
+    function filterPages() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = pages.filter(p => p.title.toLowerCase().includes(query) || p.content.toLowerCase().includes(query));
+      renderPageList(filtered);
+    }
+
+    // EDITOR INPUT HANDLERS & STATS
+    function handleTitleInput() {
+      const page = pages.find(p => p.id === currentPageId);
+      if (page) {
+        page.title = document.getElementById('pageTitleInput').value;
+        saveData();
+        renderPageList();
+      }
+    }
+
+    function handleContentInput() {
+      const page = pages.find(p => p.id === currentPageId);
+      if (page) {
+        page.content = document.getElementById('editorContent').innerHTML;
+        saveData();
+        updateCharCount();
+      }
+    }
+
+    function handleSourceInput() {
+      const page = pages.find(p => p.id === currentPageId);
+      if (page) {
+        page.source = document.getElementById('pageSourceInput').value;
+        saveData();
+        renderPageList();
+      }
+    }
+
+    function updateCharCount() {
+      const content = document.getElementById('editorContent').innerText || '';
+      const charWithSpace = content.length;
+      const charNoSpace = content.replace(/\s/g, '').length;
+      const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+      const readTime = Math.ceil(charNoSpace / 500);
+
+      document.getElementById('charCountWithSpace').innerText = charWithSpace.toLocaleString();
+      document.getElementById('charCountNoSpace').innerText = charNoSpace.toLocaleString();
+      document.getElementById('wordCount').innerText = words.toLocaleString();
+      document.getElementById('readTimeEstimate').innerText = `예상 읽기 시간 ${readTime}분`;
+    }
+
+    // EXCERPT FEATURE LOGIC
+    function handleTextSelection() {
+      const selection = window.getSelection();
+      const selectedStr = selection.toString().trim();
+      const popup = document.getElementById('selectionPopup');
+
+      if (selectedStr.length > 0) {
+        selectedTextForExcerpt = selectedStr;
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+
+        popup.style.left = `${rect.left + (rect.width / 2)}px`;
+        popup.style.top = `${rect.top - 10}px`;
+        popup.classList.remove('opacity-0', 'pointer-events-none');
+      } else {
+        popup.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    function triggerExcerptFromSelection() {
+      const selection = window.getSelection();
+      const text = selection.toString().trim() || selectedTextForExcerpt;
+
+      if (!text) {
+        showToast("발췌할 문장을 먼저 드래그하여 선택해주세요.");
+        return;
+      }
+
+      openExcerptModal(text);
+      document.getElementById('selectionPopup').classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function openExcerptModal(initialText = "") {
+      const modal = document.getElementById('excerptModal');
+      const currentPage = pages.find(p => p.id === currentPageId);
+
+      document.getElementById('modalInputContent').value = initialText || selectedTextForExcerpt || "";
+      document.getElementById('modalInputBook').value = currentPage ? currentPage.source || currentPage.title : "";
+      document.getElementById('modalInputAuthor').value = "";
+      document.getElementById('modalInputTag').value = "#발췌";
+
+      updateCardPreview();
+      modal.classList.remove('hidden');
+    }
+
+    function closeExcerptModal() {
+      document.getElementById('excerptModal').classList.add('hidden');
+    }
+
+    function updateCardPreview() {
+      const text = document.getElementById('modalInputContent').value || "선택한 문장이 이곳에 표시됩니다.";
+      const book = document.getElementById('modalInputBook').value || "출처 미상";
+      const author = document.getElementById('modalInputAuthor').value || "작자 미상";
+      const tag = document.getElementById('modalInputTag').value || "#발췌";
+      const themeClass = document.getElementById('modalThemeSelect').value;
+
+      document.getElementById('modalQuoteText').innerText = text;
+      document.getElementById('modalQuoteBook').innerText = book;
+      document.getElementById('modalQuoteAuthor').innerText = author;
+      document.getElementById('modalQuoteTag').innerText = tag;
+
+      const card = document.getElementById('quoteCardPreview');
+      card.className = `${themeClass} w-full max-w-md p-8 rounded-2xl shadow-lg relative flex flex-col justify-between min-h-[260px] border border-black/5 transition-all`;
+    }
+
+    function saveExcerptCard() {
+      const text = document.getElementById('modalInputContent').value.trim();
+      if (!text) {
+        showToast("발췌 문장을 입력해주세요.");
+        return;
+      }
+
+      const newExcerpt = {
+        id: 'exc_' + Date.now(),
+        text: text,
+        book: document.getElementById('modalInputBook').value || "출처 미상",
+        author: document.getElementById('modalInputAuthor').value || "작자 미상",
+        tag: document.getElementById('modalInputTag').value || "#발췌",
+        theme: document.getElementById('modalThemeSelect').value,
+        createdAt: new Date().toLocaleDateString('ko-KR')
+      };
+
+      excerpts.unshift(newExcerpt);
+      saveData();
+      renderExcerptList();
+      closeExcerptModal();
+      showToast("발췌 보관함에 저장되었습니다!");
+    }
+
+    function renderExcerptList() {
+      const listEl = document.getElementById('excerptList');
+      document.getElementById('excerptCountBadge').innerText = excerpts.length;
+      listEl.innerHTML = '';
+
+      if (excerpts.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-8 text-xs text-gray-400">저장된 발췌 카드가 없습니다.</div>`;
+        return;
+      }
+
+      excerpts.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `${item.theme} p-4 rounded-xl shadow-sm relative group border border-black/5 transition hover:shadow-md`;
+        card.innerHTML = `
+          <p class="font-serif text-xs leading-relaxed mb-3 line-clamp-3">"${item.text}"</p>
+          <div class="flex items-center justify-between text-[10px] opacity-80 font-sans border-t border-current/10 pt-2">
+            <span class="font-semibold truncate max-w-[120px]">${item.book}</span>
+            <span>${item.tag}</span>
+          </div>
+          <button onclick="deleteExcerpt('${item.id}')" class="absolute top-2 right-2 p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-500 transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    function deleteExcerpt(id) {
+      excerpts = excerpts.filter(e => e.id !== id);
+      saveData();
+      renderExcerptList();
+      showToast("발췌 카드가 삭제되었습니다.");
+    }
+
+    function downloadQuoteCardImage() {
+      const target = document.getElementById('quoteCardPreview');
+      html2canvas(target, { scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `quote-card-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast("발췌 카드가 이미지로 저장되었습니다!");
+      });
+    }
+
+    // TIMER LOGIC
+    function toggleTimer() {
+      if (isTimerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      isTimerRunning = true;
+      document.getElementById('timerIcon').className = "fa-solid fa-pause";
+      timerInterval = setInterval(() => {
+        timerSeconds++;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isTimerRunning = false;
+      document.getElementById('timerIcon').className = "fa-solid fa-play";
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerSeconds = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const hrs = Math.floor(timerSeconds / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((timerSeconds % 3600) / 60).toString().padStart(2, '0');
+      const secs = (timerSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+    }
+
+    function setupInactivityTimer() {
+      document.addEventListener('mousemove', resetActivity);
+      document.addEventListener('keypress', resetActivity);
+    }
+
+    function resetActivity() {
+      lastActivityTime = Date.now();
+    }
+
+    // Auto-pause timer if inactive for 5 minutes
+    setInterval(() => {
+      if (isTimerRunning && Date.now() - lastActivityTime > 300000) {
+        pauseTimer();
+        showToast("3분 이상 활동이 없어 타이머가 일시정지되었습니다.");
+      }
+    }, 10000);
+
+    // THEME SWITCHER
+    function setTheme(themeKey) {
+      const t = themes[themeKey] || themes.pink;
+      const root = document.documentElement;
+
+      root.style.setProperty('--bg-main', t.main);
+      root.style.setProperty('--bg-panel', t.panel);
+      root.style.setProperty('--bg-sidebar', t.sidebar);
+      root.style.setProperty('--text-main', t.text);
+      root.style.setProperty('--border-color', t.border);
+      root.style.setProperty('--selection-bg', t.selection);
+
+      document.getElementById('currentThemeLabel').innerText = t.label;
+      localStorage.setItem('my_writing_theme', themeKey);
+    }
+
+    // FORMATTING & UTILS
+    function setTextAlign(align) {
+      document.getElementById('editorContent').style.textAlign = align;
+      if (align === 'left') {
+        document.getElementById('btnAlignLeft').className = "p-1.5 text-xs text-pink-600 bg-pink-50 hover:bg-pink-100";
+        document.getElementById('btnAlignCenter').className = "p-1.5 text-xs text-gray-500 hover:bg-pink-100";
+      } else {
+        document.getElementById('btnAlignCenter').className = "p-1.5 text-xs text-pink-600 bg-pink-50 hover:bg-pink-100";
+        document.getElementById('btnAlignLeft').className = "p-1.5 text-xs text-gray-500 hover:bg-pink-100";
+      }
+    }
+
+    function changeEditorFont(fontClass) {
+      const editor = document.getElementById('editorContent');
+      editor.className = `editor-area flex-1 w-full outline-none text-base md:text-lg min-h-[400px] text-justify leading-relaxed ${fontClass}`;
+    }
+
+    function toggleFocusMode() {
+      document.body.classList.toggle('focus-mode-active');
+      showToast(document.body.classList.contains('focus-mode-active') ? "몰입 모드 활성화" : "몰입 모드 해제");
+    }
+
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function copyToClipboard() {
+      const text = document.getElementById('editorContent').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("전체 글이 클립보드에 복사되었습니다.");
+      });
+    }
+
+    function copySelectedText() {
+      if (selectedTextForExcerpt) {
+        navigator.clipboard.writeText(selectedTextForExcerpt);
+        showToast("선택 문장이 복사되었습니다.");
+      }
+    }
+
+    function exportCurrentPageTXT() {
+      const page = pages.find(p => p.id === currentPageId);
+      if (!page) return;
+
+      const content = `${page.title}\n출처: ${page.source || '없음'}\n작성일: ${page.createdAt}\n\n${document.getElementById('editorContent').innerText}`;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${page.title || '글쓰기노트'}.txt`;
+      link.click();
+    }
+
+    function exportJSONBackup() {
+      const backupData = { pages, excerpts };
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `writing-notes-backup-${Date.now()}.json`;
+      link.click();
+      showToast("전체 백업 파일이 다운로드 되었습니다.");
+    }
+
+    function importJSONBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.pages && data.excerpts) {
+            pages = data.pages;
+            excerpts = data.excerpts;
+            saveData();
+            renderPageList();
+            renderExcerptList();
+            if (pages.length > 0) loadPage(pages[0].id);
+            showToast("데이터 복원이 완료되었습니다!");
+          }
+        } catch (err) {
+          showToast("올바르지 않은 백업 파일 형식입니다.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // TOAST NOTIFICATIONS & UNDO
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = "bg-gray-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-sans flex items-center gap-2 pointer-events-auto animate-in fade-in slide-in-from-top-2";
+      toast.innerHTML = `<i class="fa-solid fa-circle-info text-pink-400"></i> ${msg}`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    function showUndoToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = "bg-gray-900 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-sans flex items-center justify-between gap-4 pointer-events-auto animate-in fade-in slide-in-from-top-2";
+      toast.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-trash text-pink-400"></i>
+          <span>${msg}</span>
+        </div>
+        <button onclick="undoDeletePage(this)" class="text-pink-400 font-bold hover:underline">실행 취소 (7초)</button>
+      `;
+      container.appendChild(toast);
+
+      undoTimeout = setTimeout(() => {
+        toast.remove();
+        lastDeletedPage = null;
+      }, 7000);
+    }
+
+    function undoDeletePage(btnEl) {
+      if (lastDeletedPage) {
+        pages.splice(lastDeletedPage.index, 0, lastDeletedPage.page);
+        saveData();
+        renderPageList();
+        loadPage(lastDeletedPage.page.id);
+        clearTimeout(undoTimeout);
+        btnEl.parentElement.remove();
+        showToast("글 삭제가 취소되었습니다.");
+      }
+    }
+
+    function setupAutoSave() {
+      // Auto save triggered on keypress with debounce
+      let saveTimer;
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          saveData();
+          showToast("수동 저장되었습니다.");
+        }
+      });
+    }
+  </script>
+
+</body></html>
