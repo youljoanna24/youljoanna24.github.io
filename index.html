@@ -157,6 +157,34 @@ body{
 }
 #page{background-size:cover; background-position:center; background-repeat:no-repeat;}
 #fgColor{width:44px; height:28px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent; cursor:pointer;}
+#saveMenu{
+  display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
+  background:var(--panel); border:1px solid var(--border); border-radius:10px;
+  padding:10px; width:250px; box-shadow:0 6px 20px rgba(0,0,0,.14);
+  flex-direction:column; gap:6px;
+}
+#saveMenu.open{display:flex;}
+#saveMenu button{
+  margin:0; width:100%; text-align:left; border:1px solid var(--border); background:transparent; color:var(--text);
+  border-radius:7px; padding:8px 10px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:normal;
+}
+#saveMenu button:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
+#pageList li button.dup:hover{color:var(--accent);}
+#toast{
+  display:none; position:fixed; left:50%; bottom:72px; transform:translateX(-50%); z-index:50;
+  background:var(--text); color:var(--panel); padding:10px 14px; border-radius:10px; font-size:13px;
+  align-items:center; gap:12px; box-shadow:0 6px 20px rgba(0,0,0,.25); max-width:90vw;
+}
+#toast.show{display:flex;}
+#toast button{background:transparent; border:none; color:var(--accent-soft); text-decoration:underline; cursor:pointer; font-size:13px; font-family:inherit; padding:0;}
+#focusExit{
+  display:none; position:fixed; top:12px; right:14px; z-index:40; border:1px solid var(--border);
+  background:var(--panel); color:var(--muted); border-radius:20px; padding:6px 12px; font-size:12px;
+  cursor:pointer; font-family:inherit; opacity:.7;
+}
+#focusExit:hover{opacity:1;}
+body.focus #sidebar, body.focus #topbar, body.focus #pageFooter{display:none;}
+body.focus #focusExit{display:block;}
 .panelTitle{font-size:11.5px; color:var(--accent); font-weight:bold; margin-top:2px;}
 #editor{
   width:100%; height:100%; min-height:520px; border:none; outline:none; resize:none;
@@ -233,8 +261,16 @@ body{
     <button id="styleBtn" class="tbBtn" title="색상·배경 꾸미기">🎨</button>
     <button id="themeBtn" class="tbBtn" title="다크모드 켜기/끄기">🌙</button>
     <button id="copyBtn" class="tbBtn" title="현재 페이지 글 복사">복사</button>
-    <button id="txtBtn" title="TXT로 내보내기">TXT 저장</button>
-    <button id="pdfBtn" title="현재 페이지를 PDF로 저장">PDF 저장</button>
+    <button id="focusBtn" class="tbBtn" title="집중 모드 (Alt+F)">⛶</button>
+    <button id="saveBtn" class="tbBtn" title="저장 / 백업">💾 저장</button>
+    <div id="saveMenu">
+      <button id="imgBtn">🖼 이미지로 저장 (PNG, 현재 페이지)</button>
+      <button id="pdfBtn" title="현재 페이지를 PDF로 저장">📄 PDF로 저장 (현재 페이지)</button>
+      <button id="txtBtn" title="TXT로 내보내기">📝 TXT로 저장 (전체)</button>
+      <button id="backupBtn">💾 백업 저장 (전체, JSON)</button>
+      <button id="restoreBtn">📂 백업 불러오기</button>
+    </div>
+    <input id="restoreFile" type="file" accept=".json,application/json" style="display:none;">
     <div id="stylePanel">
       <label>화면 색상
         <select id="paletteSelect">
@@ -267,6 +303,12 @@ body{
       <label>글자색 직접 고르기
         <input id="fgColor" type="color" value="#4a2c36">
       </label>
+      <label>글 정렬
+        <select id="alignSelect">
+          <option value="left">왼쪽</option>
+          <option value="center">가운데</option>
+        </select>
+      </label>
       <button id="bgUploadBtn" class="tbBtn">내 사진 넣기</button>
       <button id="bgClearBtn" class="tbBtn">디자인 지우기</button>
       <input id="bgFile" type="file" accept="image/*" style="display:none;">
@@ -286,6 +328,8 @@ body{
 </div>
 <div id="printArea"></div>
 <div id="measureBox"></div>
+<div id="toast"><span id="toastMsg"></span><button id="toastBtn" type="button"></button></div>
+<button id="focusExit" type="button">✕ 집중 모드 끝내기</button>
 
 <script>
 const STORAGE_KEY = "writing-site-pages-v1";
@@ -314,12 +358,21 @@ function newPage(){
 }
 function deletePage(id, e){
   e.stopPropagation();
-  if(!confirm("이 페이지를 삭제할까요?")) return;
+  const removed = pages.find(p=>p.id===id);
+  if(!removed) return;
   pages = pages.filter(p=>p.id!==id);
   if(currentId===id){ currentId = pages.length ? pages[0].id : null; }
   persist();
   renderList();
   renderEditor();
+  showToast("페이지를 삭제했어요", "되돌리기", ()=>{
+    pages.push(removed);
+    currentId = removed.id;
+    rememberLast();
+    persist();
+    renderList();
+    renderEditor();
+  }, 7000);
 }
 const LAST_KEY = "writing-site-last-v1";
 function rememberLast(){
@@ -345,6 +398,12 @@ function renderList(){
     span.className = "title";
     span.textContent = p.title || "제목 없음";
     li.appendChild(span);
+    const dup = document.createElement("button");
+    dup.textContent = "⧉";
+    dup.className = "dup";
+    dup.title = "페이지 복제";
+    dup.onclick = (e)=>duplicatePage(p.id,e);
+    li.appendChild(dup);
     const del = document.createElement("button");
     del.textContent = "✕";
     del.onclick = (e)=>deletePage(p.id,e);
@@ -362,7 +421,8 @@ function updateCharCount(){
   const p = pages.find(p=>p.id===currentId);
   if(!p){ charCount.textContent = "0자"; return; }
   const len = (editor.value||"").replace(/\n/g,"").length;
-  charCount.textContent = len.toLocaleString() + "자";
+  const noSpace = (editor.value||"").replace(/\s/g,"").length;
+  charCount.textContent = len.toLocaleString() + "자 (공백 제외 " + noSpace.toLocaleString() + ")";
 }
 function renderEditor(){
   const titleInput = document.getElementById("titleInput");
@@ -512,6 +572,7 @@ function exportPDF(){
   }
   area.innerHTML = html;
   area.querySelectorAll(".print-page").forEach(el=>{
+    el.style.textAlign = p.align==="center" ? "center" : "left";
     if(p.bg) el.style.backgroundImage = p.bg;
     if(p.fg){
       el.style.color = p.fg;
@@ -586,6 +647,9 @@ function applyDesign(){
   document.getElementById("page").style.backgroundImage = bg;
   document.getElementById("editor").style.color = fg;
   document.getElementById("pageNumOnPage").style.color = fg;
+  const align = (p && p.align) || "left";
+  document.getElementById("editor").style.textAlign = align;
+  document.getElementById("alignSelect").value = align;
   let key = "none";
   if(bg){ key = Object.keys(DESIGNS).find(k=>DESIGNS[k].css===bg) || "photo"; }
   const dsel = document.getElementById("designSelect");
@@ -597,7 +661,7 @@ function applyDesign(){
   if(m){
     document.getElementById("fgColor").value = "#" + m.slice(0,3).map(n=>(+n).toString(16).padStart(2,"0")).join("");
   }
-  [dsel, fsel, document.getElementById("fgColor"), document.getElementById("bgUploadBtn"), document.getElementById("bgClearBtn")]
+  [dsel, fsel, document.getElementById("alignSelect"), document.getElementById("fgColor"), document.getElementById("bgUploadBtn"), document.getElementById("bgClearBtn")]
     .forEach(el=>{ el.disabled = !p; });
 }
 function setDesign(bg, fg){
@@ -649,13 +713,246 @@ document.getElementById("bgFile").onchange = (e)=>{
   reader.readAsDataURL(f);
   e.target.value = "";
 };
-document.getElementById("styleBtn").onclick = (e)=>{
+const PANELS = ["stylePanel","saveMenu"];
+function togglePanel(id, e){
   e.stopPropagation();
-  document.getElementById("stylePanel").classList.toggle("open");
-};
+  PANELS.forEach(pid=>{
+    const el = document.getElementById(pid);
+    if(pid===id) el.classList.toggle("open"); else el.classList.remove("open");
+  });
+}
+document.getElementById("styleBtn").onclick = (e)=>togglePanel("stylePanel", e);
+document.getElementById("saveBtn").onclick = (e)=>togglePanel("saveMenu", e);
 document.addEventListener("click", (e)=>{
-  const panel = document.getElementById("stylePanel");
-  if(panel.classList.contains("open") && !panel.contains(e.target)) panel.classList.remove("open");
+  PANELS.forEach(pid=>{
+    const el = document.getElementById(pid);
+    if(el.classList.contains("open") && !el.contains(e.target)) el.classList.remove("open");
+  });
+});
+document.getElementById("saveMenu").addEventListener("click", (e)=>{
+  if(e.target.closest("button")) document.getElementById("saveMenu").classList.remove("open");
+});
+
+// ===== 편의 기능 모음 =====
+let toastTimer = null;
+function showToast(msg, label, fn, ms){
+  const t = document.getElementById("toast");
+  const b = document.getElementById("toastBtn");
+  document.getElementById("toastMsg").textContent = msg;
+  if(label){
+    b.style.display = "inline-block";
+    b.textContent = label;
+    b.onclick = ()=>{ t.classList.remove("show"); if(fn) fn(); };
+  } else {
+    b.style.display = "none";
+  }
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), ms || 3500);
+}
+function downloadBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function safeName(s){ return (s||"글쓰기노트").replace(/[\\/:*?"<>|]/g,"_").trim() || "글쓰기노트"; }
+
+// 페이지 복제
+function duplicatePage(id, e){
+  e.stopPropagation();
+  const src = pages.find(p=>p.id===id);
+  if(!src) return;
+  const copy = Object.assign({}, src, {
+    id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    title: (src.title || "제목 없음") + " (복사)",
+    created: Date.now(), updated: Date.now()
+  });
+  pages.unshift(copy);
+  currentId = copy.id;
+  rememberLast();
+  persist();
+  renderList();
+  renderEditor();
+  showToast("페이지를 복제했어요");
+}
+
+// 글 정렬
+document.getElementById("alignSelect").onchange = (e)=>{
+  const p = curPage();
+  if(!p) return;
+  p.align = e.target.value;
+  persist();
+  applyDesign();
+};
+
+// 백업 저장 / 불러오기
+function exportBackup(){
+  if(!pages.length){ alert("백업할 페이지가 없어요."); return; }
+  const data = {app:"writing-site", version:1, exportedAt:Date.now(), pages:pages};
+  downloadBlob(new Blob([JSON.stringify(data)], {type:"application/json"}), "글쓰기노트-백업.json");
+}
+function importBackup(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let data;
+    try{ data = JSON.parse(reader.result); }catch(e){ alert("백업 파일을 읽을 수 없어요."); return; }
+    const list = Array.isArray(data) ? data : (data && data.pages);
+    if(!Array.isArray(list)){ alert("백업 파일 형식이 맞지 않아요."); return; }
+    let added = 0, updated = 0;
+    list.forEach(raw=>{
+      if(!raw || typeof raw.id !== "string") return;
+      const item = Object.assign({}, raw, {
+        title: typeof raw.title === "string" ? raw.title : "",
+        content: typeof raw.content === "string" ? raw.content : "",
+        created: raw.created || raw.updated || Date.now(),
+        updated: raw.updated || Date.now()
+      });
+      const idx = pages.findIndex(p=>p.id===item.id);
+      if(idx<0){ pages.push(item); added++; }
+      else if((item.updated||0) > (pages[idx].updated||0)){ pages[idx] = item; updated++; }
+    });
+    if(!currentId && pages.length) currentId = pages[0].id;
+    persist();
+    renderList();
+    renderEditor();
+    showToast("불러오기 완료: 새 페이지 " + added + "개, 갱신 " + updated + "개", null, null, 4500);
+  };
+  reader.readAsText(file);
+}
+document.getElementById("backupBtn").onclick = exportBackup;
+document.getElementById("restoreBtn").onclick = ()=>document.getElementById("restoreFile").click();
+document.getElementById("restoreFile").onchange = (e)=>{
+  const f = e.target.files[0];
+  if(f) importBackup(f);
+  e.target.value = "";
+};
+
+// 이미지로 저장 (PNG)
+function loadImg(src){
+  return new Promise((res, rej)=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = rej; i.src = src; });
+}
+function wrapText(ctx, text, maxW){
+  const out = [];
+  text.split("\n").forEach(par=>{
+    if(par===""){ out.push(""); return; }
+    let line = "", lastSpace = -1;
+    for(const ch of par){
+      const test = line + ch;
+      if(ctx.measureText(test).width > maxW && line !== ""){
+        if(lastSpace > 0){
+          out.push(line.slice(0, lastSpace));
+          line = line.slice(lastSpace+1) + ch;
+        } else {
+          out.push(line);
+          line = ch;
+        }
+        lastSpace = line.lastIndexOf(" ");
+      } else {
+        line = test;
+        if(ch===" ") lastSpace = line.length - 1;
+      }
+    }
+    out.push(line);
+  });
+  return out;
+}
+function drawGradient(ctx, css, W, H){
+  const m = css.match(/linear-gradient\(\s*(-?[\d.]+)deg\s*,(.*)\)$/);
+  if(!m){ ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,W,H); return; }
+  const ang = parseFloat(m[1]) * Math.PI / 180;
+  const len = Math.abs(W*Math.sin(ang)) + Math.abs(H*Math.cos(ang));
+  const cx = W/2, cy = H/2, dx = Math.sin(ang)*len/2, dy = -Math.cos(ang)*len/2;
+  const g = ctx.createLinearGradient(cx-dx, cy-dy, cx+dx, cy+dy);
+  m[2].split(",").forEach(s=>{
+    const parts = s.trim().split(/\s+/);
+    if(parts.length>=2) g.addColorStop(parseFloat(parts[1])/100, parts[0]);
+  });
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+}
+async function exportPNG(){
+  const p = curPage();
+  if(!p){ alert("저장할 페이지가 없어요. 먼저 페이지를 선택하거나 만들어주세요."); return; }
+  const rootCs = getComputedStyle(document.documentElement);
+  const family = rootCs.getPropertyValue("--editor-font").trim();
+  const sizePx = parseFloat(rootCs.getPropertyValue("--editor-size")) || 16;
+  const W = 1080, baseH = Math.round(W*297/210), k = W/640;
+  const fs = sizePx*k, lh = fs*2;
+  const padX = 48*k, padTop = 56*k, padBottom = 76*k;
+  const fg = p.fg || getComputedStyle(document.getElementById("editor")).color;
+  try{ await document.fonts.load(fs + "px " + family); await document.fonts.load("bold " + fs + "px " + family); }catch(e){}
+  const tmp = document.createElement("canvas").getContext("2d");
+  tmp.font = fs + "px " + family;
+  const lines = wrapText(tmp, p.content||"", W - padX*2);
+  const titleFs = fs*1.35, titleLH = titleFs*1.6;
+  const titleBlock = p.title ? titleLH + fs*0.6 : 0;
+  const H = Math.max(baseH, Math.ceil(padTop + titleBlock + lines.length*lh + padBottom));
+  const c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  // 배경
+  if(p.bg && p.bg.indexOf("linear-gradient")===0){
+    drawGradient(ctx, p.bg, W, H);
+  } else if(p.bg && p.bg.indexOf("url(")===0){
+    try{
+      const img = await loadImg(p.bg.replace(/^url\("?/, "").replace(/"?\)$/, ""));
+      const sc = Math.max(W/img.width, H/img.height);
+      const dw = img.width*sc, dh = img.height*sc;
+      ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+    }catch(e){ ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,W,H); }
+  } else {
+    ctx.fillStyle = rootCs.getPropertyValue("--panel").trim() || "#ffffff";
+    ctx.fillRect(0,0,W,H);
+  }
+  // 글
+  const center = p.align==="center";
+  ctx.fillStyle = fg;
+  ctx.textAlign = center ? "center" : "left";
+  ctx.textBaseline = "middle";
+  const x = center ? W/2 : padX;
+  let y = padTop;
+  if(p.title){
+    ctx.font = "bold " + titleFs + "px " + family;
+    ctx.fillText(p.title, x, y + titleLH/2, W - padX*2);
+    y += titleBlock;
+  }
+  ctx.font = fs + "px " + family;
+  lines.forEach((ln, i)=>{ if(ln) ctx.fillText(ln, x, y + i*lh + lh/2); });
+  // 페이지 번호
+  const num = orderedPages().findIndex(x=>x.id===p.id) + 1;
+  ctx.globalAlpha = 0.75;
+  ctx.textAlign = "center";
+  ctx.font = (fs*0.8) + "px " + family;
+  ctx.fillText("- " + num + " -", W/2, H - 36*k);
+  ctx.globalAlpha = 1;
+  c.toBlob(blob=>{
+    if(!blob){ alert("이미지를 만들지 못했어요."); return; }
+    downloadBlob(blob, safeName(p.title) + ".png");
+    showToast("이미지로 저장했어요");
+  }, "image/png");
+}
+document.getElementById("imgBtn").onclick = exportPNG;
+
+// 집중 모드
+function toggleFocus(){ document.body.classList.toggle("focus"); }
+document.getElementById("focusBtn").onclick = toggleFocus;
+document.getElementById("focusExit").onclick = toggleFocus;
+
+// 추가 단축키: Alt+F 집중 모드, Esc 닫기, Ctrl/Cmd+S 안내
+document.addEventListener("keydown", (e)=>{
+  if(e.altKey && !e.ctrlKey && !e.metaKey && (e.code==="KeyF")){ e.preventDefault(); toggleFocus(); }
+  if(e.key==="Escape"){
+    document.body.classList.remove("focus");
+    PANELS.forEach(pid=>document.getElementById(pid).classList.remove("open"));
+  }
+  if((e.ctrlKey || e.metaKey) && (e.key==="s" || e.key==="S")){
+    e.preventDefault();
+    showToast("자동 저장되고 있어요. 파일로 받으려면 💾 저장 메뉴를 쓰세요.");
+  }
 });
 
 // 다크모드 토글 (선택값 기억)
