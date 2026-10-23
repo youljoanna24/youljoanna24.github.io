@@ -105,13 +105,13 @@
             <span class="text-rose-500 text-lg font-bold tracking-wider font-dodum">무제_MUZE</span>
             <span class="text-xs bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full font-dodum">집필 & 발췌 노트</span>
         </div>
-        <div class="flex items-center gap-2">
-            <!-- Timer Display -->
-            <div class="flex items-center gap-2 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 text-xs text-rose-700 mr-2">
-                <i class="fa-regular fa-clock"></i>
+        <div class="flex items-center gap-3">
+            <!-- Timer Display & Control -->
+            <div class="flex items-center gap-2 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 text-xs text-rose-700">
+                <i class="fa-regular fa-clock text-rose-500"></i>
                 <span id="timerDisplay" class="font-mono font-medium">00:00:00</span>
-                <button id="toggleTimerBtn" onclick="toggleTimer()" class="ml-1 text-rose-500 hover:text-rose-700">
-                    <i class="fa-solid fa-pause" id="timerIcon"></i>
+                <button id="toggleTimerBtn" onclick="toggleTimer()" title="시간 체크 시작/정지" class="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-rose-200 hover:bg-rose-300 text-rose-800 transition text-[10px]">
+                    <i class="fa-solid fa-play" id="timerIcon"></i>
                 </button>
             </div>
             
@@ -198,8 +198,14 @@
                     </button>
                 </div>
 
-                <div class="text-xs text-rose-400 font-dodum">
-                    <span id="autoSaveStatus">자동 저장됨</span>
+                <div class="flex items-center gap-4 text-xs text-rose-500 font-dod0m">
+                    <!-- Character Counts -->
+                    <div class="flex items-center gap-2 bg-rose-50/80 px-2.5 py-1 rounded-lg border border-rose-200/60">
+                        <span>공백 포함: <strong id="charCountWithSpaces" class="text-rose-900 font-mono">0</strong>자</span>
+                        <span class="text-rose-300">|</span>
+                        <span>공백 제외: <strong id="charCountWithoutSpaces" class="text-rose-900 font-mono">0</strong>자</span>
+                    </div>
+                    <span id="autoSaveStatus" class="text-rose-400">자동 저장됨</span>
                 </div>
             </div>
 
@@ -210,7 +216,7 @@
                     <input type="text" id="noteTitleInput" oninput="updateCurrentNoteTitle(this.value)" placeholder="제목을 입력하세요..." class="text-2xl font-bold border-b border-rose-200 pb-3 mb-6 focus:outline-none focus:border-rose-400 bg-transparent text-rose-950 font-dodum w-full">
                     
                     <!-- Editable Body -->
-                    <div id="editorContent" contenteditable="true" oninput="saveCurrentNoteContent()" placeholder="이곳에 글을 자유롭게 작성해보세요..." class="flex-1 focus:outline-none text-base leading-relaxed text-gray-800 font-batang min-h-[500px]"></div>
+                    <div id="editorContent" contenteditable="true" oninput="onEditorInput()" placeholder="이곳에 글을 자유롭게 작성해보세요..." class="flex-1 focus:outline-none text-base leading-relaxed text-gray-800 font-batang min-h-[500px]"></div>
 
                     <!-- Page Footer Signature -->
                     <div class="mt-12 pt-4 border-t border-rose-100 text-center text-xs text-rose-300 font-dodum">
@@ -321,16 +327,47 @@
         ];
         let excerpts = JSON.parse(localStorage.getItem('muze_excerpts')) || [];
         let currentNoteId = notes[0]?.id || 'default-1';
+        
         let timerSeconds = 0;
-        let timerActive = true;
+        let timerActive = false; // 기본값: 정지 상태 (사용자가 재생 버튼을 눌러야 카운트 시작)
         let timerInterval = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             renderPagesList();
             renderExcerptsList();
             loadCurrentNote();
-            startTimer();
+            updateTimerDisplay();
         });
+
+        // Timer Logic (사용자가 재생할 때만 체크)
+        function toggleTimer() {
+            timerActive = !timerActive;
+            const icon = document.getElementById('timerIcon');
+            const btn = document.getElementById('toggleTimerBtn');
+            
+            if (timerActive) {
+                icon.className = 'fa-solid fa-pause';
+                btn.title = '시간 체크 일시정지';
+                if (!timerInterval) {
+                    timerInterval = setInterval(() => {
+                        if (timerActive) {
+                            timerSeconds++;
+                            updateTimerDisplay();
+                        }
+                    }, 1000);
+                }
+            } else {
+                icon.className = 'fa-solid fa-play';
+                btn.title = '시간 체크 시작';
+            }
+        }
+
+        function updateTimerDisplay() {
+            const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+        }
 
         function switchTab(tab) {
             const notesBtn = document.getElementById('tabNotesBtn');
@@ -349,33 +386,6 @@
                 excerptsSec.classList.remove('hidden');
                 notesSec.classList.add('hidden');
             }
-        }
-
-        function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (timerActive) {
-                    timerSeconds++;
-                    updateTimerDisplay();
-                }
-            }, 1000);
-        }
-
-        function toggleTimer() {
-            timerActive = !timerActive;
-            const icon = document.getElementById('timerIcon');
-            if (timerActive) {
-                icon.className = 'fa-solid fa-pause';
-            } else {
-                icon.className = 'fa-solid fa-play';
-            }
-        }
-
-        function updateTimerDisplay() {
-            const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
-            const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
-            const secs = String(timerSeconds % 60).padStart(2, '0');
-            document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
         }
 
         function renderPagesList() {
@@ -478,6 +488,7 @@
             const fontSelect = document.getElementById('fontSelect');
             fontSelect.value = note.font || 'font-batang';
             changeFont(note.font || 'font-batang', false);
+            updateCharacterCounts();
         }
 
         function updateCurrentNoteTitle(val) {
@@ -488,6 +499,20 @@
                 saveNotesToStorage();
                 renderPagesList();
             }
+        }
+
+        function onEditorInput() {
+            saveCurrentNoteContent();
+            updateCharacterCounts();
+        }
+
+        function updateCharacterCounts() {
+            const text = document.getElementById('editorContent').innerText || '';
+            const withSpaces = text.length;
+            const withoutSpaces = text.replace(/\s+/g, '').length;
+
+            document.getElementById('charCountWithSpaces').innerText = withSpaces;
+            document.getElementById('charCountWithoutSpaces').innerText = withoutSpaces;
         }
 
         function saveCurrentNoteContent() {
@@ -530,6 +555,7 @@
         function execCommand(command, value = null) {
             document.execCommand(command, false, value);
             saveCurrentNoteContent();
+            updateCharacterCounts();
         }
 
         function createExcerptFromSelection() {
@@ -555,7 +581,6 @@
             renderExcerptsList();
         }
 
-        // Individual Excerpt PNG Download
         async function downloadSingleExcerpt(index) {
             const exc = excerpts[index];
             if (!exc) return;
