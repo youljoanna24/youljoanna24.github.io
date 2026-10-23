@@ -316,7 +316,6 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // 안전하게 데이터 불러오기 (비어있거나 형식이 깨졌으면 기본값 세팅)
         let savedNotes = [];
         try {
             savedNotes = JSON.parse(localStorage.getItem('muze_notes'));
@@ -338,7 +337,7 @@
         let currentNoteId = notes[0]?.id || 'default-1';
         
         let timerSeconds = 0;
-        let timerActive = true;
+        let timerActive = true; // 자동 시작 상태
         let timerInterval = null;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -361,3 +360,35 @@
         function toggleTimer() {
             timerActive = !timerActive;
             const icon = document.getElementById('timerIcon');
+            const btn = document.getElementById('toggleTimerBtn');
+            
+            if (timerActive) {
+                icon.className = 'fa-solid fa-pause';
+                btn.title = '시간 체크 일시정지';
+            } else {
+                icon.className = 'fa-solid fa-play';
+                btn.title = '시간 체크 재개';
+            }
+        }
+
+        function updateTimerDisplay() {
+            const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+        }
+
+        function switchTab(tab) {
+            const notesBtn = document.getElementById('tabNotesBtn');
+            const excerptsBtn = document.getElementById('tabExcerptsBtn');
+            const notesSec = document.getElementById('notesSection');
+            const excerptsSec = document.getElementById('excerptsSection');
+
+            if (tab === 'notes') {
+                notesBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg transition font-dodum bg-white text-rose-600 shadow-sm';
+                excerptsBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg transition font-dodum text-gray-500 hover:text-rose-600';
+                notesSec.classList.remove('hidden');
+                excerptsSec.classList.add('hidden');
+            } else {
+                excerptsBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg transition font-dodum bg-white text-rose-600 shadow-sm';
+                notesBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg
