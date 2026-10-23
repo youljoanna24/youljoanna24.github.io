@@ -157,6 +157,28 @@ body{
 }
 #page{background-size:cover; background-position:center; background-repeat:no-repeat;}
 #fgColor{width:44px; height:28px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent; cursor:pointer;}
+#timerBox{
+  display:flex; align-items:center; gap:6px; margin-left:12px; cursor:pointer; user-select:none;
+  font-size:12.5px; color:var(--muted); white-space:nowrap; flex-shrink:0;
+}
+#timerDot{width:7px; height:7px; border-radius:50%; background:var(--border);}
+#timerBox.on #timerDot{background:#3fb37f; box-shadow:0 0 0 3px rgba(63,179,127,.2);}
+#timerBox:hover #timerText{color:var(--accent);}
+#timerBtn{
+  display:none; border:1px solid var(--border); background:transparent; color:var(--text);
+  border-radius:6px; width:24px; height:24px; cursor:pointer; font-size:11px; padding:0;
+}
+#timerBox.manual #timerBtn{display:inline-block;}
+#timerPanel{
+  display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
+  background:var(--panel); border:1px solid var(--border); border-radius:10px;
+  padding:14px; width:250px; box-shadow:0 6px 20px rgba(0,0,0,.14);
+  flex-direction:column; gap:10px; font-size:12.5px;
+}
+#timerPanel.open{display:flex;}
+#timerPanel .tRow{display:flex; justify-content:space-between; align-items:center; gap:10px; color:var(--muted);}
+#timerPanel .tRow b{color:var(--text); font-weight:600;}
+#timerPanel .tbBtn{margin-left:0; width:100%;}
 #saveMenu{
   display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
   background:var(--panel); border:1px solid var(--border); border-radius:10px;
@@ -215,6 +237,7 @@ body.focus #focusExit{display:block;}
   #menuBtn{display:inline-block !important;}
   #titleInput{font-size:19px;}
   #status{display:none;}
+  #timerBox{margin-left:6px; font-size:11px;}
   #charCount{display:none;}
   .tbBtn{padding:6px 7px; font-size:11px; margin-left:6px;}
   #txtBtn{padding:6px 8px; font-size:11px; margin-left:6px;}
@@ -258,11 +281,22 @@ body.focus #focusExit{display:block;}
     </div>
     <div id="status">저장됨</div>
     <span id="charCount">0자</span>
+    <div id="timerBox" title="작업 시간 (눌러서 자세히 보기)">
+      <span id="timerDot"></span><span id="timerText">⏱ 00:00</span><button id="timerBtn" type="button" title="시작 / 일시정지">▶</button>
+    </div>
     <button id="styleBtn" class="tbBtn" title="색상·배경 꾸미기">🎨</button>
     <button id="themeBtn" class="tbBtn" title="다크모드 켜기/끄기">🌙</button>
     <button id="copyBtn" class="tbBtn" title="현재 페이지 글 복사">복사</button>
     <button id="focusBtn" class="tbBtn" title="집중 모드 (Alt+F)">⛶</button>
     <button id="saveBtn" class="tbBtn" title="저장 / 백업">💾 저장</button>
+    <div id="timerPanel">
+      <div class="panelTitle">작업 시간</div>
+      <div class="tRow"><span>오늘</span><b id="tToday">0초</b></div>
+      <div class="tRow"><span>이 페이지</span><b id="tPage">0초</b></div>
+      <div class="tRow"><span>전체 페이지 합계</span><b id="tTotal">0초</b></div>
+      <label class="tRow"><span>자동 측정<br>(글 쓸 때만 · 1분 쉬면 멈춤)</span><input id="timerAutoChk" type="checkbox" checked></label>
+      <button id="timerResetBtn" class="tbBtn" type="button">이 페이지 시간 초기화</button>
+    </div>
     <div id="saveMenu">
       <button id="imgBtn">🖼 이미지로 저장 (PNG, 현재 페이지)</button>
       <button id="pdfBtn" title="현재 페이지를 PDF로 저장">📄 PDF로 저장 (현재 페이지)</button>
@@ -713,7 +747,7 @@ document.getElementById("bgFile").onchange = (e)=>{
   reader.readAsDataURL(f);
   e.target.value = "";
 };
-const PANELS = ["stylePanel","saveMenu"];
+const PANELS = ["stylePanel","saveMenu","timerPanel"];
 function togglePanel(id, e){
   e.stopPropagation();
   PANELS.forEach(pid=>{
@@ -769,7 +803,7 @@ function duplicatePage(id, e){
   const copy = Object.assign({}, src, {
     id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
     title: (src.title || "제목 없음") + " (복사)",
-    created: Date.now(), updated: Date.now()
+    created: Date.now(), updated: Date.now(), time: 0
   });
   pages.unshift(copy);
   currentId = copy.id;
@@ -954,6 +988,105 @@ document.addEventListener("keydown", (e)=>{
     showToast("자동 저장되고 있어요. 파일로 받으려면 💾 저장 메뉴를 쓰세요.");
   }
 });
+
+// ===== 작업 시간 측정 =====
+const TIMER_KEY = "writing-site-timer-v1";
+const LOG_KEY = "writing-site-timelog-v1";
+const IDLE_MS = 60000;
+let timerAuto = true, timerRunning = false;
+let lastActivity = 0, lastTick = Date.now(), lastSave = Date.now(), timerDirty = false;
+let timeLog = {};
+try{ const s = JSON.parse(localStorage.getItem(TIMER_KEY) || "{}"); if(s.auto === false) timerAuto = false; }catch(e){}
+try{ timeLog = JSON.parse(localStorage.getItem(LOG_KEY) || "{}") || {}; }catch(e){ timeLog = {}; }
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+function fmtClock(sec){
+  const s = Math.floor(sec), h = Math.floor(s/3600), m = Math.floor(s%3600/60), r = s%60;
+  return h>0 ? h + ":" + pad2(m) + ":" + pad2(r) : pad2(m) + ":" + pad2(r);
+}
+function fmtKo(sec){
+  const s = Math.floor(sec);
+  if(s < 60) return s + "초";
+  const m = Math.floor(s/60);
+  if(m < 60) return m + "분";
+  return Math.floor(m/60) + "시간 " + (m%60) + "분";
+}
+function flushTimer(){
+  if(!timerDirty) return;
+  persist();
+  try{ localStorage.setItem(LOG_KEY, JSON.stringify(timeLog)); }catch(e){}
+  timerDirty = false;
+  lastSave = Date.now();
+}
+function updateTimerPanel(){
+  const p = curPage();
+  document.getElementById("tToday").textContent = fmtKo(timeLog[todayKey()] || 0);
+  document.getElementById("tPage").textContent = fmtKo(p ? (p.time||0) : 0);
+  document.getElementById("tTotal").textContent = fmtKo(pages.reduce((a,x)=>a+(x.time||0), 0));
+}
+function updateTimerUI(counting){
+  const p = curPage();
+  const box = document.getElementById("timerBox");
+  document.getElementById("timerText").textContent = "⏱ " + fmtClock(p ? (p.time||0) : 0);
+  box.classList.toggle("on", !!counting);
+  box.classList.toggle("manual", !timerAuto);
+  document.getElementById("timerBtn").textContent = timerRunning ? "⏸" : "▶";
+  if(document.getElementById("timerPanel").classList.contains("open")) updateTimerPanel();
+}
+setInterval(()=>{
+  const now = Date.now();
+  const delta = (now - lastTick) / 1000;
+  lastTick = now;
+  const p = curPage();
+  const counting = !!p && (timerAuto ? (now - lastActivity <= IDLE_MS) : timerRunning);
+  if(counting && delta > 0 && delta <= 65){
+    p.time = Math.round(((p.time||0) + delta) * 100) / 100;
+    const k = todayKey();
+    timeLog[k] = Math.round(((timeLog[k]||0) + delta) * 100) / 100;
+    timerDirty = true;
+  }
+  updateTimerUI(counting);
+  if(timerDirty && now - lastSave > 15000) flushTimer();
+}, 1000);
+function markActivity(e){
+  if(e.target && (e.target.id==="editor" || e.target.id==="titleInput")) lastActivity = Date.now();
+}
+document.addEventListener("input", markActivity);
+document.addEventListener("keydown", markActivity);
+window.addEventListener("beforeunload", flushTimer);
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden) flushTimer(); });
+
+document.getElementById("timerBox").onclick = (e)=>{
+  togglePanel("timerPanel", e);
+  updateTimerPanel();
+};
+document.getElementById("timerBtn").onclick = (e)=>{
+  e.stopPropagation();
+  timerRunning = !timerRunning;
+  lastTick = Date.now();
+  updateTimerUI(timerRunning);
+};
+const autoChk = document.getElementById("timerAutoChk");
+autoChk.checked = timerAuto;
+autoChk.onchange = ()=>{
+  timerAuto = autoChk.checked;
+  timerRunning = false;
+  try{ localStorage.setItem(TIMER_KEY, JSON.stringify({auto:timerAuto})); }catch(e){}
+  updateTimerUI(false);
+};
+document.getElementById("timerResetBtn").onclick = ()=>{
+  const p = curPage();
+  if(!p){ return; }
+  if(!confirm("이 페이지의 작업 시간을 0으로 초기화할까요?")) return;
+  p.time = 0;
+  persist();
+  updateTimerUI(false);
+  updateTimerPanel();
+};
+updateTimerUI(false);
 
 // 다크모드 토글 (선택값 기억)
 const THEME_KEY = "writing-site-theme-v1";
