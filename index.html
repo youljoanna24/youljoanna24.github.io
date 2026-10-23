@@ -1,921 +1,860 @@
 <!DOCTYPE html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>무제_MUZE - 글쓰기 &amp; 발췌 노트</title>
+    <title>무제_MUZE - 글쓰기 및 발췌 아카이브</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Nanum+Myeongjo:wght@400;700&amp;family=Maru+Buri:wght@400;700&amp;family=Pretendard:wght@300;400;500;600;700&amp;family=Gowun+Dodum&amp;family=Dongle:wght@400;700&amp;family=Gamja+Flower&amp;family=Nanum+Pen+Script&amp;display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas for PNG Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- html2pdf for Direct PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Web Fonts -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Maru+Buri:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff0f3',
+                            100: '#ffe3e8',
+                            200: '#fccad3',
+                            300: '#f89eb1',
+                            400: '#f36886',
+                            500: '#e83e65',
+                            600: '#d3204c',
+                            700: '#b1143a',
+                            800: '#931434',
+                            900: '#7d1530',
+                        }
+                    },
                     fontFamily: {
                         sans: ['Pretendard', 'sans-serif'],
                         batang: ['Gowun Batang', 'serif'],
                         myeongjo: ['Nanum Myeongjo', 'serif'],
-                        maru: ['Maru Buri', 'serif'],
-                        dodum: ['Gowun Dodum', 'sans-serif'],
-                        pen: ['Nanum Pen Script', 'cursive'],
-                        dongle: ['Dongle', 'sans-serif'],
-                        gamja: ['Gamja Flower', 'cursive']
+                        maruburi: ['Maru Buri', 'serif'],
+                        dodum: ['Gowun Dodum', 'sans-serif']
                     }
                 }
             }
         }
     </script>
     <style>
-        .custom-scrollbar::-webkit-scrollbar {
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #fff8f9;
+        }
+        /* Custom Pink Scrollbar */
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
+        ::-webkit-scrollbar-track {
+            background: rgba(243, 104, 134, 0.05);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(203, 213, 225, 0.5);
-            border-radius: 9999px;
+        ::-webkit-scrollbar-thumb {
+            background: rgba(243, 104, 134, 0.25);
+            border-radius: 4px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(148, 163, 184, 0.8);
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(243, 104, 134, 0.45);
         }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.05); }
-        }
-        .animate-pulse-slow {
-            animation: pulse-slow 3s infinite ease-in-out;
+
+        /* Standard A4 Container for Image & PDF Export */
+        .a4-canvas-container {
+            width: 794px; /* Standard A4 width at 96DPI */
+            min-height: 1123px; /* Standard A4 height at 96DPI */
+            padding: 65px 75px;
+            box-sizing: border-box;
+            background: #ffffff;
+            color: #2b2b2b;
+            word-break: break-all;
+            white-space: pre-wrap;
+            line-height: 1.85;
+            font-size: 15px;
         }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Pretendard, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.left-3{left:0.75rem}.top-3{top:0.75rem}.z-10{z-index:10}.z-20{z-index:20}.z-30{z-index:30}.z-50{z-index:50}.col-span-full{grid-column:1 / -1}.mx-1{margin-left:0.25rem;margin-right:0.25rem}.my-3{margin-top:0.75rem;margin-bottom:0.75rem}.my-4{margin-top:1rem;margin-bottom:1rem}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.me-1\.5{margin-inline-end:0.375rem}.mt-0\.5{margin-top:0.125rem}.mt-4{margin-top:1rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-14{height:3.5rem}.h-28{height:7rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-screen{height:100vh}.max-h-\[90vh\]{max-height:90vh}.min-h-\[160px\]{min-height:160px}.min-h-\[320px\]{min-height:320px}.min-h-\[500px\]{min-height:500px}.w-5{width:1.25rem}.w-8{width:2rem}.w-80{width:20rem}.w-full{width:100%}.w-px{width:1px}.max-w-3xl{max-width:48rem}.max-w-lg{max-width:32rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.text-ellipsis{text-overflow:ellipsis}.break-keep{word-break:keep-all}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-emerald-700{--tw-border-opacity:1;border-color:rgb(4 120 87 / var(--tw-border-opacity, 1))}.border-green-300{--tw-border-opacity:1;border-color:rgb(134 239 172 / var(--tw-border-opacity, 1))}.border-indigo-300{--tw-border-opacity:1;border-color:rgb(165 180 252 / var(--tw-border-opacity, 1))}.border-orange-300{--tw-border-opacity:1;border-color:rgb(253 186 116 / var(--tw-border-opacity, 1))}.border-pink-100{--tw-border-opacity:1;border-color:rgb(252 231 243 / var(--tw-border-opacity, 1))}.border-pink-200{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.border-pink-300{--tw-border-opacity:1;border-color:rgb(249 168 212 / var(--tw-border-opacity, 1))}.border-pink-500{--tw-border-opacity:1;border-color:rgb(236 72 153 / var(--tw-border-opacity, 1))}.border-rose-100{--tw-border-opacity:1;border-color:rgb(255 228 230 / var(--tw-border-opacity, 1))}.border-rose-200{--tw-border-opacity:1;border-color:rgb(254 205 211 / var(--tw-border-opacity, 1))}.border-rose-200\/50{border-color:rgb(254 205 211 / 0.5)}.border-rose-200\/60{border-color:rgb(254 205 211 / 0.6)}.border-rose-400{--tw-border-opacity:1;border-color:rgb(251 113 133 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.border-white\/20{border-color:rgb(255 255 255 / 0.2)}.border-yellow-300{--tw-border-opacity:1;border-color:rgb(253 224 71 / var(--tw-border-opacity, 1))}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-emerald-900{--tw-bg-opacity:1;background-color:rgb(6 78 59 / var(--tw-bg-opacity, 1))}.bg-green-200{--tw-bg-opacity:1;background-color:rgb(187 247 208 / var(--tw-bg-opacity, 1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.bg-orange-100{--tw-bg-opacity:1;background-color:rgb(255 237 213 / var(--tw-bg-opacity, 1))}.bg-pink-100{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.bg-pink-200{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.bg-pink-50{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.bg-pink-500{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.bg-rose-100\/60{background-color:rgb(255 228 230 / 0.6)}.bg-rose-100\/70{background-color:rgb(255 228 230 / 0.7)}.bg-rose-200{--tw-bg-opacity:1;background-color:rgb(254 205 211 / var(--tw-bg-opacity, 1))}.bg-rose-400{--tw-bg-opacity:1;background-color:rgb(251 113 133 / var(--tw-bg-opacity, 1))}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.bg-rose-50\/50{background-color:rgb(255 241 242 / 0.5)}.bg-rose-50\/80{background-color:rgb(255 241 242 / 0.8)}.bg-slate-700{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/50{background-color:rgb(255 255 255 / 0.5)}.bg-white\/60{background-color:rgb(255 255 255 / 0.6)}.bg-white\/80{background-color:rgb(255 255 255 / 0.8)}.bg-yellow-200{--tw-bg-opacity:1;background-color:rgb(254 240 138 / var(--tw-bg-opacity, 1))}.bg-rose-200\/70{background-color:rgb(254 205 211 / 0.7)}.bg-white\/40{background-color:rgb(255 255 255 / 0.4)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-rose-400{--tw-gradient-to:#fb7185 var(--tw-gradient-to-position)}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-12{padding-top:3rem;padding-bottom:3rem}.pb-2{padding-bottom:0.5rem}.pb-20{padding-bottom:5rem}.pb-4{padding-bottom:1rem}.pl-9{padding-left:2.25rem}.pr-4{padding-right:1rem}.pt-2{padding-top:0.5rem}.pt-4{padding-top:1rem}.pr-2{padding-right:0.5rem}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Pretendard, sans-serif}.font-serif{font-family:ui-serif, Georgia, Cambria, "Times New Roman", Times, serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.text-amber-900{--tw-text-opacity:1;color:rgb(120 53 15 / var(--tw-text-opacity, 1))}.text-pink-500{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133 / var(--tw-text-opacity, 1))}.text-rose-500{--tw-text-opacity:1;color:rgb(244 63 94 / var(--tw-text-opacity, 1))}.text-rose-500\/80{color:rgb(244 63 94 / 0.8)}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-rose-800{--tw-text-opacity:1;color:rgb(159 18 57 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175 / var(--tw-text-opacity, 1))}.text-rose-900{--tw-text-opacity:1;color:rgb(136 19 55 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.line-through{-webkit-text-decoration-line:line-through;text-decoration-line:line-through}.opacity-40{opacity:0.4}.opacity-90{opacity:0.9}.opacity-0{opacity:0}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:scale-110:hover{--tw-scale-x:1.1;--tw-scale-y:1.1;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-rose-200:hover{--tw-border-opacity:1;border-color:rgb(254 205 211 / var(--tw-border-opacity, 1))}.hover\:bg-pink-200:hover{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-600:hover{--tw-bg-opacity:1;background-color:rgb(219 39 119 / var(--tw-bg-opacity, 1))}.hover\:bg-rose-100:hover{--tw-bg-opacity:1;background-color:rgb(255 228 230 / var(--tw-bg-opacity, 1))}.hover\:bg-rose-500:hover{--tw-bg-opacity:1;background-color:rgb(244 63 94 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-100:hover{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.hover\:bg-white:hover{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.hover\:text-pink-600:hover{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.hover\:text-slate-600:hover{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.hover\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-rose-400:focus{--tw-border-opacity:1;border-color:rgb(251 113 133 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-pink-400:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(244 114 182 / var(--tw-ring-opacity, 1))}.focus\:ring-rose-400:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(251 113 133 / var(--tw-ring-opacity, 1))}.group:hover .group-hover\:opacity-100{opacity:1}.dark\:border-slate-700:is(.dark *){--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.dark\:border-slate-700\/50:is(.dark *){border-color:rgb(51 65 85 / 0.5)}.dark\:border-slate-800:is(.dark *){--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity, 1))}.dark\:bg-rose-400:is(.dark *){--tw-bg-opacity:1;background-color:rgb(251 113 133 / var(--tw-bg-opacity, 1))}.dark\:bg-slate-700:is(.dark *){--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.dark\:bg-slate-800:is(.dark *){--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.dark\:bg-slate-900:is(.dark *){--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.dark\:bg-slate-900\/60:is(.dark *){background-color:rgb(15 23 42 / 0.6)}.dark\:bg-slate-900\/80:is(.dark *){background-color:rgb(15 23 42 / 0.8)}.dark\:bg-slate-900\/85:is(.dark *){background-color:rgb(15 23 42 / 0.85)}.dark\:bg-slate-950\/50:is(.dark *){background-color:rgb(2 6 23 / 0.5)}.dark\:bg-slate-800\/40:is(.dark *){background-color:rgb(30 41 59 / 0.4)}.dark\:text-rose-200:is(.dark *){--tw-text-opacity:1;color:rgb(254 205 211 / var(--tw-text-opacity, 1))}.dark\:text-rose-300:is(.dark *){--tw-text-opacity:1;color:rgb(253 164 175 / var(--tw-text-opacity, 1))}.dark\:text-rose-300\/80:is(.dark *){color:rgb(253 164 175 / 0.8)}.dark\:text-rose-400:is(.dark *){--tw-text-opacity:1;color:rgb(251 113 133 / var(--tw-text-opacity, 1))}.dark\:text-slate-100:is(.dark *){--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity, 1))}.dark\:text-slate-200:is(.dark *){--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity, 1))}.dark\:text-slate-300:is(.dark *){--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.dark\:text-slate-400:is(.dark *){--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.dark\:text-slate-900:is(.dark *){--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.dark\:text-rose-500:is(.dark *){--tw-text-opacity:1;color:rgb(244 63 94 / var(--tw-text-opacity, 1))}.dark\:text-slate-500:is(.dark *){--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.dark\:hover\:border-slate-700:hover:is(.dark *){--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.dark\:hover\:bg-slate-700:hover:is(.dark *){--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.dark\:hover\:bg-slate-800:hover:is(.dark *){--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}@media (min-width: 640px){.sm\:flex{display:flex}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:p-12{padding:3rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:hidden{display:none}}</style></head>
-<body class="bg-rose-50 text-slate-800 font-sans h-screen flex overflow-hidden transition-colors duration-300" id="appBody">
+</head>
+<body class="h-screen flex flex-col overflow-hidden text-gray-800 bg-[#FFF5F7]">
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-r border-rose-100 dark:border-slate-800 flex flex-col z-20 transition-all duration-300">
-        <!-- Sidebar Header -->
-        <div class="p-4 border-b border-rose-100 dark:border-slate-800 flex items-center justify-between">
-            <!-- Theme Toggle & Stats -->
-            <div class="flex items-center space-x-3">
-                <span id="timerDisplay" class="bg-pink-100 text-pink-700 font-mono px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center shadow-inner">
-                    <i class="fas me-1.5 fa-clock text-pink-500 animate-pulse"></i><span id="timerText">00:00:01</span>
-                </span>
-                <button id="themeBtn" class="p-2 rounded-lg bg-pink-100 text-pink-700 hover:bg-pink-200 transition" title="테마 변경">
-                    <i class="fas fa-palette"></i>
-                </button>
-                <button onclick="toggleSidebar()" title="사이드바 접기" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+    <!-- Header -->
+    <header class="h-14 bg-white/90 backdrop-blur border-b border-brand-100 flex items-center justify-between px-4 z-20 shrink-0 shadow-sm">
+        <div class="flex items-center gap-3">
+            <button id="toggle-sidebar-btn" class="p-2 text-brand-700 hover:text-brand-900 hover:bg-brand-50 rounded-lg transition-colors">
+                <i data-lucide="panel-left-open" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-brand-400 inline-block ring-4 ring-brand-100"></span>
+                <h1 class="font-bold text-lg tracking-tight text-brand-900">무제_MUZE</h1>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-600 border border-brand-200 font-medium">집필 노트</span>
             </div>
         </div>
 
-        <!-- Search & Tab Navigation -->
-        <div class="p-4 space-y-3 border-b border-rose-100 dark:border-slate-800">
+        <!-- Timer & Export Actions -->
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:flex items-center gap-2 bg-brand-50/80 border border-brand-200/60 px-3.5 py-1.5 rounded-full text-xs text-brand-800 font-medium shadow-xs">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-500 animate-pulse"></i>
+                <span>집필 시간:</span>
+                <span id="active-timer-display" class="font-mono font-semibold text-brand-900">00:00:00</span>
+                <span id="timer-status-dot" class="w-2 h-2 rounded-full bg-gray-300 ml-1" title="휴식 중"></span>
+            </div>
+
+            <!-- Export / Save Dropdown -->
             <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
-                <input type="text" id="searchInput" placeholder="노트 검색..." oninput="filterNotes(this.value)" class="w-full pl-9 pr-4 py-2 bg-rose-50/50 dark:bg-slate-800 border border-rose-200/60 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 dark:text-slate-200">
-            </div>
-            <div class="flex bg-rose-100/60 dark:bg-slate-800 p-1 rounded-xl text-xs font-medium">
-                <button onclick="switchTab('notes')" id="tabNotesBtn" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-rose-800 dark:text-rose-200 shadow-sm transition">글쓰기 노트</button>
-                <button onclick="switchTab('excerpts')" id="tabExcerptsBtn" class="flex-1 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 transition">발췌 보관함</button>
-            </div>
-        </div>
-
-        <!-- List Area (Notes or Excerpts) -->
-        <div id="notesListContainer" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2"><div class="p-3 rounded-2xl cursor-pointer transition flex items-center justify-between group bg-rose-200/70 dark:bg-slate-800 text-rose-900 dark:text-rose-200 font-semibold shadow-xs">
-                    <div class="truncate flex-1 pr-2">
-                        <p class="text-sm truncate">첫 번째 노트</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">여기에 소설, 에세이 또는 메모를 자유롭게 작성하세요.</p>
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition">
-                        <button onclick="event.stopPropagation(); duplicateNote('1')" title="복제" class="p-1 rounded hover:bg-white dark:hover:bg-slate-700 text-slate-500"><i class="fa-solid fa-copy text-xs"></i></button>
-                        <button onclick="event.stopPropagation(); deleteNoteWithUndo('1')" title="삭제" class="p-1 rounded hover:bg-white dark:hover:bg-slate-700 text-rose-500"><i class="fa-solid fa-trash text-xs"></i></button>
-                    </div>
-                </div></div>
-
-        <div id="excerptsListContainer" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3 hidden">
-                    <div class="col-span-full text-center py-12 text-slate-400 bg-white/40 dark:bg-slate-800/40 rounded-2xl border border-dashed border-rose-200 dark:border-slate-700">
-                        <i class="fas fa-quote-right text-3xl mb-2 text-rose-300 dark:text-rose-500"></i>
-                        <p class="text-sm">저장된 발췌 카드가 없습니다.</p>
-                    </div></div>
-
-        <!-- Sidebar Footer / Theme Switcher -->
-        <div class="p-3 border-t border-rose-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
-        <!-- Tab Navigation -->
-        <div class="flex border-b border-pink-100 bg-white/50 backdrop-blur">
-            <button id="tabWrite" class="flex-1 py-3.5 px-4 font-bold text-center text-pink-600 border-b-2 border-pink-500 flex items-center justify-center gap-2 transition">
-                <i class="fas fa-pen-fancy"></i> 집필 노트
-            </button>
-            <button id="tabExcerpts" class="flex-1 py-3.5 px-4 font-medium text-center text-slate-500 hover:text-pink-600 flex items-center justify-center gap-2 transition">
-                <i class="fas fa-quote-right"></i> 발췌 카드
-            </button>
-            <button id="tabStats" class="flex-1 py-3.5 px-4 font-medium text-center text-slate-500 hover:text-pink-600 flex items-center justify-center gap-2 transition">
-                <i class="fas fa-chart-line"></i> 통계 &amp; 백업
-            </button>
-        </div>
-    </div></aside>
-
-    <!-- Main Editor Area -->
-    <main class="flex-1 flex flex-col h-screen relative bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm overflow-hidden">
-        <!-- Top Navigation / Toolbar -->
-        <header class="h-14 border-b border-rose-100 dark:border-slate-800 px-4 flex items-center justify-between bg-white/80 dark:bg-slate-900/85 z-10">
-            <div class="flex items-center space-x-3">
-                <button onclick="toggleSidebar()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-rose-100 dark:hover:bg-slate-800 transition md:hidden">
-                    <i class="fa-solid fa-bars"></i>
+                <button id="export-menu-btn" class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium px-4 py-1.5 rounded-xl shadow-sm transition-all active:scale-95">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>저장 / 내보내기</span>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-80"></i>
                 </button>
-                <div class="flex items-center space-x-2">
-                    <select id="fontSelector" onchange="changeEditorFont(this.value)" class="text-xs bg-rose-50 dark:bg-slate-800 border border-rose-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-700 dark:text-slate-200 focus:outline-none">
-                        <option value="font-sans">프리텐다드 (기본)</option>
-                        <option value="font-batang">고운바탕 (세리프)</option>
-                        <option value="font-myeongjo">나눔명조</option>
-                        <option value="font-maru">마루부리</option>
-                        <option value="font-dodum">고운돋움</option>
-                        <option value="font-pen">나눔손글씨 펜</option>
-                        <option value="font-dongle">동글 (귀여운체)</option>
-                        <option value="font-gamja">감자꽃체</option>
+
+                <div id="export-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-brand-100 py-2 z-50 text-sm">
+                    <div class="px-3.5 py-1.5 text-xs font-semibold text-brand-400 tracking-wider uppercase border-b border-brand-50">현재 문서 내보내기</div>
+                    
+                    <button id="export-a4-png-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-2.5 transition-colors">
+                        <i data-lucide="image" class="w-4 h-4 text-brand-500"></i>
+                        <div>
+                            <div class="font-medium text-gray-800">PNG 이미지 저장 (A4 규격)</div>
+                            <div class="text-[11px] text-gray-400">우측 잘림 없는 선명한 A4 이미지</div>
+                        </div>
+                    </button>
+                    
+                    <button id="export-pdf-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-2.5 transition-colors">
+                        <i data-lucide="file-text" class="w-4 h-4 text-brand-500"></i>
+                        <div>
+                            <div class="font-medium text-gray-800">PDF 파일 다운로드</div>
+                            <div class="text-[11px] text-gray-400">A4 단일 문서로 즉시 저장</div>
+                        </div>
+                    </button>
+                    
+                    <button id="export-txt-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-2.5 transition-colors">
+                        <i data-lucide="file-type-2" class="w-4 h-4 text-brand-500"></i>
+                        <div>
+                            <div class="font-medium text-gray-800">TXT 텍스트 저장</div>
+                            <div class="text-[11px] text-gray-400">일반 텍스트 문서 저장</div>
+                        </div>
+                    </button>
+                    
+                    <div class="my-1 border-t border-brand-50"></div>
+                    <div class="px-3.5 py-1.5 text-xs font-semibold text-brand-400 tracking-wider uppercase">데이터 백업</div>
+                    <button id="backup-json-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-3 transition-colors">
+                        <i data-lucide="database" class="w-4 h-4 text-gray-400"></i>
+                        <span>전체 데이터 백업 (JSON)</span>
+                    </button>
+                    <button id="restore-json-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-3 transition-colors">
+                        <i data-lucide="folder-up" class="w-4 h-4 text-gray-400"></i>
+                        <span>백업 파일 불러오기</span>
+                    </button>
+                    <input type="file" id="json-file-input" class="hidden" accept=".json">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-72 bg-white/80 backdrop-blur border-r border-brand-100 flex flex-col shrink-0 transition-all duration-300 z-10">
+            <!-- New Note Button & Search -->
+            <div class="p-3 border-b border-brand-50 space-y-2">
+                <button id="new-note-btn" class="w-full bg-brand-50 hover:bg-brand-100 text-brand-700 font-medium py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm border border-brand-200/50 shadow-2xs">
+                    <i data-lucide="plus" class="w-4 h-4 text-brand-500"></i>
+                    <span>새 집필 노트</span>
+                </button>
+                <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-brand-300"></i>
+                    <input type="text" id="search-input" placeholder="노트 및 발췌 검색..." class="w-full pl-8 pr-3 py-1.5 bg-brand-50/40 border border-brand-100 rounded-lg text-xs focus:outline-none focus:border-brand-300 text-gray-700 placeholder-brand-300">
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-brand-100 bg-brand-50/30 text-xs font-medium">
+                <button id="tab-notes-btn" class="flex-1 py-2.5 text-center text-brand-600 border-b-2 border-brand-500 font-semibold flex items-center justify-center gap-1.5">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                    <span>노트목차</span>
+                </button>
+                <button id="tab-excerpts-btn" class="flex-1 py-2.5 text-center text-gray-400 hover:text-brand-600 border-b-2 border-transparent flex items-center justify-center gap-1.5">
+                    <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+                    <span>발췌 아카이브</span>
+                </button>
+            </div>
+
+            <!-- Notes List View -->
+            <div id="notes-list-container" class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Dynamic Notes Injected Here -->
+            </div>
+
+            <!-- Excerpts List View -->
+            <div id="excerpts-list-container" class="hidden flex-1 overflow-y-auto p-2 space-y-2">
+                <!-- Dynamic Excerpts Injected Here -->
+            </div>
+
+            <!-- Sidebar Footer Status -->
+            <div class="p-3 border-t border-brand-100 bg-brand-50/20 text-xs text-brand-600/70 flex justify-between items-center font-medium">
+                <span id="total-stats-count">노트 0개 | 발췌 0개</span>
+                <span class="text-[10px] text-brand-400">무제_MUZE</span>
+            </div>
+        </aside>
+
+        <!-- Main Editor -->
+        <main class="flex-1 flex flex-col bg-white overflow-hidden relative">
+
+            <!-- Toolbar / Font Controls -->
+            <div class="h-11 border-b border-brand-100 px-4 flex items-center justify-between bg-white text-xs gap-3 shrink-0 overflow-x-auto shadow-2xs">
+                <div class="flex items-center gap-2">
+                    <span class="text-brand-400 font-medium">글꼴:</span>
+                    <select id="font-family-select" class="bg-brand-50/50 border border-brand-100 text-gray-700 rounded-lg px-2.5 py-1 focus:outline-none focus:border-brand-400 text-xs">
+                        <option value="font-sans">Pretendard (기본 산세리프)</option>
+                        <option value="font-batang">고운바탕 (감성 소설)</option>
+                        <option value="font-myeongjo">나눔명조 (고전 수필)</option>
+                        <option value="font-maruburi">마루부리 (정갈한 문체)</option>
+                        <option value="font-dodum">고운돋움 (깔끔한 돋움)</option>
+                    </select>
+
+                    <span class="text-brand-400 font-medium ml-2">크기:</span>
+                    <select id="font-size-select" class="bg-brand-50/50 border border-brand-100 text-gray-700 rounded-lg px-2.5 py-1 focus:outline-none focus:border-brand-400 text-xs">
+                        <option value="text-sm">작게 (14px)</option>
+                        <option value="text-base" selected>보통 (16px)</option>
+                        <option value="text-lg">크게 (18px)</option>
+                        <option value="text-xl">매우 크게 (20px)</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- Formatting Tools -->
-            <div class="hidden sm:flex items-center space-x-1 bg-rose-50/80 dark:bg-slate-800 p-1 rounded-xl border border-rose-200/50 dark:border-slate-700 text-xs">
-                <button onclick="formatText('bold')" title="굵게" class="p-1.5 px-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold transition"><i class="fa-solid fa-bold"></i></button>
-                <button onclick="formatText('italic')" title="기울임" class="p-1.5 px-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 italic transition"><i class="fa-solid fa-italic"></i></button>
-                <button onclick="formatText('underline')" title="밑줄" class="p-1.5 px-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 underline transition"><i class="fa-solid fa-underline"></i></button>
-                <button onclick="formatText('strikeThrough')" title="취소선" class="p-1.5 px-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 line-through transition"><i class="fa-solid fa-strikethrough"></i></button>
-                <div class="w-px h-4 bg-rose-200 dark:bg-slate-700 mx-1"></div>
-                <button onclick="applyHighlight('#fde047')" title="노란 형광펜" class="w-5 h-5 rounded bg-yellow-200 border border-yellow-300 hover:scale-110 transition shadow-xs"></button>
-                <button onclick="applyHighlight('#fbcfe8')" title="핑크 형광펜" class="w-5 h-5 rounded bg-pink-200 border border-pink-300 hover:scale-110 transition shadow-xs"></button>
-                <button onclick="applyHighlight('#bbf7d0')" title="초록 형광펜" class="w-5 h-5 rounded bg-green-200 border border-green-300 hover:scale-110 transition shadow-xs"></button>
-            </div>
-
-            <!-- Right Top Actions -->
-            <div class="flex items-center space-x-2">
-                <button onclick="openExcerptModalFromSelection()" id="excerptBtn" class="hidden items-center space-x-1.5 px-3 py-1.5 bg-rose-400 hover:bg-rose-500 text-white rounded-xl text-xs font-medium shadow-sm transition">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>발췌 카드 만들기</span>
-                </button>
-                <button onclick="toggleFocusMode()" id="focusBtn" title="집중 모드 (Esc / Alt+F)" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-rose-100 dark:hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-expand"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Editor Scroll Container -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-12 flex justify-center" id="editorScrollArea">
-            <div class="w-full max-w-3xl flex flex-col space-y-4 pb-20">
-                <!-- Title Input -->
-                <input type="text" id="noteTitleInput" placeholder="노트의 제목을 입력하세요..." oninput="updateActiveNoteTitle(this.value)" class="text-2xl sm:text-3xl font-bold bg-transparent border-b border-transparent hover:border-rose-200 dark:hover:border-slate-700 focus:border-rose-400 focus:outline-none pb-2 text-slate-800 dark:text-slate-100 transition">
-                
-                <!-- Content Editable Area -->
-                <div id="editorContent" contenteditable="true" oninput="handleEditorInput()" onmouseup="checkSelection()" onkeyup="checkSelection()" class="flex-1 min-h-[500px] bg-transparent outline-none text-slate-700 dark:text-slate-200 leading-relaxed text-base sm:text-lg">여기에 소설, 에세이 또는 메모를 자유롭게 작성하세요.</div>
-            </div>
-        </div>
-
-        <!-- Floating Selection Excerpt Button -->
-        <div id="floatingExcerptBtn" class="absolute hidden z-30 transition-all duration-200">
-            <button onclick="openExcerptModalFromSelection()" class="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-900 text-white dark:bg-rose-400 dark:text-slate-900 rounded-full text-xs font-semibold shadow-lg hover:scale-105 transition">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span>발췌 카드로 만들기</span>
-            </button>
-        </div>
-
-        <!-- Bottom Footer Stats Bar -->
-        <footer class="h-10 border-t border-rose-100 dark:border-slate-800 px-6 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-slate-900/60">
-            <div class="flex items-center space-x-4">
-                <span id="wordCount">단어 7개</span>
-                <span id="charCount">글자 30자 (공백포함)</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span id="saveStatus" class="text-rose-600 dark:text-rose-400 font-medium">저장됨 ✓</span>
-            </div>
-        </footer>
-    </main>
-
-    <!-- Excerpt Card Customizer Modal -->
-    <div id="excerptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-rose-100 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div class="flex items-center justify-between pb-4 border-b border-rose-100 dark:border-slate-800">
-                <div class="flex items-center space-x-2 text-rose-500">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <h3 class="font-bold text-slate-800 dark:text-slate-100">예쁜 발췌 카드 꾸미기</h3>
-                </div>
-                <button onclick="closeExcerptModal()" class="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Card Preview Area -->
-            <div class="py-6 flex justify-center">
-                <div id="excerptCardPreview" class="w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] bg-rose-100/70 text-slate-800" style="background: linear-gradient(135deg, #ffe4e6 0%, #fbcfe8 100%);">
-                    <div class="text-rose-400 dark:text-rose-300 text-2xl font-serif">“</div>
-                    <p id="previewText" class="text-sm sm:text-base leading-relaxed font-serif text-center my-4 px-2 select-none overflow-hidden text-ellipsis">"간직하고 싶은 문장을 입력하세요..."</p>
-                    <div class="text-rose-400 dark:text-rose-300 text-2xl font-serif text-right">”</div>
-                    <div class="pt-4 border-t border-rose-200/50 dark:border-slate-700/50 flex items-end justify-between text-xs">
-                        <div>
-                            <p id="previewSource" class="font-semibold text-slate-700 dark:text-slate-200">출처 / 책 제목</p>
-                            <p id="previewHashtags" class="text-rose-500/80 dark:text-rose-300/80 mt-0.5">#글귀 #발췌</p>
-                        </div>
-                        <div class="flex items-center space-x-1 text-rose-600 dark:text-rose-400 font-medium">
-                            <span id="previewAuthor">무제_MUZE</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Customization Controls -->
-            <div class="space-y-4 pt-2">
-                <!-- Theme Color Selector -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">테마 칼라 선택</label>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="setExcerptTheme('rose')" class="w-8 h-8 rounded-full bg-rose-200 border-2 border-rose-400 shadow-sm" title="핑크 로즈"></button>
-                        <button onclick="setExcerptTheme('cream')" class="w-8 h-8 rounded-full bg-amber-100 border-2 border-amber-300 shadow-sm" title="따뜻한 크림"></button>
-                        <button onclick="setExcerptTheme('forest')" class="w-8 h-8 rounded-full bg-emerald-900 border-2 border-emerald-700 shadow-sm" title="포레스트 그린"></button>
-                        <button onclick="setExcerptTheme('lavender')" class="w-8 h-8 rounded-full bg-indigo-100 border-2 border-indigo-300 shadow-sm" title="라벤더"></button>
-                        <button onclick="setExcerptTheme('sunset')" class="w-8 h-8 rounded-full bg-orange-100 border-2 border-orange-300 shadow-sm" title="선셋 오렌지"></button>
-                        <button onclick="setExcerptTheme('dark')" class="w-8 h-8 rounded-full bg-slate-900 border-2 border-slate-700 shadow-sm" title="모던 다크"></button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">출처 / 책 제목</label>
-                        <input type="text" id="modalSourceInput" oninput="updateCardMeta()" placeholder="예: 너라서 좋아하는 거야." class="w-full px-3 py-2 bg-rose-50/50 dark:bg-slate-800 border border-rose-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-rose-400 dark:text-slate-200">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">작가명 (Author)</label>
-                        <input type="text" id="modalAuthorInput" oninput="updateCardMeta()" placeholder="예: 무제_MUZE" value="무제_MUZE" class="w-full px-3 py-2 bg-rose-50/50 dark:bg-slate-800 border border-rose-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-rose-400 dark:text-slate-200">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">해시태그</label>
-                    <input type="text" id="modalHashtagInput" oninput="updateCardMeta()" placeholder="예: #글귀 #발췌 #사랑" value="#글귀 #발췌" class="w-full px-3 py-2 bg-rose-50/50 dark:bg-slate-800 border border-rose-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-rose-400 dark:text-slate-200">
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center space-x-3 pt-4 border-t border-rose-100 dark:border-slate-800">
-                <!-- Excerpt Add Modal Trigger -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fas fa-bookmark text-pink-500"></i> 수집된 발췌문
-                    </h2>
-                    <button id="openExcerptModalBtn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition flex items-center gap-2">
-                        <i class="fas fa-plus"></i> 새 발췌 카드
+                <div class="flex items-center gap-3">
+                    <button id="extract-selection-btn" class="flex items-center gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 px-3 py-1 rounded-lg text-xs font-medium transition-colors border border-brand-200/80">
+                        <i data-lucide="quote" class="w-3.5 h-3.5 text-brand-500"></i>
+                        <span>선택영역 발췌 생성</span>
                     </button>
+                    
+                    <div class="text-brand-300 border-l border-brand-100 pl-3 flex items-center gap-3">
+                        <span>글자 수: <strong id="char-count" class="text-brand-800">0</strong>자</span>
+                        <span>단어 수: <strong id="word-count" class="text-brand-800">0</strong>개</span>
+                    </div>
                 </div>
-    <!-- Excerpt Creation Modal -->
-    <div id="excerptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-pink-100 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fas fa-quote-left text-pink-500"></i> 발췌 카드 생성
-                </h3>
-                <button id="closeExcerptModalBtn" class="text-slate-400 hover:text-slate-600">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
             </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">발췌 내용</label>
-                    <textarea id="excerptTextInput" class="w-full p-3 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm h-28" placeholder="간직하고 싶은 문장을 입력하세요..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">출처 / 작가명</label>
-                    <input type="text" id="excerptAuthorInput" class="w-full p-2.5 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm" value="무제_MUZE" placeholder="무제_MUZE">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">카드 배경 스타일</label>
-                    <div class="flex gap-2">
-                        <button class="style-select-btn border-2 border-pink-500 rounded-lg p-2 flex-1 bg-pink-50 text-xs text-pink-700 font-semibold" data-style="pink">로맨틱 핑크</button>
-                        <button class="style-select-btn border border-slate-200 rounded-lg p-2 flex-1 bg-slate-800 text-xs text-white font-semibold" data-style="dark">모던 다크</button>
-                        <button class="style-select-btn border border-slate-200 rounded-lg p-2 flex-1 bg-amber-50 text-xs text-amber-900 font-semibold" data-style="warm">클래식 웜</button>
-                    </div>
-                </div>
 
-                <!-- Preview Area -->
-                <div class="mt-4">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">카드 미리보기</label>
-                    <div id="excerptCardPreview" class="p-6 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-400 text-white shadow-lg min-h-[160px] flex flex-col justify-between transition-all">
-                        <i class="fas fa-quote-left opacity-40 text-xl"></i>
-                        <p id="previewText" class="text-sm my-3 italic leading-relaxed break-keep font-serif">"간직하고 싶은 문장을 입력하세요..."</p>
-                        <div class="text-right text-xs opacity-90 border-t border-white/20 pt-2 font-medium" id="previewAuthor">
-                            무제_MUZE
-                        </div>
-                    </div>
+            <!-- Editor Document Page Container -->
+            <div class="flex-1 overflow-y-auto p-6 md:p-12 lg:p-14 flex justify-center bg-[#FFF8F9]">
+                <!-- Document Page Surface -->
+                <div class="w-full max-w-3xl bg-white min-h-[842px] shadow-sm border border-brand-100/70 rounded-2xl p-8 sm:p-14 flex flex-col">
+                    <!-- Title Input -->
+                    <input type="text" id="note-title-input" placeholder="제목 없는 집필 노트" class="w-full text-2xl sm:text-3xl font-bold border-b border-transparent hover:border-brand-100 focus:border-brand-300 focus:outline-none pb-3 mb-6 transition-colors bg-transparent text-gray-900 placeholder-brand-200">
+                    
+                    <!-- Content Input -->
+                    <textarea id="note-content-input" placeholder="이곳에 자유롭게 글을 작성하세요. 원하는 문장을 드래그하여 발췌 카드로 보관할 수 있습니다..." class="w-full flex-1 resize-none bg-transparent focus:outline-none leading-relaxed text-gray-800 font-sans text-base min-h-[500px]" spellcheck="false"></textarea>
                 </div>
+            </div>
 
-                <div class="flex gap-2 pt-2">
-                    <button id="saveExcerptBtn" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-2.5 rounded-xl text-sm font-bold shadow-md transition">
-                        저장하기
-                    </button>
-                    <button id="downloadCardBtn" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-md transition flex items-center gap-1.5">
-                        <i class="fas fa-download"></i> PNG
-                    </button>
+            <!-- Floating Selection Tooltip -->
+            <div id="selection-tooltip" class="hidden absolute bg-brand-900 text-white text-xs px-3.5 py-2 rounded-xl shadow-xl flex items-center gap-2 z-30 cursor-pointer hover:bg-brand-800 transition-all border border-brand-700">
+                <i data-lucide="quote" class="w-3.5 h-3.5 text-brand-300"></i>
+                <span>발췌문 카드로 만들기</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Render Container for Accurate A4 PNG/PDF Output -->
+    <div class="fixed left-[-9999px] top-[-9999px] overflow-hidden">
+        <div id="printable-a4-area" class="a4-canvas-container font-sans">
+            <div class="border-b-2 border-brand-400 pb-4 mb-8 flex justify-between items-end">
+                <div>
+                    <h1 id="render-title" class="text-2xl font-bold text-gray-900 mb-1">제목</h1>
                 </div>
+                <div class="text-right text-xs text-brand-300 font-mono" id="render-date">
+                    2026. 10. 23.
+                </div>
+            </div>
+            <!-- Render Content with Full Whitespace Preservation -->
+            <div id="render-content" class="text-gray-800 text-base leading-relaxed whitespace-pre-wrap break-words">
+                내용
+            </div>
+            <div class="mt-16 pt-4 border-t border-brand-100 text-center text-xs text-brand-300 font-medium">
+                무제_MUZE
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- Excerpt Modal -->
+    <div id="excerpt-modal" class="hidden fixed inset-0 bg-brand-950/20 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-brand-100 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-brand-900 flex items-center gap-2">
+                    <i data-lucide="quote" class="w-4 h-4 text-brand-500"></i>
+                    <span>새 발췌 카드 생성</span>
+                </h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Excerpt Card Preview Target -->
+            <div id="excerpt-card-preview" class="p-6 rounded-xl bg-gradient-to-br from-brand-50 to-pink-50/60 border border-brand-100/80 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center">
+                <p id="modal-excerpt-text" class="text-gray-800 font-batang italic text-base leading-relaxed mb-3">
+                    "발췌된 문장이 여기에 표시됩니다."
+                </p>
+                <div class="text-xs text-brand-600 font-medium">
+                    — <span id="modal-excerpt-author">무제_MUZE</span>
+                </div>
+            </div>
+
+            <!-- Inputs -->
+            <div class="space-y-3 mb-6">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">출처 / 작성자</label>
+                    <input type="text" id="modal-author-input" value="무제_MUZE" class="w-full px-3 py-2 border border-brand-100 rounded-lg text-xs focus:outline-none focus:border-brand-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">카드 배경 테마</label>
+                    <div class="flex gap-2">
+                        <button data-theme="pink" class="theme-btn w-7 h-7 rounded-full bg-gradient-to-br from-pink-100 to-brand-100 border-2 border-brand-400"></button>
+                        <button data-theme="clean" class="theme-btn w-7 h-7 rounded-full bg-white border border-gray-300"></button>
+                        <button data-theme="dark" class="theme-btn w-7 h-7 rounded-full bg-gray-900 border border-gray-800"></button>
+                        <button data-theme="warm" class="theme-btn w-7 h-7 rounded-full bg-amber-50 border border-amber-200"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="save-excerpt-btn" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs">
+                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    <span>아카이브에 저장</span>
+                </button>
+                <button id="download-excerpt-card-btn" class="bg-brand-50 hover:bg-brand-100 text-brand-700 font-medium px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center gap-1.5 border border-brand-200/60">
+                    <i data-lucide="image" class="w-4 h-4"></i>
+                    <span>카드 이미지 저장</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Logic -->
     <script>
         // State Management
         let state = {
-            documents: JSON.parse(localStorage.getItem('muze_docs')) || [
-                { id: '1', title: '첫 번째 원고', content: '여기에 소설, 에세이 또는 메모를 자유롭게 작성하세요.', font: 'Inter', updatedAt: new Date().toISOString() }
-            ],
-            currentDocId: '1',
-            excerpts: JSON.parse(localStorage.getItem('muze_excerpts')) || [],
+            notes: [],
+            excerpts: [],
+            activeNoteId: null,
+            activeTab: 'notes',
             timerSeconds: 0,
-            timerRunning: true,
-            cardStyle: 'pink'
+            isTimerActive: false,
+            idleTimer: null
         };
 
-        // Global Variables
-        let notes = JSON.parse(localStorage.getItem('muze_notes')) || [
-            { id: '1', title: '첫 번째 노트', content: '여기에 소설, 에세이 또는 메모를 자유롭게 작성하세요.', updatedAt: Date.now() }
-        ];
-        let activeNoteId = notes[0] ? notes[0].id : null;
-        let excerpts = state.excerpts;
-        let currentTheme = 'rose';
-        let currentExcerptTheme = 'rose';
-        let secondsElapsed = 0;
-        let isIdle = false;
-        let lastActivityTime = Date.now();
-        let timerInterval = null;
-
         // DOM Elements
-        const editor = document.getElementById('editorContent');
-        const docTitleInput = document.getElementById('noteTitleInput');
-        const excerptGrid = document.getElementById('excerptsListContainer');
-        const excerptTextInput = document.getElementById('excerptTextInput');
-        const excerptAuthorInput = document.getElementById('excerptAuthorInput');
-        const previewText = document.getElementById('previewText');
-        const previewAuthor = document.getElementById('previewAuthor');
-        const excerptCardPreview = document.getElementById('excerptCardPreview');
+        const notesListContainer = document.getElementById('notes-list-container');
+        const excerptsListContainer = document.getElementById('excerpts-list-container');
+        const noteTitleInput = document.getElementById('note-title-input');
+        const noteContentInput = document.getElementById('note-content-input');
+        const charCountEl = document.getElementById('char-count');
+        const wordCountEl = document.getElementById('word-count');
+        const activeTimerDisplay = document.getElementById('active-timer-display');
+        const timerStatusDot = document.getElementById('timer-status-dot');
+        const totalStatsCount = document.getElementById('total-stats-count');
 
-        // Timer Functionality
-        setInterval(() => {
-            if (state.timerRunning) {
-                state.timerSeconds++;
-                const hrs = String(Math.floor(state.timerSeconds / 3600)).padStart(2, '0');
-                const mins = String(Math.floor((state.timerSeconds % 3600) / 60)).padStart(2, '0');
-                const secs = String(state.timerSeconds % 60).padStart(2, '0');
-                const timerEl = document.getElementById('timerText');
-                if (timerEl) timerEl.innerText = `${hrs}:${mins}:${secs}`;
+        // Font Controls
+        const fontFamilySelect = document.getElementById('font-family-select');
+        const fontSizeSelect = document.getElementById('font-size-select');
+
+        // Export & Modal Elements
+        const exportMenuBtn = document.getElementById('export-menu-btn');
+        const exportDropdown = document.getElementById('export-dropdown');
+        const excerptModal = document.getElementById('excerpt-modal');
+        const modalExcerptText = document.getElementById('modal-excerpt-text');
+        const modalAuthorInput = document.getElementById('modal-author-input');
+        const modalExcerptAuthor = document.getElementById('modal-excerpt-author');
+        const excerptCardPreview = document.getElementById('excerpt-card-preview');
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadStateFromLocalStorage();
+
+            if (state.notes.length === 0) {
+                createNewNote("무제_MUZE에 오신 것을 환영합니다", "이곳은 글쓰기와 발췌를 위한 아카이브 공간입니다.\n\n좌측 목차에서 새 집필 노트를 생성하거나 작성 중인 글에서 문장을 선택해 '발췌' 카드를 만들어 보세요.\n\n우측 상단의 '저장 / 내보내기' 버튼을 사용하면 글자 짤림 없는 깨끗한 A4 규격 이미지(PNG) 또는 PDF 파일로 쉽게 보관할 수 있습니다.");
+            } else {
+                renderNotesList();
+                renderExcerptsList();
+                selectNote(state.notes[0].id);
             }
-        }, 1000);
 
-        // Render Excerpts
-        function renderExcerpts() {
-            const container = document.getElementById('excerptsListContainer');
-            if (!container) return;
-            container.innerHTML = '';
+            setupEventListeners();
+            startWritingTimer();
+        });
+
+        // LocalStorage Logic
+        function saveStateToLocalStorage() {
+            localStorage.setItem('muze_pink_app_state', JSON.stringify({
+                notes: state.notes,
+                excerpts: state.excerpts,
+                timerSeconds: state.timerSeconds
+            }));
+            updateStatsUI();
+        }
+
+        function loadStateFromLocalStorage() {
+            const saved = localStorage.getItem('muze_pink_app_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state.notes = parsed.notes || [];
+                    state.excerpts = parsed.excerpts || [];
+                    state.timerSeconds = parsed.timerSeconds || 0;
+                } catch (e) {
+                    console.error("Failed to restore state", e);
+                }
+            }
+        }
+
+        // Note Management
+        function createNewNote(title = "제목 없는 집필 노트", content = "") {
+            const newNote = {
+                id: 'note_' + Date.now(),
+                title: title,
+                content: content,
+                createdAt: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                updatedAt: Date.now()
+            };
+            state.notes.unshift(newNote);
+            saveStateToLocalStorage();
+            renderNotesList();
+            selectNote(newNote.id);
+        }
+
+        function selectNote(id) {
+            state.activeNoteId = id;
+            const note = state.notes.find(n => n.id === id);
+            if (!note) return;
+
+            noteTitleInput.value = note.title;
+            noteContentInput.value = note.content;
+
+            updateWordAndCharCount();
+            renderNotesList();
+        }
+
+        function updateCurrentNote() {
+            if (!state.activeNoteId) return;
+            const note = state.notes.find(n => n.id === state.activeNoteId);
+            if (!note) return;
+
+            note.title = noteTitleInput.value || "제목 없는 집필 노트";
+            note.content = noteContentInput.value;
+            note.updatedAt = Date.now();
+
+            saveStateToLocalStorage();
+            updateWordAndCharCount();
+            
+            const sidebarTitleEl = document.querySelector(`[data-note-id="${note.id}"] .note-title`);
+            if (sidebarTitleEl) {
+                sidebarTitleEl.textContent = note.title;
+            }
+
+            triggerActivity();
+        }
+
+        function deleteNote(id, event) {
+            event.stopPropagation();
+            if (state.notes.length <= 1) {
+                alert("최소 하나의 집필 노트는 유지되어야 합니다.");
+                return;
+            }
+            if (confirm("이 집필 노트를 삭제하시겠습니까?")) {
+                state.notes = state.notes.filter(n => n.id !== id);
+                saveStateToLocalStorage();
+                renderNotesList();
+                if (state.activeNoteId === id) {
+                    selectNote(state.notes[0].id);
+                }
+            }
+        }
+
+        // Excerpt Management
+        function saveExcerpt(text, author, theme = "pink") {
+            const newExcerpt = {
+                id: 'excerpt_' + Date.now(),
+                text: text,
+                author: author || "무제_MUZE",
+                theme: theme,
+                createdAt: new Date().toLocaleDateString('ko-KR')
+            };
+            state.excerpts.unshift(newExcerpt);
+            saveStateToLocalStorage();
+            renderExcerptsList();
+            closeExcerptModal();
+        }
+
+        function deleteExcerpt(id) {
+            state.excerpts = state.excerpts.filter(e => e.id !== id);
+            saveStateToLocalStorage();
+            renderExcerptsList();
+        }
+
+        // Render Sidebar Lists
+        function renderNotesList(query = '') {
+            notesListContainer.innerHTML = '';
+            const filtered = state.notes.filter(n => 
+                n.title.toLowerCase().includes(query.toLowerCase()) || 
+                n.content.toLowerCase().includes(query.toLowerCase())
+            );
+
+            filtered.forEach(note => {
+                const isActive = note.id === state.activeNoteId;
+                const div = document.createElement('div');
+                div.setAttribute('data-note-id', note.id);
+                div.className = `group p-3 rounded-xl cursor-pointer transition-all border ${
+                    isActive 
+                        ? 'bg-brand-50/90 border-brand-200 text-brand-900 shadow-2xs' 
+                        : 'hover:bg-brand-50/30 border-transparent text-gray-700'
+                }`;
+                div.onclick = () => selectNote(note.id);
+
+                div.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <h4 class="note-title font-semibold text-xs truncate flex-1">${escapeHtml(note.title)}</h4>
+                        <button onclick="deleteNote('${note.id}', event)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity p-0.5">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-gray-400 line-clamp-2 leading-relaxed mb-1.5">${escapeHtml(note.content || '내용 없음')}</p>
+                    <div class="text-[10px] text-brand-300 font-mono">${note.createdAt}</div>
+                `;
+                notesListContainer.appendChild(div);
+            });
+            lucide.createIcons();
+            updateStatsUI();
+        }
+
+        function renderExcerptsList() {
+            excerptsListContainer.innerHTML = '';
             if (state.excerpts.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-12 text-slate-400 bg-white/40 dark:bg-slate-800/40 rounded-2xl border border-dashed border-rose-200 dark:border-slate-700">
-                        <i class="fas fa-quote-right text-3xl mb-2 text-rose-300 dark:text-rose-500"></i>
-                        <p class="text-sm">저장된 발췌 카드가 없습니다.</p>
-                    </div>`;
+                excerptsListContainer.innerHTML = `
+                    <div class="text-center py-8 px-4 text-xs text-brand-300">
+                        <i data-lucide="quote" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        저장된 발췌문이 없습니다.<br>글 작성 중 문장을 드래그해 만들어보세요.
+                    </div>
+                `;
+                lucide.createIcons();
                 return;
             }
 
-            state.excerpts.forEach((item, index) => {
-                const card = document.createElement('div');
-                let bgClass = "from-pink-500 to-rose-400 text-white";
-                if (item.style === 'dark' || item.theme === 'dark') bgClass = "from-slate-800 to-slate-900 text-slate-100";
-                if (item.style === 'warm' || item.theme === 'cream') bgClass = "from-amber-100 to-amber-200 text-amber-900";
-
-                const authorText = (item.author && item.author.trim() !== '') ? item.author : '무제_MUZE';
-
-                card.className = `p-4 rounded-2xl bg-gradient-to-br ${bgClass} shadow-md flex flex-col justify-between relative group min-h-[140px]`;
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <i class="fas fa-quote-left opacity-40 text-sm"></i>
-                        <button onclick="deleteExcerpt(${index})" class="opacity-0 group-hover:opacity-100 text-xs bg-black/20 hover:bg-black/40 text-white p-1 rounded transition">
-                            <i class="fas fa-trash"></i>
+            state.excerpts.forEach(excerpt => {
+                const div = document.createElement('div');
+                div.className = 'p-3 rounded-xl bg-gradient-to-br from-pink-50/60 to-brand-50/40 border border-brand-100/70 relative group';
+                div.innerHTML = `
+                    <p class="text-xs font-batang italic text-gray-800 mb-2 leading-relaxed">"${escapeHtml(excerpt.text)}"</p>
+                    <div class="flex justify-between items-center text-[10px] text-brand-600 font-medium">
+                        <span>— ${escapeHtml(excerpt.author)}</span>
+                        <button onclick="deleteExcerpt('${excerpt.id}')" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
-                    <p class="text-xs sm:text-sm my-2 italic leading-relaxed break-keep font-serif">"${escapeHtml(item.text)}"</p>
-                    <div class="text-right text-xs opacity-90 border-t border-current/20 pt-1.5 font-medium">
-                        ${escapeHtml(authorText)}
-                    </div>
                 `;
-                container.appendChild(card);
+                excerptsListContainer.appendChild(div);
             });
+            lucide.createIcons();
+            updateStatsUI();
         }
 
-        // Excerpt Input Modal Dynamic Handlers
-        if (excerptTextInput) excerptTextInput.addEventListener('input', updateCardPreview);
-        if (excerptAuthorInput) excerptAuthorInput.addEventListener('input', updateCardPreview);
-
-        function updateCardPreview() {
-            const textVal = excerptTextInput ? excerptTextInput.value.trim() : '';
-            const authorVal = excerptAuthorInput ? excerptAuthorInput.value.trim() : '';
-            
-            if (previewText) previewText.innerText = textVal ? `"${textVal}"` : '"간직하고 싶은 문장을 입력하세요..."';
-            if (previewAuthor) previewAuthor.innerText = authorVal !== '' ? authorVal : '무제_MUZE';
+        function updateStatsUI() {
+            totalStatsCount.textContent = `노트 ${state.notes.length}개 | 발췌 ${state.excerpts.length}개`;
         }
 
-        function deleteExcerpt(index) {
-            state.excerpts.splice(index, 1);
-            localStorage.setItem('muze_excerpts', JSON.stringify(state.excerpts));
-            renderExcerpts();
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        // Initialize App
-        window.onload = function() {
-            renderNotesList();
-            if (activeNoteId) loadActiveNote();
-            renderExcerpts();
-            updateCardPreview();
-        };
-
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                if (!isIdle) {
-                    secondsElapsed++;
-                    updateTimerDisplay();
+        // Active Writing Session Timer
+        function startWritingTimer() {
+            setInterval(() => {
+                if (state.isTimerActive) {
+                    state.timerSeconds++;
+                    const hours = String(Math.floor(state.timerSeconds / 3600)).padStart(2, '0');
+                    const minutes = String(Math.floor((state.timerSeconds % 3600) / 60)).padStart(2, '0');
+                    const seconds = String(state.timerSeconds % 60).padStart(2, '0');
+                    activeTimerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
                 }
             }, 1000);
         }
 
-        function setupIdleDetection() {
-            const checkIdle = () => {
-                if (Date.now() - lastActivityTime > 45000) {
-                    if (!isIdle) {
-                        isIdle = true;
-                        document.getElementById('timerPulse').className = 'w-2 h-2 rounded-full bg-amber-400';
-                        const idleTxt = document.getElementById('idleStatusText');
-                        if (idleTxt) idleTxt.innerText = '○ 휴식 중 (45초 비활성)';
-                    }
-                }
-            };
-            setInterval(checkIdle, 5000);
+        function triggerActivity() {
+            state.isTimerActive = true;
+            timerStatusDot.className = "w-2 h-2 rounded-full bg-emerald-500 ml-1 animate-pulse";
+            timerStatusDot.title = "집필 중";
 
-            window.addEventListener('mousemove', resetIdle);
-            window.addEventListener('keydown', resetIdle);
+            clearTimeout(state.idleTimer);
+            state.idleTimer = setTimeout(() => {
+                state.isTimerActive = false;
+                timerStatusDot.className = "w-2 h-2 rounded-full bg-gray-300 ml-1";
+                timerStatusDot.title = "휴식 중";
+            }, 45000);
         }
 
-        function resetIdle() {
-            lastActivityTime = Date.now();
-            if (isIdle) {
-                isIdle = false;
-                document.getElementById('timerPulse').className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
-                const idleTxt = document.getElementById('idleStatusText');
-                if (idleTxt) idleTxt.innerText = '● 글쓰기 활성 상태';
-            }
-        }
-
-        function updateTimerDisplay() {
-            const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-            const secs = (secondsElapsed % 60).toString().padStart(2, '0');
-            const timeStr = `${mins}:${secs}`;
-            document.getElementById('timerDisplay').innerText = timeStr;
-            const statsDisp = document.getElementById('statsTimerDisplay');
-            if (statsDisp) statsDisp.innerText = timeStr;
-        }
-
-        // Theme Switcher
-        function setTheme(theme) {
-            currentTheme = theme;
-            localStorage.setItem('muze_theme', theme);
-            const body = document.getElementById('appBody');
-            body.className = 'font-sans h-screen flex overflow-hidden transition-colors duration-300';
-            
-            if (theme === 'rose') {
-                body.classList.add('bg-rose-50', 'text-slate-800');
-            } else if (theme === 'cream') {
-                body.classList.add('bg-amber-50', 'text-stone-800');
-            } else if (theme === 'forest') {
-                body.classList.add('bg-emerald-950', 'text-emerald-100', 'dark');
-            } else if (theme === 'lavender') {
-                body.classList.add('bg-indigo-50', 'text-slate-800');
-            } else if (theme === 'dark') {
-                body.classList.add('bg-slate-900', 'text-slate-100', 'dark');
-            }
-        }
-
-        // Notes Management
-        function saveNotesToStorage() {
-            localStorage.setItem('muze_notes', JSON.stringify(notes));
-            showSaveStatus();
-        }
-
-        function showSaveStatus() {
-            const status = document.getElementById('saveStatus');
-            status.innerText = '저장됨 ✓';
-            setTimeout(() => { status.innerText = ''; }, 2000);
-        }
-
-        function createNewNote() {
-            const newNote = {
-                id: Date.now().toString(),
-                title: '새로운 무제 노트',
-                content: '',
-                updatedAt: Date.now()
-            };
-            notes.unshift(newNote);
-            activeNoteId = newNote.id;
-            saveNotesToStorage();
-            renderNotesList();
-            loadActiveNote();
-        }
-
-        function renderNotesList() {
-            const container = document.getElementById('notesListContainer');
-            container.innerHTML = '';
-            
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = notes.filter(n => n.title.toLowerCase().includes(searchTerm) || n.content.toLowerCase().includes(searchTerm));
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">검색된 노트가 없습니다.</div>`;
-                return;
-            }
-
-            filtered.forEach(note => {
-                const isActive = note.id === activeNoteId;
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-2xl cursor-pointer transition flex items-center justify-between group ${isActive ? 'bg-rose-200/70 dark:bg-slate-800 text-rose-900 dark:text-rose-200 font-semibold shadow-xs' : 'hover:bg-rose-100/50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-300'}`;
-                div.onclick = () => selectNote(note.id);
-                
-                div.innerHTML = `
-                    <div class="truncate flex-1 pr-2">
-                        <p class="text-sm truncate">${note.title || '제목 없음'}</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">${note.content.replace(/<[^>]*>?/gm, '') || '내용이 없습니다...'}</p>
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition">
-                        <button onclick="event.stopPropagation(); duplicateNote('${note.id}')" title="복제" class="p-1 rounded hover:bg-white dark:hover:bg-slate-700 text-slate-500"><i class="fa-solid fa-copy text-xs"></i></button>
-                        <button onclick="event.stopPropagation(); deleteNoteWithUndo('${note.id}')" title="삭제" class="p-1 rounded hover:bg-white dark:hover:bg-slate-700 text-rose-500"><i class="fa-solid fa-trash text-xs"></i></button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function selectNote(id) {
-            activeNoteId = id;
-            loadActiveNote();
-            renderNotesList();
-        }
-
-        function loadActiveNote() {
-            const note = notes.find(n => n.id === activeNoteId);
-            if (!note) return;
-            document.getElementById('noteTitleInput').value = note.title;
-            document.getElementById('editorContent').innerHTML = note.content;
-            updateStats();
-        }
-
-        function updateActiveNoteTitle(val) {
-            const note = notes.find(n => n.id === activeNoteId);
-            if (note) {
-                note.title = val;
-                note.updatedAt = Date.now();
-                saveNotesToStorage();
-                renderNotesList();
-            }
-        }
-
-        function handleEditorInput() {
-            const content = document.getElementById('editorContent').innerHTML;
-            const note = notes.find(n => n.id === activeNoteId);
-            if (note) {
-                note.content = content;
-                note.updatedAt = Date.now();
-                saveNotesToStorage();
-                updateStats();
-            }
-        }
-
-        function updateStats() {
-            const text = document.getElementById('editorContent').innerText || '';
+        // Stats & Selection Utility
+        function updateWordAndCharCount() {
+            const text = noteContentInput.value;
+            charCountEl.textContent = text.length;
             const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const chars = text.length;
+            wordCountEl.textContent = words;
+        }
 
-            document.getElementById('wordCount').innerText = `단어 ${words}개`;
-            document.getElementById('charCount').innerText = `글자 ${chars}자 (공백포함)`;
+        function handleSelection() {
+            const selectedText = window.getSelection().toString().trim();
+            const selectionTooltip = document.getElementById('selection-tooltip');
             
-            const statsW = document.getElementById('statsWordCount');
-            const statsC = document.getElementById('statsCharCount');
-            if (statsW) statsW.innerText = `${words}개`;
-            if (statsC) statsC.innerText = `${chars}자`;
-        }
-
-        function duplicateNote(id) {
-            const target = notes.find(n => n.id === id);
-            if (!target) return;
-            const dup = {
-                id: Date.now().toString(),
-                title: `${target.title} (사본)`,
-                content: target.content,
-                updatedAt: Date.now()
-            };
-            notes.unshift(dup);
-            saveNotesToStorage();
-            renderNotesList();
-        }
-
-        let deletedNotesBackup = [];
-        function deleteNoteWithUndo(id) {
-            const idx = notes.findIndex(n => n.id === id);
-            if (idx === -1) return;
-            const removed = notes.splice(idx, 1)[0];
-            deletedNotesBackup = { note: removed, index: idx };
-            
-            if (activeNoteId === id) {
-                activeNoteId = notes[0] ? notes[0].id : null;
-                if (activeNoteId) loadActiveNote();
-                else {
-                    document.getElementById('noteTitleInput').value = '';
-                    document.getElementById('editorContent').innerHTML = '';
-                }
-            }
-            saveNotesToStorage();
-            renderNotesList();
-            showUndoToast('노트가 삭제되었습니다.');
-        }
-
-        function showUndoToast(msg) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'pointer-events-auto bg-slate-900 text-white dark:bg-rose-100 dark:text-rose-900 px-4 py-3 rounded-2xl shadow-xl flex items-center justify-between space-x-4 text-xs font-medium animate-bounce-short';
-            toast.innerHTML = `
-                <span>${msg}</span>
-                <button onclick="undoDelete()" class="underline font-bold text-rose-400 dark:text-rose-600">되돌리기 (7초)</button>
-            `;
-            container.appendChild(toast);
-
-            const timer = setTimeout(() => {
-                toast.remove();
-                deletedNotesBackup = null;
-            }, 7000);
-            toast.dataset.timerId = timer;
-        }
-
-        function undoDelete() {
-            if (!deletedNotesBackup) return;
-            notes.splice(deletedNotesBackup.index, 0, deletedNotesBackup.note);
-            activeNoteId = deletedNotesBackup.note.id;
-            deletedNotesBackup = null;
-            saveNotesToStorage();
-            renderNotesList();
-            loadActiveNote();
-            document.getElementById('toastContainer').innerHTML = '';
-        }
-
-        // Tab Switching
-        function switchTab(tab) {
-            currentTab = tab;
-            const btnNotes = document.getElementById('tabNotesBtn');
-            const btnExcerpts = document.getElementById('tabExcerptsBtn');
-            const listNotes = document.getElementById('notesListContainer');
-            const listExcerpts = document.getElementById('excerptsListContainer');
-
-            if (tab === 'notes') {
-                btnNotes.className = 'flex-1 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-rose-800 dark:text-rose-200 shadow-sm transition';
-                btnExcerpts.className = 'flex-1 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 transition';
-                listNotes.classList.remove('hidden');
-                listExcerpts.classList.add('hidden');
-            } else {
-                btnExcerpts.className = 'flex-1 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-rose-800 dark:text-rose-200 shadow-sm transition';
-                btnNotes.className = 'flex-1 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 transition';
-                listExcerpts.classList.remove('hidden');
-                listNotes.classList.add('hidden');
-                renderExcerptsGallery();
-            }
-        }
-
-        // Rich Text Formatting
-        function formatText(command, value = null) {
-            document.execCommand(command, false, value);
-            document.getElementById('editorContent').focus();
-        }
-
-        function applyHighlight(color) {
-            const selection = window.getSelection();
-            if (!selection.rangeCount) return;
-            const range = selection.getRangeAt(0);
-            const span = document.createElement('span');
-            span.style.backgroundColor = color;
-            span.appendChild(range.extractContents());
-            range.insertNode(span);
-            handleEditorInput();
-        }
-
-        function changeEditorFont(fontClass) {
-            const editor = document.getElementById('editorContent');
-            editor.className = `flex-1 min-h-[500px] bg-transparent outline-none text-slate-700 dark:text-slate-200 leading-relaxed text-base sm:text-lg ${fontClass}`;
-        }
-
-        // Selection & Excerpt Card Feature
-        let selectedExcerptText = '';
-
-        function checkSelection() {
-            const selection = window.getSelection();
-            const text = selection.toString().trim();
-            const btn = document.getElementById('excerptBtn');
-            const floatBtn = document.getElementById('floatingExcerptBtn');
-
-            if (text.length > 0) {
-                selectedExcerptText = text;
-                btn.classList.remove('hidden');
-                btn.classList.add('flex');
+            if (selectedText.length > 3) {
+                const range = window.getSelection().getRangeAt(0);
+                const rect = range.getBoundingClientRect();
                 
-                try {
-                    const range = selection.getRangeAt(0);
-                    const rect = range.getBoundingClientRect();
-                    if (rect.top > 100) {
-                        floatBtn.style.top = `${rect.top - 50}px`;
-                        floatBtn.style.left = `${Math.min(window.innerWidth - 200, Math.max(20, rect.left))}px`;
-                        floatBtn.classList.remove('hidden');
-                    }
-                } catch (e) {
-                    floatBtn.classList.add('hidden');
-                }
+                selectionTooltip.style.left = `${rect.left + window.scrollX}px`;
+                selectionTooltip.style.top = `${rect.top + window.scrollY - 38}px`;
+                selectionTooltip.classList.remove('hidden');
             } else {
-                floatBtn.classList.add('hidden');
-                if (!selectedExcerptText) {
-                    btn.classList.add('hidden');
-                    btn.classList.remove('flex');
-                }
+                selectionTooltip.classList.add('hidden');
             }
         }
 
-        function openExcerptModalFromSelection() {
-            const text = selectedExcerptText || window.getSelection().toString().trim() || document.getElementById('editorContent').innerText.slice(0, 150);
-            if (!text) {
-                alertCustom('발췌할 텍스트를 선택하거나 작성해주세요.');
+        function openExcerptModalWithSelection() {
+            const selectedText = window.getSelection().toString().trim() || noteContentInput.value.slice(0, 100);
+            if (!selectedText) {
+                alert("발췌할 문장을 선택해 주세요.");
                 return;
             }
-            selectedExcerptText = text;
-            document.getElementById('previewText').innerText = text;
-            
-            const activeNote = notes.find(n => n.id === activeNoteId);
-            if (activeNote) {
-                document.getElementById('modalSourceInput').value = activeNote.title || '출처 미상';
-            }
-            updateCardMeta();
-            document.getElementById('excerptModal').classList.remove('hidden');
-            document.getElementById('floatingExcerptBtn').classList.add('hidden');
+            modalExcerptText.textContent = `"${selectedText}"`;
+            modalAuthorInput.value = "무제_MUZE";
+            modalExcerptAuthor.textContent = "무제_MUZE";
+            excerptModal.classList.remove('hidden');
+            document.getElementById('selection-tooltip').classList.add('hidden');
         }
 
         function closeExcerptModal() {
-            document.getElementById('excerptModal').classList.add('hidden');
+            excerptModal.classList.add('hidden');
         }
 
-        function setExcerptTheme(theme) {
-            currentExcerptTheme = theme;
-            const card = document.getElementById('excerptCardPreview');
-            if (theme === 'rose') {
-                card.style.background = 'linear-gradient(135deg, #ffe4e6 0%, #fbcfe8 100%)';
-                card.className = 'w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] text-slate-800';
-            } else if (theme === 'cream') {
-                card.style.background = 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)';
-                card.className = 'w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] text-stone-800';
-            } else if (theme === 'forest') {
-                card.style.background = 'linear-gradient(135deg, #065f46 0%, #047857 100%)';
-                card.className = 'w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] text-emerald-50';
-            } else if (theme === 'lavender') {
-                card.style.background = 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)';
-                card.className = 'w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] text-indigo-950';
-            } else if (theme === 'sunset') {
-                card.style.background = 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)';
-                card.className = 'w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] text-orange-950';
-            } else if (theme === 'dark') {
-                card.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
-                card.className = 'w-full max-w-sm rounded-2xl p-6 shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[320px] text-slate-100';
-            }
+        // Export Render Preparation Helper
+        function prepareRenderContainer() {
+            const currentNote = state.notes.find(n => n.id === state.activeNoteId);
+            if (!currentNote) return null;
+
+            const renderTitle = document.getElementById('render-title');
+            const renderContent = document.getElementById('render-content');
+            const renderDate = document.getElementById('render-date');
+            const printableArea = document.getElementById('printable-a4-area');
+
+            renderTitle.textContent = currentNote.title || "제목 없는 집필 노트";
+            renderContent.textContent = currentNote.content || "내용이 없습니다.";
+            renderDate.textContent = currentNote.createdAt;
+            renderContent.className = `text-gray-800 text-base leading-relaxed whitespace-pre-wrap break-words ${fontFamilySelect.value}`;
+
+            return { currentNote, printableArea };
         }
 
-        function updateCardMeta() {
-            const source = document.getElementById('modalSourceInput').value || '출처 / 책 제목';
-            const author = document.getElementById('modalAuthorInput').value || '작가명';
-            const hashtags = document.getElementById('modalHashtagInput').value || '#글귀 #발췌';
+        // A4 PNG Image Export
+        async function exportToA4Image() {
+            exportDropdown.classList.add('hidden');
+            const prep = prepareRenderContainer();
+            if (!prep) return;
 
-            document.getElementById('previewSource').innerText = source;
-            document.getElementById('previewAuthor').innerText = author;
-            document.getElementById('previewHashtags').innerText = hashtags;
-        }
+            try {
+                const canvas = await html2canvas(prep.printableArea, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    width: 794,
+                    windowWidth: 794
+                });
 
-        function saveExcerptToGallery() {
-            const excerptObj = {
-                id: Date.now().toString(),
-                text: selectedExcerptText,
-                source: document.getElementById('modalSourceInput').value || '출처 미상',
-                author: document.getElementById('modalAuthorInput').value || '작가명',
-                hashtags: document.getElementById('modalHashtagInput').value || '#글귀',
-                theme: currentExcerptTheme,
-                createdAt: Date.now()
-            };
-            excerpts.unshift(excerptObj);
-            localStorage.setItem('muze_excerpts', JSON.stringify(excerpts));
-            closeExcerptModal();
-            showUndoToast('발췌 보관함에 저장되었습니다 📥');
-        }
-
-        function renderExcerptsGallery() {
-            const container = document.getElementById('excerptsListContainer');
-            container.innerHTML = '';
-
-            if (excerpts.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">보관된 발췌 카드가 없습니다.</div>`;
-                return;
-            }
-
-            excerpts.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'p-3 rounded-2xl bg-rose-50/50 dark:bg-slate-800 border border-rose-100 dark:border-slate-700 space-y-2 text-xs';
-                div.innerHTML = `
-                    <p class="font-serif italic text-slate-700 dark:text-slate-200 line-clamp-3">“${item.text}”</p>
-                    <div class="flex items-center justify-between text-slate-500 pt-2 border-t border-rose-100/60 dark:border-slate-700">
-                        <span class="font-semibold">${item.source} (${item.author})</span>
-                        <button onclick="deleteExcerpt('${item.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function deleteExcerpt(id) {
-            excerpts = excerpts.filter(e => e.id !== id);
-            localStorage.setItem('muze_excerpts', JSON.stringify(excerpts));
-            renderExcerptsGallery();
-        }
-
-        function downloadExcerptPng() {
-            const cardEl = document.getElementById('excerptCardPreview');
-            html2canvas(cardEl, { scale: 2, backgroundColor: null }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `MUZE_Excerpt_${Date.now()}.png`;
+                link.download = `${prep.currentNote.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_무제MUZE.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+            } catch (err) {
+                console.error("Image generation error:", err);
+                alert("이미지 저장 중 오류가 발생했습니다.");
+            }
+        }
+
+        // Direct Reliable PDF Export via html2pdf
+        function exportToPDF() {
+            exportDropdown.classList.add('hidden');
+            const prep = prepareRenderContainer();
+            if (!prep) return;
+
+            const opt = {
+                margin:       0,
+                filename:     `${prep.currentNote.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_무제.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, width: 794, windowWidth: 794 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(prep.printableArea).save();
+        }
+
+        // TXT Text Download
+        function exportToTXT() {
+            exportDropdown.classList.add('hidden');
+            const currentNote = state.notes.find(n => n.id === state.activeNoteId);
+            if (!currentNote) return;
+
+            const textData = `제목: ${currentNote.title}\n작성일: ${currentNote.createdAt}\n출처: 무제_MUZE\n\n----------------------------------------\n\n${currentNote.content}`;
+            const blob = new Blob([textData], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${currentNote.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_무제.txt`;
+            link.click();
+        }
+
+        // Backup & Restore
+        function backupToJSON() {
+            exportDropdown.classList.add('hidden');
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `MUZE_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function restoreFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const restored = JSON.parse(e.target.result);
+                    if (restored.notes && Array.isArray(restored.notes)) {
+                        state.notes = restored.notes;
+                        state.excerpts = restored.excerpts || [];
+                        state.timerSeconds = restored.timerSeconds || 0;
+                        saveStateToLocalStorage();
+                        renderNotesList();
+                        renderExcerptsList();
+                        if (state.notes.length > 0) selectNote(state.notes[0].id);
+                        alert("데이터가 성공적으로 복원되었습니다.");
+                    }
+                } catch (err) {
+                    alert("올바르지 않은 백업 파일 형식입니다.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Event Listeners Setup
+        function setupEventListeners() {
+            noteTitleInput.addEventListener('input', updateCurrentNote);
+            noteContentInput.addEventListener('input', updateCurrentNote);
+
+            // Font options
+            fontFamilySelect.addEventListener('change', (e) => {
+                noteContentInput.className = `w-full flex-1 resize-none bg-transparent focus:outline-none leading-relaxed text-gray-800 ${e.target.value} ${fontSizeSelect.value} min-h-[500px]`;
+            });
+            fontSizeSelect.addEventListener('change', (e) => {
+                noteContentInput.className = `w-full flex-1 resize-none bg-transparent focus:outline-none leading-relaxed text-gray-800 ${fontFamilySelect.value} ${e.target.value} min-h-[500px]`;
+            });
+
+            document.getElementById('new-note-btn').addEventListener('click', () => createNewNote());
+            document.getElementById('search-input').addEventListener('input', (e) => renderNotesList(e.target.value));
+
+            // Tabs
+            const tabNotesBtn = document.getElementById('tab-notes-btn');
+            const tabExcerptsBtn = document.getElementById('tab-excerpts-btn');
+
+            tabNotesBtn.addEventListener('click', () => {
+                state.activeTab = 'notes';
+                tabNotesBtn.className = "flex-1 py-2.5 text-center text-brand-600 border-b-2 border-brand-500 font-semibold flex items-center justify-center gap-1.5";
+                tabExcerptsBtn.className = "flex-1 py-2.5 text-center text-gray-400 hover:text-brand-600 border-b-2 border-transparent flex items-center justify-center gap-1.5";
+                notesListContainer.classList.remove('hidden');
+                excerptsListContainer.classList.add('hidden');
+            });
+
+            tabExcerptsBtn.addEventListener('click', () => {
+                state.activeTab = 'excerpts';
+                tabExcerptsBtn.className = "flex-1 py-2.5 text-center text-brand-600 border-b-2 border-brand-500 font-semibold flex items-center justify-center gap-1.5";
+                tabNotesBtn.className = "flex-1 py-2.5 text-center text-gray-400 hover:text-brand-600 border-b-2 border-transparent flex items-center justify-center gap-1.5";
+                excerptsListContainer.classList.remove('hidden');
+                notesListContainer.classList.add('hidden');
+            });
+
+            // Toggle Sidebar
+            const sidebar = document.getElementById('sidebar');
+            document.getElementById('toggle-sidebar-btn').addEventListener('click', () => {
+                sidebar.classList.toggle('-ml-72');
+            });
+
+            // Export Menu
+            exportMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                exportDropdown.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', () => {
+                exportDropdown.classList.add('hidden');
+            });
+
+            // Actions
+            document.getElementById('export-a4-png-btn').addEventListener('click', exportToA4Image);
+            document.getElementById('export-pdf-btn').addEventListener('click', exportToPDF);
+            document.getElementById('export-txt-btn').addEventListener('click', exportToTXT);
+            document.getElementById('backup-json-btn').addEventListener('click', backupToJSON);
+            
+            const restoreBtn = document.getElementById('restore-json-btn');
+            const fileInput = document.getElementById('json-file-input');
+            restoreBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', restoreFromJSON);
+
+            // Selection tooltips & Excerpt modal
+            document.addEventListener('mouseup', handleSelection);
+            document.getElementById('selection-tooltip').addEventListener('click', openExcerptModalWithSelection);
+            document.getElementById('extract-selection-btn').addEventListener('click', openExcerptModalWithSelection);
+            document.getElementById('close-modal-btn').addEventListener('click', closeExcerptModal);
+
+            modalAuthorInput.addEventListener('input', (e) => {
+                modalExcerptAuthor.textContent = e.target.value || "무제_MUZE";
+            });
+
+            // Themes
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const theme = e.currentTarget.getAttribute('data-theme');
+                    if (theme === 'pink') {
+                        excerptCardPreview.className = "p-6 rounded-xl bg-gradient-to-br from-brand-50 to-pink-50/60 border border-brand-100/80 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-gray-800";
+                    } else if (theme === 'clean') {
+                        excerptCardPreview.className = "p-6 rounded-xl bg-white border border-gray-200 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-gray-800";
+                    } else if (theme === 'dark') {
+                        excerptCardPreview.className = "p-6 rounded-xl bg-gray-900 border border-gray-800 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-white";
+                    } else if (theme === 'warm') {
+                        excerptCardPreview.className = "p-6 rounded-xl bg-amber-50/80 border border-amber-200 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-amber-950";
+                    }
+                });
+            });
+
+            document.getElementById('save-excerpt-btn').addEventListener('click', () => {
+                saveExcerpt(
+                    modalExcerptText.textContent.replace(/^"|"$/g, ''),
+                    modalAuthorInput.value
+                );
+            });
+
+            document.getElementById('download-excerpt-card-btn').addEventListener('click', async () => {
+                try {
+                    const canvas = await html2canvas(excerptCardPreview, { scale: 3 });
+                    const link = document.createElement('a');
+                    link.download = `MUZE_Excerpt_${Date.now()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (e) {
+                    alert("발췌 카드 저장 실패");
+                }
             });
         }
 
-        // Stats Modal
-        function openStatsModal() {
-            document.getElementById('statsModal').classList.remove('hidden');
-            updateStats();
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
-        function closeStatsModal() {
-            document.getElementById('statsModal').classList.add('hidden');
-        }
-
-        // Focus Mode
-        let isFocusMode = false;
-        function toggleFocusMode() {
-            isFocusMode = !isFocusMode;
-            const sidebar = document.getElementById('sidebar');
-            const focusBtn = document.getElementById('focusBtn');
-            if (isFocusMode) {
-                sidebar.classList.add('-translate-x-full');
-                focusBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-            } else {
-                sidebar.classList.remove('-translate-x-full');
-                focusBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-            }
-        }
-
-        function alertCustom(msg) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'pointer-events-auto bg-rose-500 text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-medium';
-            toast.innerText = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function filterNotes(query) {
-            renderNotesList();
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
-        }
-
-        // Keyboard Shortcuts
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeExcerptModal();
-                closeStatsModal();
-                if (isFocusMode) toggleFocusMode();
-            }
-            if (e.altKey && e.key.toLowerCase() === 'f') {
-                e.preventDefault();
-                toggleFocusMode();
-            }
-        });
     </script>
-
-</div></div></div></div></body></html>
+</body>
+</html>
