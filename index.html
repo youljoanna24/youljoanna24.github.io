@@ -1,23 +1,16 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 글쓰기 & 발췌 노트</title>
+<html><head><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&amp;family=Gowun+Dodum&amp;family=Maru+Buri:wght@300;400;700&amp;family=Nanum+Myeongjo:wght@400;700;800&amp;family=Noto+Sans+KR:wght@300;400;500;700&amp;family=Sunflower:wght@300;500&amp;display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Gowun Batang & Pretendard CDN -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest" crossorigin="anonymous"></script>
 
     <!-- html2canvas for Image Generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
 
     <script>
         tailwind.config = {
@@ -40,6 +33,10 @@
                     },
                     fontFamily: {
                         batang: ['"Gowun Batang"', 'serif'],
+                        dodum: ['"Gowun Dodum"', 'sans-serif'],
+                        nanum: ['"Nanum Myeongjo"', 'serif'],
+                        maru: ['"Maru Buri"', 'serif'],
+                        sunflower: ['"Sunflower"', 'sans-serif'],
                         sans: ['"Noto Sans KR"', 'sans-serif'],
                     }
                 }
@@ -50,54 +47,69 @@
     <style>
         /* CSS Animations & Custom Styling */
         @keyframes pulseGlow {
-            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            50% { opacity: 0.8; transform: scale(1.05); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 114, 182, 0.6); }
+            50% { opacity: 0.85; transform: scale(1.08); box-shadow: 0 0 0 6px rgba(244, 114, 182, 0); }
         }
         .active-dot-pulse {
             animation: pulseGlow 2s infinite ease-in-out;
         }
 
         .font-batang { font-family: 'Gowun Batang', serif; }
+        .font-dodum { font-family: 'Gowun Dodum', sans-serif; }
+        .font-nanum { font-family: 'Nanum Myeongjo', serif; }
+        .font-maru { font-family: 'Maru Buri', serif; }
+        .font-sunflower { font-family: 'Sunflower', sans-serif; }
         .font-sans { font-family: 'Noto Sans KR', sans-serif; }
 
         /* Custom Scrollbars */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(244, 114, 182, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(244, 114, 182, 0.5); }
 
         /* Editor Placeholder */
         [contenteditable]:empty:before {
             content: attr(data-placeholder);
-            color: #9ca3af;
+            color: #f472b6;
+            opacity: 0.6;
             cursor: text;
         }
 
-        /* Themes setup */
+        /* Editor Embedded Elements */
+        #editor-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: block;
+        }
+
+        /* Themes setup with cuter pastel palettes */
         .theme-cotton {
-            --bg-main: #fff5f7;
+            --bg-main: #fff0f5;
             --bg-editor: #ffffff;
-            --text-main: #374151;
-            --accent: #f46c96;
-            --sidebar-bg: #fce8ef;
+            --text-main: #4a3b4e;
+            --accent: #f472b6;
+            --sidebar-bg: #ffe4e6;
             --border-color: #fbcfe8;
         }
 
         .theme-cream {
-            --bg-main: #fdfbf7;
+            --bg-main: #fffbeb;
             --bg-editor: #ffffff;
-            --text-main: #2d2a26;
-            --accent: #d97706;
-            --sidebar-bg: #f5efe6;
-            --border-color: #e7dfd5;
+            --text-main: #451a03;
+            --accent: #fbbf24;
+            --sidebar-bg: #fef3c7;
+            --border-color: #fde68a;
         }
 
         .theme-lavender {
-            --bg-main: #f8f7ff;
+            --bg-main: #f5f3ff;
             --bg-editor: #ffffff;
-            --text-main: #2e2a47;
-            --accent: #8b5cf6;
-            --sidebar-bg: #eee8f8;
+            --text-main: #3b0764;
+            --accent: #a78bfa;
+            --sidebar-bg: #ede9fe;
             --border-color: #ddd6fe;
         }
 
@@ -105,21 +117,21 @@
             --bg-main: #f4f4f5;
             --bg-editor: #ffffff;
             --text-main: #18181b;
-            --accent: #52525b;
+            --accent: #71717a;
             --sidebar-bg: #e4e4e7;
             --border-color: #d4d4d8;
         }
 
         .theme-dark {
-            --bg-main: #121214;
-            --bg-editor: #18181b;
+            --bg-main: #18181b;
+            --bg-editor: #27272a;
             --text-main: #f4f4f5;
-            --accent: #f46c96;
+            --accent: #f472b6;
             --sidebar-bg: #09090b;
-            --border-color: #27272a;
+            --border-color: #3f3f46;
         }
     </style>
-</head>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:"Noto Sans KR", sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.inset-y-0{top:0px;bottom:0px}.bottom-6{bottom:1.5rem}.left-0{left:0px}.left-3{left:0.75rem}.right-0{right:0px}.right-6{right:1.5rem}.top-2\.5{top:0.625rem}.z-20{z-index:20}.z-30{z-index:30}.z-50{z-index:50}.col-span-full{grid-column:1 / -1}.mx-auto{margin-left:auto;margin-right:auto}.my-1{margin-top:0.25rem;margin-bottom:0.25rem}.my-auto{margin-top:auto;margin-bottom:auto}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-6{margin-bottom:1.5rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mb-2{margin-bottom:0.5rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-2\.5{height:0.625rem}.h-3{height:0.75rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-auto{height:auto}.h-full{height:100%}.h-screen{height:100vh}.max-h-\[90vh\]{max-height:90vh}.min-h-\[260px\]{min-height:260px}.min-h-\[50vh\]{min-height:50vh}.min-h-\[80vh\]{min-height:80vh}.min-h-screen{min-height:100vh}.w-2\.5{width:0.625rem}.w-3{width:0.75rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-40{width:10rem}.w-44{width:11rem}.w-5{width:1.25rem}.w-52{width:13rem}.w-72{width:18rem}.w-9{width:2.25rem}.w-full{width:100%}.w-8{width:2rem}.min-w-0{min-width:0px}.max-w-3xl{max-width:48rem}.max-w-5xl{max-width:64rem}.max-w-lg{max-width:32rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-x-full{--tw-translate-x:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-y-2{--tw-translate-y:0.5rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-6{grid-template-columns:repeat(6, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-5{gap:1.25rem}.gap-y-1{row-gap:0.25rem}.space-x-0\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.125rem * var(--tw-space-x-reverse));margin-left:calc(0.125rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-x-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.625rem * var(--tw-space-x-reverse));margin-left:calc(0.625rem * calc(1 - var(--tw-space-x-reverse)))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.overflow-x-hidden{overflow-x:hidden}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.rounded{border-radius:0.25rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-emerald-700{--tw-border-opacity:1;border-color:rgb(4 120 87 / var(--tw-border-opacity, 1))}.border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.border-pink-100{--tw-border-opacity:1;border-color:rgb(252 231 243 / var(--tw-border-opacity, 1))}.border-pink-100\/50{border-color:rgb(252 231 243 / 0.5)}.border-pink-100\/80{border-color:rgb(252 231 243 / 0.8)}.border-pink-200{--tw-border-opacity:1;border-color:rgb(251 207 232 / var(--tw-border-opacity, 1))}.border-pink-300{--tw-border-opacity:1;border-color:rgb(249 168 212 / var(--tw-border-opacity, 1))}.border-purple-300{--tw-border-opacity:1;border-color:rgb(216 180 254 / var(--tw-border-opacity, 1))}.border-stone-300{--tw-border-opacity:1;border-color:rgb(214 211 209 / var(--tw-border-opacity, 1))}.border-pink-200\/80{border-color:rgb(251 207 232 / 0.8)}.bg-amber-300{--tw-bg-opacity:1;background-color:rgb(252 211 77 / var(--tw-bg-opacity, 1))}.bg-black\/30{background-color:rgb(0 0 0 / 0.3)}.bg-gray-300{--tw-bg-opacity:1;background-color:rgb(209 213 219 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-pink-100{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.bg-pink-400{--tw-bg-opacity:1;background-color:rgb(244 114 182 / var(--tw-bg-opacity, 1))}.bg-pink-50\/40{background-color:rgb(253 242 248 / 0.4)}.bg-pink-50\/60{background-color:rgb(253 242 248 / 0.6)}.bg-pink-500{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.bg-purple-300{--tw-bg-opacity:1;background-color:rgb(216 180 254 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/80{background-color:rgb(255 255 255 / 0.8)}.bg-white\/90{background-color:rgb(255 255 255 / 0.9)}.bg-zinc-800{--tw-bg-opacity:1;background-color:rgb(39 39 42 / var(--tw-bg-opacity, 1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94 / var(--tw-bg-opacity, 1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.from-amber-100{--tw-gradient-from:#fef3c7 var(--tw-gradient-from-position);--tw-gradient-to:rgb(254 243 199 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-emerald-800{--tw-gradient-from:#065f46 var(--tw-gradient-from-position);--tw-gradient-to:rgb(6 95 70 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-gray-900{--tw-gradient-from:#111827 var(--tw-gradient-from-position);--tw-gradient-to:rgb(17 24 39 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-100{--tw-gradient-from:#fce7f3 var(--tw-gradient-from-position);--tw-gradient-to:rgb(252 231 243 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-100{--tw-gradient-from:#f3e8ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(243 232 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-stone-100{--tw-gradient-from:#f5f5f4 var(--tw-gradient-from-position);--tw-gradient-to:rgb(245 245 244 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-rose-50{--tw-gradient-to:rgb(255 241 242 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #fff1f2 var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-amber-100{--tw-gradient-to:#fef3c7 var(--tw-gradient-to-position)}.to-indigo-200{--tw-gradient-to:#c7d2fe var(--tw-gradient-to-position)}.to-orange-200{--tw-gradient-to:#fed7aa var(--tw-gradient-to-position)}.to-pink-200{--tw-gradient-to:#fbcfe8 var(--tw-gradient-to-position)}.to-rose-200{--tw-gradient-to:#fecdd3 var(--tw-gradient-to-position)}.to-teal-900{--tw-gradient-to:#134e4a var(--tw-gradient-to-position)}.to-zinc-800{--tw-gradient-to:#27272a var(--tw-gradient-to-position)}.fill-current{fill:currentColor}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.p-2\.5{padding:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-12{padding-top:3rem;padding-bottom:3rem}.pb-3{padding-bottom:0.75rem}.pb-6{padding-bottom:1.5rem}.pl-9{padding-left:2.25rem}.pr-3{padding-right:0.75rem}.pt-2{padding-top:0.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-batang{font-family:"Gowun Batang", serif}.font-dodum{font-family:"Gowun Dodum", sans-serif}.font-maru{font-family:"Maru Buri", serif}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-nanum{font-family:"Nanum Myeongjo", serif}.font-sans{font-family:"Noto Sans KR", sans-serif}.font-serif{font-family:ui-serif, Georgia, Cambria, "Times New Roman", Times, serif}.font-sunflower{font-family:"Sunflower", sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-pink-400{--tw-text-opacity:1;color:rgb(244 114 182 / var(--tw-text-opacity, 1))}.text-pink-500{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.text-pink-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-pink-700\/70{color:rgb(190 24 93 / 0.7)}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.line-through{-webkit-text-decoration-line:line-through;text-decoration-line:line-through}.opacity-30{opacity:0.3}.opacity-60{opacity:0.6}.opacity-70{opacity:0.7}.opacity-80{opacity:0.8}.opacity-0{opacity:0}.opacity-40{opacity:0.4}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-pink-300:hover{--tw-border-opacity:1;border-color:rgb(249 168 212 / var(--tw-border-opacity, 1))}.hover\:bg-amber-50:hover{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.hover\:bg-black\/5:hover{background-color:rgb(0 0 0 / 0.05)}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-900:hover{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-100:hover{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-100\/50:hover{background-color:rgb(252 231 243 / 0.5)}.hover\:bg-pink-200:hover{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-50:hover{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.hover\:bg-pink-500:hover{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.hover\:bg-purple-50:hover{--tw-bg-opacity:1;background-color:rgb(250 245 255 / var(--tw-bg-opacity, 1))}.hover\:bg-white\/60:hover{background-color:rgb(255 255 255 / 0.6)}.hover\:bg-yellow-100:hover{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.hover\:bg-zinc-100:hover{--tw-bg-opacity:1;background-color:rgb(244 244 245 / var(--tw-bg-opacity, 1))}.hover\:text-gray-600:hover{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.hover\:text-pink-200:hover{--tw-text-opacity:1;color:rgb(251 207 232 / var(--tw-text-opacity, 1))}.hover\:text-pink-600:hover{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.hover\:text-pink-500:hover{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.hover\:text-red-500:hover{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:border-pink-400:focus{--tw-border-opacity:1;border-color:rgb(244 114 182 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-pink-300:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(249 168 212 / var(--tw-ring-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:flex{display:flex}.dark\:border-white\/10:is(.dark *){border-color:rgb(255 255 255 / 0.1)}.dark\:border-zinc-600:is(.dark *){--tw-border-opacity:1;border-color:rgb(82 82 91 / var(--tw-border-opacity, 1))}.dark\:border-zinc-700:is(.dark *){--tw-border-opacity:1;border-color:rgb(63 63 70 / var(--tw-border-opacity, 1))}.dark\:border-zinc-800:is(.dark *){--tw-border-opacity:1;border-color:rgb(39 39 42 / var(--tw-border-opacity, 1))}.dark\:border-pink-900\/50:is(.dark *){border-color:rgb(131 24 67 / 0.5)}.dark\:bg-pink-900\/40:is(.dark *){background-color:rgb(131 24 67 / 0.4)}.dark\:bg-white\/5:is(.dark *){background-color:rgb(255 255 255 / 0.05)}.dark\:bg-zinc-700:is(.dark *){--tw-bg-opacity:1;background-color:rgb(63 63 70 / var(--tw-bg-opacity, 1))}.dark\:bg-zinc-700\/50:is(.dark *){background-color:rgb(63 63 70 / 0.5)}.dark\:bg-zinc-800:is(.dark *){--tw-bg-opacity:1;background-color:rgb(39 39 42 / var(--tw-bg-opacity, 1))}.dark\:bg-zinc-800\/80:is(.dark *){background-color:rgb(39 39 42 / 0.8)}.dark\:bg-zinc-800\/90:is(.dark *){background-color:rgb(39 39 42 / 0.9)}.dark\:text-gray-300:is(.dark *){--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.dark\:text-gray-400:is(.dark *){--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.dark\:text-pink-300:is(.dark *){--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.dark\:text-pink-300\/70:is(.dark *){color:rgb(249 168 212 / 0.7)}.dark\:text-pink-400:is(.dark *){--tw-text-opacity:1;color:rgb(244 114 182 / var(--tw-text-opacity, 1))}.dark\:hover\:bg-white\/5:hover:is(.dark *){background-color:rgb(255 255 255 / 0.05)}.dark\:hover\:bg-zinc-700:hover:is(.dark *){--tw-bg-opacity:1;background-color:rgb(63 63 70 / var(--tw-bg-opacity, 1))}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:flex{display:flex}.sm\:p-12{padding:3rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:p-8{padding:2rem}}@media (min-width: 1024px){.lg\:static{position:static}.lg\:hidden{display:none}.lg\:translate-x-0{--tw-translate-x:0px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}</style></head>
 <body class="theme-cotton font-sans min-h-screen transition-colors duration-300 overflow-x-hidden" style="background-color: var(--bg-main); color: var(--text-main);">
 
     <div id="app" class="flex h-screen overflow-hidden">
@@ -129,49 +141,55 @@
             <!-- Sidebar Header -->
             <div class="p-4 border-b flex items-center justify-between" style="border-color: var(--border-color);">
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-brand-400 flex items-center justify-center text-white font-bold shadow-sm">
-                        <i data-lucide="feather" class="w-4 h-4"></i>
+                    <div class="w-9 h-9 rounded-2xl bg-pink-400 flex items-center justify-center text-white shadow-md transform hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="heart" aria-hidden="true" class="lucide lucide-heart w-5 h-5 fill-current"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path></svg>
                     </div>
-                    <span class="font-batang font-bold text-lg tracking-tight">글쓰기 노트</span>
                 </div>
-                <button id="close-sidebar-btn" class="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-black/5">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <button id="close-sidebar-btn" onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-xl text-gray-500 hover:bg-black/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
             </div>
 
             <!-- Main Navigation Tabs -->
-            <div class="p-3 border-b flex space-x-1" style="border-color: var(--border-color);">
-                <button id="tab-notes-btn" onclick="switchMainTab('notes')" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 bg-white/70 shadow-sm border border-black/5 text-gray-800">
-                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                    <span>내 글로구</span>
+            <div class="p-3 border-b flex space-x-1.5" style="border-color: var(--border-color);">
+                <button id="tab-notes-btn" onclick="switchMainTab('notes')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 bg-white shadow-sm text-pink-600 transition-all hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pen-tool" aria-hidden="true" class="lucide lucide-pen-tool w-3.5 h-3.5"><path d="m18 13-.654-4.736a4 4 0 00-2.756-3.266l-9.163-2.9a2 2 0 00-2.017.493l-.82.819a2 2 0 00-.492 2.017l2.9 9.163a4 4 0 003.266 2.756L13 18"></path><path d="M18.648 12.352a1.205 1.205 0 011.704 0l1.296 1.296a1.205 1.205 0 010 1.704l-6.296 6.296a1.205 1.205 0 01-1.704 0l-1.296-1.296a1.205 1.205 0 010-1.704z"></path><path d="m3 3 6.586 6.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                    <span>글목록 ✏️</span>
                 </button>
-                <button id="tab-excerpts-btn" onclick="switchMainTab('excerpts')" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 text-gray-600 hover:bg-white/50">
-                    <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-                    <span>발췌 보관함</span>
+                <button id="tab-excerpts-btn" onclick="switchMainTab('excerpts')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 text-gray-600 hover:bg-white/60 transition-all hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bookmark" aria-hidden="true" class="lucide lucide-bookmark w-3.5 h-3.5"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"></path></svg>
+                    <span>발췌함 🎀</span>
                 </button>
             </div>
 
             <!-- Search & New Page Controls (Visible in Notes Tab) -->
             <div id="notes-sidebar-controls" class="p-3 space-y-2">
                 <div class="relative">
-                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-gray-400"></i>
-                    <input type="text" id="search-input" placeholder="글 제목, 내용 검색..." oninput="renderPagesList()" class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border focus:outline-none focus:ring-1 focus:ring-brand-400 bg-white/60 dark:bg-zinc-800/60" style="border-color: var(--border-color);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="search" aria-hidden="true" class="lucide lucide-search w-4 h-4 absolute left-3 top-2.5 text-pink-400"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                    <input type="text" id="search-input" placeholder="글 제목, 내용 검색..." oninput="renderPagesList()" class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white/80 dark:bg-zinc-800/80 shadow-inner" style="border-color: var(--border-color);">
                 </div>
-                <button onclick="createNewPage()" class="w-full py-2 px-3 rounded-lg bg-brand-400 hover:bg-brand-500 text-white font-medium text-xs flex items-center justify-center space-x-1.5 shadow-sm transition-all hover:shadow">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>새 글 작성하기</span>
+                <button onclick="createNewPage()" class="w-full py-2.5 px-3 rounded-xl bg-pink-400 hover:bg-pink-500 text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md hover:shadow-lg transition-all transform active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="plus-circle" aria-hidden="true" class="lucide lucide-plus-circle w-4 h-4"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path><path d="M12 8v8"></path></svg>
+                    <span>새 작성하기 🌸</span>
                 </button>
             </div>
 
             <!-- Page List Container -->
-            <div id="pages-container" class="flex-1 overflow-y-auto p-3 space-y-1">
-                <!-- Dynamically populated page list -->
-            </div>
+            <div id="pages-container" class="flex-1 overflow-y-auto p-3 space-y-1.5"><div class="group p-2.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between bg-white dark:bg-zinc-800 shadow-sm border border-pink-200/80 dark:border-pink-900/50 font-bold text-pink-600 dark:text-pink-300">
+                    <div class="flex items-center space-x-2.5 overflow-hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="heart" aria-hidden="true" class="lucide lucide-heart w-3.5 h-3.5 flex-shrink-0 text-pink-400 fill-current"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path></svg>
+                        <span class="text-xs truncate">첫 번째 나의 상상 🌸</span>
+                    </div>
+                    <div class="hidden group-hover:flex items-center space-x-1">
+                        <button onclick="duplicatePage('page_1792744520903', event)" title="복사" class="p-1 hover:text-pink-500 rounded"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="copy" aria-hidden="true" class="lucide lucide-copy w-3.5 h-3.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button>
+                        <button onclick="deletePage('page_1792744520903', event)" title="삭제" class="p-1 hover:text-red-500 rounded"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2" aria-hidden="true" class="lucide lucide-trash-2 w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                    </div>
+                </div></div>
 
             <!-- Sidebar Footer Stats -->
-            <div class="p-3 border-t text-xs text-gray-500 flex items-center justify-between" style="border-color: var(--border-color);">
-                <span id="page-count-display">글 0개</span>
-                <span id="total-words-display">0 자</span>
+            <div class="p-3 border-t text-xs font-medium text-pink-700/70 dark:text-pink-300/70 flex items-center justify-between" style="border-color: var(--border-color);">
+                <span id="page-count-display">📝 글 1개</span>
+                <span id="total-words-display">✨ 73 자</span>
             </div>
         </aside>
 
@@ -179,121 +197,152 @@
         <main class="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative" style="background-color: var(--bg-main);">
             
             <!-- TOP BAR HEADER -->
-            <header id="top-bar" class="h-14 border-b flex items-center justify-between px-4 transition-all z-20" style="border-color: var(--border-color); background-color: var(--bg-main);">
-                <div class="flex items-center space-x-2">
-                    <button id="open-sidebar-btn" onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-black/5">
-                        <i data-lucide="menu" class="w-5 h-5"></i>
+            <header id="top-bar" class="h-auto py-2 border-b flex flex-wrap items-center justify-between px-4 gap-2 transition-all z-20" style="border-color: var(--border-color); background-color: var(--bg-main);">
+                <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                    <button id="open-sidebar-btn" onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-black/5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu w-5 h-5"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
                     </button>
                     
-                    <!-- Font Selector Toggle -->
-                    <div class="flex items-center bg-black/5 dark:bg-white/10 rounded-lg p-0.5 text-xs">
-                        <button id="font-batang-btn" onclick="setFontFamily('batang')" class="px-2.5 py-1 rounded-md font-batang transition-all font-semibold bg-white dark:bg-zinc-800 shadow-sm">바탕</button>
-                        <button id="font-sans-btn" onclick="setFontFamily('sans')" class="px-2.5 py-1 rounded-md font-sans text-gray-500 transition-all">고딕</button>
+                    <!-- Expanded Font Selector Dropdown -->
+                    <div class="relative inline-block text-left">
+                        <button onclick="toggleDropdown('font-dropdown')" class="px-3 py-1.5 bg-white/80 dark:bg-zinc-800/80 rounded-xl text-xs font-bold border border-pink-100 flex items-center space-x-1 shadow-sm text-pink-600">
+                            <span id="current-font-name">💬 노토고딕</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-down" aria-hidden="true" class="lucide lucide-chevron-down w-3.5 h-3.5"><path d="m6 9 6 6 6-6"></path></svg>
+                        </button>
+                        <div id="font-dropdown" class="absolute left-0 mt-2 w-40 rounded-2xl bg-white dark:bg-zinc-800 shadow-xl border border-pink-100 dark:border-white/10 p-2 z-50 text-xs space-y-1 hidden">
+                            <button onclick="setFontFamily('batang', '🌸 고운바탕')" class="w-full text-left px-3 py-1.5 rounded-xl font-batang hover:bg-pink-50 dark:hover:bg-zinc-700">고운바탕</button>
+                            <button onclick="setFontFamily('dodum', '🌿 고운돋움')" class="w-full text-left px-3 py-1.5 rounded-xl font-dodum hover:bg-pink-50 dark:hover:bg-zinc-700">고운돋움</button>
+                            <button onclick="setFontFamily('maru', '📖 마루부리')" class="w-full text-left px-3 py-1.5 rounded-xl font-maru hover:bg-pink-50 dark:hover:bg-zinc-700">마루부리</button>
+                            <button onclick="setFontFamily('nanum', '📜 나눔명조')" class="w-full text-left px-3 py-1.5 rounded-xl font-nanum hover:bg-pink-50 dark:hover:bg-zinc-700">나눔명조</button>
+                            <button onclick="setFontFamily('sunflower', '🌻 해바라기')" class="w-full text-left px-3 py-1.5 rounded-xl font-sunflower hover:bg-pink-50 dark:hover:bg-zinc-700">해바라기</button>
+                            <button onclick="setFontFamily('sans', '💬 노토고딕')" class="w-full text-left px-3 py-1.5 rounded-xl font-sans hover:bg-pink-50 dark:hover:bg-zinc-700">노토고딕</button>
+                        </div>
+                    </div>
+
+                    <!-- Text Formatting Toolbar (Bold, Italic, Underline, Strikethrough) -->
+                    <div class="flex items-center bg-white/80 dark:bg-zinc-800/80 rounded-xl p-1 text-xs border border-pink-100 shadow-sm space-x-0.5">
+                        <button onclick="applyFormat('bold')" title="굵게 (Ctrl+B)" class="p-1.5 rounded-lg hover:bg-pink-100 dark:hover:bg-zinc-700 font-bold"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bold" aria-hidden="true" class="lucide lucide-bold w-3.5 h-3.5"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path></svg></button>
+                        <button onclick="applyFormat('italic')" title="기울임 (Ctrl+I)" class="p-1.5 rounded-lg hover:bg-pink-100 dark:hover:bg-zinc-700 italic"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="italic" aria-hidden="true" class="lucide lucide-italic w-3.5 h-3.5"><line x1="19" x2="10" y1="4" y2="4"></line><line x1="14" x2="5" y1="20" y2="20"></line><line x1="15" x2="9" y1="4" y2="20"></line></svg></button>
+                        <button onclick="applyFormat('underline')" title="밑줄 (Ctrl+U)" class="p-1.5 rounded-lg hover:bg-pink-100 dark:hover:bg-zinc-700 underline"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="underline" aria-hidden="true" class="lucide lucide-underline w-3.5 h-3.5"><path d="M6 4v6a6 6 0 0 0 12 0V4"></path><line x1="4" x2="20" y1="20" y2="20"></line></svg></button>
+                        <button onclick="applyFormat('strikeThrough')" title="취소선" class="p-1.5 rounded-lg hover:bg-pink-100 dark:hover:bg-zinc-700 line-through"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="strikethrough" aria-hidden="true" class="lucide lucide-strikethrough w-3.5 h-3.5"><path d="M16 4H9a3 3 0 0 0-2.83 4"></path><path d="M14 12a4 4 0 0 1 0 8H6"></path><line x1="4" x2="20" y1="12" y2="12"></line></svg></button>
+                        <button onclick="applyFormat('hiliteColor', '#fef08a')" title="형광팬" class="p-1.5 rounded-lg hover:bg-yellow-100 text-amber-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="highlighter" aria-hidden="true" class="lucide lucide-highlighter w-3.5 h-3.5"><path d="m9 11-6 6v3h9l3-3"></path><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"></path></svg></button>
                     </div>
 
                     <!-- Alignment Control -->
-                    <div class="hidden sm:flex items-center bg-black/5 dark:bg-white/10 rounded-lg p-0.5 text-xs ml-2">
-                        <button id="align-left-btn" onclick="setTextAlign('left')" class="p-1 rounded text-gray-700 bg-white dark:bg-zinc-800 shadow-sm"><i data-lucide="align-left" class="w-3.5 h-3.5"></i></button>
-                        <button id="align-center-btn" onclick="setTextAlign('center')" class="p-1 rounded text-gray-500 hover:text-gray-700"><i data-lucide="align-center" class="w-3.5 h-3.5"></i></button>
+                    <div class="flex items-center bg-white/80 dark:bg-zinc-800/80 rounded-xl p-1 text-xs border border-pink-100 shadow-sm">
+                        <button id="align-left-btn" onclick="setTextAlign('left')" class="p-1 rounded-lg text-pink-600 bg-white dark:bg-zinc-800 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="align-left" aria-hidden="true" class="lucide lucide-align-left w-3.5 h-3.5"><path d="M21 5H3"></path><path d="M15 12H3"></path><path d="M17 19H3"></path></svg></button>
+                        <button id="align-center-btn" onclick="setTextAlign('center')" class="p-1 rounded-lg text-gray-400 hover:text-pink-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="align-center" aria-hidden="true" class="lucide lucide-align-center w-3.5 h-3.5"><path d="M21 5H3"></path><path d="M17 12H7"></path><path d="M19 19H5"></path></svg></button>
+                    </div>
+
+                    <!-- Image & Sticker Insertion -->
+                    <div class="flex items-center bg-white/80 dark:bg-zinc-800/80 rounded-xl p-1 text-xs border border-pink-100 shadow-sm space-x-1">
+                        <button onclick="triggerImageUpload()" title="이미지 첨부" class="p-1 rounded-lg text-pink-500 hover:bg-pink-50 flex items-center space-x-1 font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image" aria-hidden="true" class="lucide lucide-image w-3.5 h-3.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                            <span class="text-[11px] hidden sm:inline">사진</span>
+                        </button>
+                        <button onclick="insertDivider()" title="구분선 삽입" class="p-1 rounded-lg text-pink-500 hover:bg-pink-50 font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="minus" aria-hidden="true" class="lucide lucide-minus w-3.5 h-3.5"><path d="M5 12h14"></path></svg>
+                        </button>
+                        <input type="file" id="image-upload-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                     </div>
                 </div>
 
                 <!-- Center/Right Controls: Timer & Menu -->
                 <div class="flex items-center space-x-2">
                     <!-- Automatic Timer Display -->
-                    <button onclick="openTimerModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/10 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer">
+                    <button onclick="openTimerModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/90 dark:bg-zinc-800/90 border border-pink-200 dark:border-white/10 shadow-sm hover:scale-105 transition-all cursor-pointer">
                         <span id="active-pulse-dot" class="w-2.5 h-2.5 rounded-full bg-green-500 active-dot-pulse" title="자동 작업 시간 측정 중"></span>
-                        <span class="text-xs font-mono font-medium" id="page-timer-display">⏱ 00:00</span>
+                        <span class="text-xs font-bold text-pink-600 dark:text-pink-300" id="page-timer-display">⏱ 00:14</span>
                     </button>
 
                     <!-- Extract Highlight Button -->
-                    <button onclick="createExcerptFromSelection()" title="선택 문장 발췌 저장" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 text-xs font-medium hover:bg-brand-200 transition-all">
-                        <i data-lucide="quote" class="w-3.5 h-3.5"></i>
-                        <span>선택 발췌</span>
+                    <button onclick="createExcerptFromSelection()" title="선택 문장 발췌 저장" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-300 text-xs font-bold hover:bg-pink-200 transition-all transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles w-3.5 h-3.5"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                        <span>문장 발췌</span>
                     </button>
 
                     <!-- Theme Selector Menu -->
                     <div class="relative inline-block text-left">
-                        <button onclick="toggleDropdown('theme-dropdown')" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5">
-                            <i data-lucide="palette" class="w-4 h-4"></i>
+                        <button onclick="toggleDropdown('theme-dropdown')" class="p-2 rounded-xl text-pink-500 hover:bg-pink-100/50 dark:hover:bg-white/5 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="palette" aria-hidden="true" class="lucide lucide-palette w-4.5 h-4.5"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
                         </button>
-                        <div id="theme-dropdown" class="hidden absolute right-0 mt-2 w-40 rounded-xl bg-white dark:bg-zinc-800 shadow-xl border border-black/10 dark:border-white/10 p-1.5 z-50 text-xs space-y-1">
-                            <button onclick="setTheme('theme-cotton')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-pink-50 dark:hover:bg-zinc-700">
-                                <span>코튼 핑크</span>
-                                <span class="w-3 h-3 rounded-full bg-pink-400"></span>
+                        <div id="theme-dropdown" class="hidden absolute right-0 mt-2 w-44 rounded-2xl bg-white dark:bg-zinc-800 shadow-xl border border-pink-100 dark:border-white/10 p-2 z-50 text-xs space-y-1">
+                            <button onclick="setTheme('theme-cotton')" class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-pink-50 dark:hover:bg-zinc-700 font-medium">
+                                <span>🌸 딸기 코튼</span>
+                                <span class="w-3.5 h-3.5 rounded-full bg-pink-400"></span>
                             </button>
-                            <button onclick="setTheme('theme-cream')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-amber-50 dark:hover:bg-zinc-700">
-                                <span>소프트 크림</span>
-                                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                            <button onclick="setTheme('theme-cream')" class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-amber-50 dark:hover:bg-zinc-700 font-medium">
+                                <span>🍯 바닐라 크림</span>
+                                <span class="w-3.5 h-3.5 rounded-full bg-amber-300"></span>
                             </button>
-                            <button onclick="setTheme('theme-lavender')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-purple-50 dark:hover:bg-zinc-700">
-                                <span>라벤더 드림</span>
-                                <span class="w-3 h-3 rounded-full bg-purple-400"></span>
+                            <button onclick="setTheme('theme-lavender')" class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-zinc-700 font-medium">
+                                <span>🍇 블루베리 밀크</span>
+                                <span class="w-3.5 h-3.5 rounded-full bg-purple-300"></span>
                             </button>
-                            <button onclick="setTheme('theme-paper')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-gray-100 dark:hover:bg-zinc-700">
-                                <span>페이퍼 라이트</span>
-                                <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+                            <button onclick="setTheme('theme-paper')" class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-gray-100 dark:hover:bg-zinc-700 font-medium">
+                                <span>☁️ 포근 라이트</span>
+                                <span class="w-3.5 h-3.5 rounded-full bg-gray-300"></span>
                             </button>
-                            <button onclick="setTheme('theme-dark')" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between hover:bg-zinc-100 dark:hover:bg-zinc-700">
-                                <span>다크 모드</span>
-                                <span class="w-3 h-3 rounded-full bg-zinc-800"></span>
+                            <button onclick="setTheme('theme-dark')" class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between hover:bg-zinc-100 dark:hover:bg-zinc-700 font-medium">
+                                <span>🌙 밤하늘 다크</span>
+                                <span class="w-3.5 h-3.5 rounded-full bg-zinc-800"></span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Export & Storage Dropdown -->
                     <div class="relative inline-block text-left">
-                        <button onclick="toggleDropdown('export-dropdown')" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5">
-                            <i data-lucide="download" class="w-4 h-4"></i>
+                        <button onclick="toggleDropdown('export-dropdown')" class="p-2 rounded-xl text-pink-500 hover:bg-pink-100/50 dark:hover:bg-white/5 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-4.5 h-4.5"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
                         </button>
-                        <div id="export-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-zinc-800 shadow-xl border border-black/10 dark:border-white/10 p-1.5 z-50 text-xs space-y-1">
-                            <button onclick="exportAsTxt()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700">
-                                <i data-lucide="file-text" class="w-3.5 h-3.5 text-gray-500"></i>
-                                <span>TXT 파일로 내보내기</span>
+                        <div id="export-dropdown" class="hidden absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-zinc-800 shadow-xl border border-pink-100 dark:border-white/10 p-2 z-50 text-xs space-y-1">
+                            <button onclick="exportAsTxt()" class="w-full text-left px-3 py-2 rounded-xl flex items-center space-x-2 hover:bg-pink-50 dark:hover:bg-zinc-700 font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="file-text" aria-hidden="true" class="lucide lucide-file-text w-3.5 h-3.5 text-pink-400"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+                                <span>TXT 파일로 저장</span>
                             </button>
-                            <button onclick="exportQuoteCardPNG()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700">
-                                <i data-lucide="image" class="w-3.5 h-3.5 text-gray-500"></i>
-                                <span>이미지 카드로 저장 (PNG)</span>
+                            <button onclick="exportQuoteCardPNG()" class="w-full text-left px-3 py-2 rounded-xl flex items-center space-x-2 hover:bg-pink-50 dark:hover:bg-zinc-700 font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="image" aria-hidden="true" class="lucide lucide-image w-3.5 h-3.5 text-pink-400"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                                <span>예쁜 이미지 카드로 저장</span>
                             </button>
-                            <div class="border-t border-gray-200 dark:border-zinc-700 my-1"></div>
-                            <button onclick="downloadBackupJSON()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700">
-                                <i data-lucide="database" class="w-3.5 h-3.5 text-gray-500"></i>
-                                <span>전체 백업 파일 다운로드</span>
+                            <div class="border-t border-pink-100 dark:border-zinc-700 my-1"></div>
+                            <button onclick="downloadBackupJSON()" class="w-full text-left px-3 py-2 rounded-xl flex items-center space-x-2 hover:bg-pink-50 dark:hover:bg-zinc-700 font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="database" aria-hidden="true" class="lucide lucide-database w-3.5 h-3.5 text-pink-400"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
+                                <span>백업 파일 만들기</span>
                             </button>
-                            <button onclick="triggerRestoreJSON()" class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-zinc-700 text-brand-600 dark:text-brand-400">
-                                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                                <span>백업 데이터 불러오기</span>
+                            <button onclick="triggerRestoreJSON()" class="w-full text-left px-3 py-2 rounded-xl flex items-center space-x-2 hover:bg-pink-50 dark:hover:bg-zinc-700 text-pink-600 dark:text-pink-400 font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="upload" aria-hidden="true" class="lucide lucide-upload w-3.5 h-3.5"><path d="M12 3v12"></path><path d="m17 8-5-5-5 5"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path></svg>
+                                <span>백업 데이터 가져오기</span>
                             </button>
                             <input type="file" id="restore-file-input" accept=".json" class="hidden" onchange="handleRestoreJSON(event)">
                         </div>
                     </div>
 
                     <!-- Focus Mode Toggle -->
-                    <button onclick="toggleFocusMode()" title="몰입 모드 (Alt+F)" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5">
-                        <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                    <button onclick="toggleFocusMode()" title="몰입 모드 (Alt+F)" class="p-2 rounded-xl text-pink-500 hover:bg-pink-100/50 dark:hover:bg-white/5 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="maximize-2" aria-hidden="true" class="lucide lucide-maximize-2 w-4.5 h-4.5"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg>
                     </button>
                 </div>
             </header>
 
             <!-- WORKSPACE CONTENT: EDITOR TAB -->
-            <div id="notes-view" class="flex-1 overflow-y-auto p-4 md:p-10 flex justify-center">
-                <div class="w-full max-w-3xl min-h-[80vh] flex flex-col rounded-2xl shadow-sm p-6 sm:p-12 transition-all" style="background-color: var(--bg-editor); border: 1px solid var(--border-color);">
+            <div id="notes-view" class="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center">
+                <div class="w-full max-w-3xl min-h-[80vh] flex flex-col rounded-3xl shadow-xl p-8 sm:p-12 transition-all border border-pink-100/80 dark:border-zinc-800" style="background-color: var(--bg-editor);">
                     
                     <!-- Title Input -->
-                    <input type="text" id="editor-title" placeholder="제목을 입력하세요..." oninput="onEditorTitleInput()" class="text-2xl sm:text-3xl font-batang font-bold bg-transparent border-b border-transparent hover:border-gray-200 focus:border-brand-300 focus:outline-none pb-3 mb-6 transition-colors" style="color: var(--text-main);">
+                    <input type="text" id="editor-title" placeholder="오늘의 상상을 적어보세요..." oninput="onEditorTitleInput()" class="text-2xl sm:text-3xl font-bold bg-transparent border-b-2 border-pink-100 hover:border-pink-300 focus:border-pink-400 focus:outline-none pb-3 mb-6 transition-colors font-sans" style="color: var(--text-main);">
 
                     <!-- Metadata Bar -->
-                    <div class="flex items-center justify-between text-xs text-gray-400 pb-6 mb-6 border-b border-gray-100 dark:border-zinc-800">
+                    <div class="flex items-center justify-between text-xs text-pink-400 font-medium pb-6 mb-6 border-b border-pink-100/50 dark:border-zinc-800">
                         <div class="flex items-center space-x-3">
-                            <span id="editor-date-display">2026. 10. 23</span>
+                            <span id="editor-date-display">2026년 10월 23일</span>
                             <span>•</span>
-                            <span id="editor-time-spent">작업 시간: 00:00</span>
+                            <span id="editor-time-spent">작업 시간: 00:14</span>
                         </div>
-                        <div id="editor-char-count">0 글자</div>
+                        <div id="editor-char-count">73 글자</div>
                     </div>
 
-                    <!-- Main Editable Body -->
-                    <div id="editor-content" contenteditable="true" data-placeholder="여기에 생각이나 이야기를 자유롭게 적어보세요..." oninput="onEditorContentInput()" class="flex-1 font-batang text-base sm:text-lg leading-relaxed focus:outline-none min-h-[50vh] whitespace-pre-wrap" style="color: var(--text-main);"></div>
+                    <!-- Main Editable Body (HTML content enabled) -->
+                    <div id="editor-content" contenteditable="true" data-placeholder="여기에 생각이나 이야기를 마음껏 적어보세요... 💖" oninput="onEditorContentInput()" class="flex-1 text-base sm:text-lg leading-relaxed focus:outline-none min-h-[50vh] whitespace-pre-wrap font-sans" style="color: var(--text-main);">이곳에 글을 써보세요. 텍스트를 드래그해 굵게, 기울임, 밑줄, 형광펜 등을 적용하고 사진이나 구분선도 자유롭게 추가할 수 있어요!</div>
                 </div>
             </div>
 
@@ -302,27 +351,30 @@
                 <div class="max-w-5xl mx-auto space-y-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-xl font-batang font-bold">✨ 발췌 보관함</h2>
-                            <p class="text-xs text-gray-500 mt-1">기록하며 마음에 남았던 문장들을 모아두는 공간입니다.</p>
+                            <h2 class="text-xl font-batang font-bold text-pink-600 dark:text-pink-300">🎀 수집한 예쁜 문장들</h2>
+                            <p class="text-xs text-gray-500 mt-1">글을 읽고 쓰면서 마음에 남았던 구절들입니다.</p>
                         </div>
-                        <button onclick="switchMainTab('notes')" class="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center space-x-1">
-                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-                            <span>노트로 돌아가기</span>
+                        <button onclick="switchMainTab('notes')" class="text-xs text-pink-500 font-bold hover:underline flex items-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-left" aria-hidden="true" class="lucide lucide-arrow-left w-3.5 h-3.5"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+                            <span>글목록으로</span>
                         </button>
                     </div>
 
                     <!-- Excerpts Grid -->
-                    <div id="excerpts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Dynamically populated excerpt cards -->
+                    <div id="excerpts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="col-span-full py-12 text-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bookmark" aria-hidden="true" class="lucide lucide-bookmark w-8 h-8 mx-auto mb-2 opacity-40"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"></path></svg>
+                        <p class="text-xs">저장된 발췌문이 없습니다.<br>글을 쓰다가 중요한 문장을 drag하여 발췌해 보세요.</p>
                     </div>
+                </div>
                 </div>
             </div>
 
             <!-- Floating Selection Toolbar (Pop-up on text highlight) -->
-            <div id="selection-popup" class="hidden absolute z-50 bg-gray-900 text-white text-xs rounded-xl shadow-2xl py-1.5 px-3 flex items-center space-x-2 transition-all transform -translate-x-1/2">
-                <button onclick="createExcerptFromSelection()" class="hover:text-brand-300 font-medium flex items-center space-x-1">
-                    <i data-lucide="quote" class="w-3.5 h-3.5"></i>
-                    <span>문장 발췌 저장</span>
+            <div id="selection-popup" class="absolute z-50 bg-pink-500 text-white text-xs font-bold rounded-2xl shadow-xl py-2 px-4 flex items-center space-x-2 transition-all transform -translate-x-1/2 hidden" style="top: 220.938px; left: 233.108px;">
+                <button onclick="createExcerptFromSelection()" class="hover:text-pink-200 flex items-center space-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles w-3.5 h-3.5"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                    <span>이 문장 발췌하기 💕</span>
                 </button>
             </div>
 
@@ -333,104 +385,104 @@
     </div>
 
     <!-- TIMER DETAILED STATS MODAL -->
-    <div id="timer-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-5 border border-black/10 dark:border-white/10">
+    <div id="timer-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-5 border border-pink-100 dark:border-zinc-700">
             <div class="flex items-center justify-between border-b pb-3 dark:border-zinc-700">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 active-dot-pulse"></span>
-                    <h3 class="font-bold text-sm">작업 시간 통계</h3>
+                    <span class="w-3 h-3 rounded-full bg-pink-400 active-dot-pulse"></span>
+                    <h3 class="font-bold text-sm text-pink-600 dark:text-pink-300">⏱ 시간 통계 보기</h3>
                 </div>
                 <button onclick="closeTimerModal()" class="text-gray-400 hover:text-gray-600 p-1">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-4 h-4"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
             </div>
 
             <div class="space-y-3">
-                <div class="bg-gray-50 dark:bg-zinc-700/50 p-3 rounded-xl flex justify-between items-center">
-                    <span class="text-xs text-gray-500 dark:text-gray-400">현재 글 작성 시간</span>
-                    <span class="font-mono font-bold text-base text-brand-600 dark:text-brand-400" id="modal-current-time">00:00:00</span>
+                <div class="bg-pink-50/60 dark:bg-zinc-700/50 p-3.5 rounded-2xl flex justify-between items-center">
+                    <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">현재 글 작성 시간</span>
+                    <span class="font-mono font-bold text-base text-pink-500" id="modal-current-time">00:00:00</span>
                 </div>
-                <div class="bg-gray-50 dark:bg-zinc-700/50 p-3 rounded-xl flex justify-between items-center">
-                    <span class="text-xs text-gray-500 dark:text-gray-400">오늘 누적 몰입 시간</span>
+                <div class="bg-pink-50/60 dark:bg-zinc-700/50 p-3.5 rounded-2xl flex justify-between items-center">
+                    <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">오늘 집중 시간</span>
                     <span class="font-mono font-bold text-base" id="modal-today-time">00:00:00</span>
                 </div>
-                <div class="bg-gray-50 dark:bg-zinc-700/50 p-3 rounded-xl flex justify-between items-center">
-                    <span class="text-xs text-gray-500 dark:text-gray-400">전체 총 작성 시간</span>
+                <div class="bg-pink-50/60 dark:bg-zinc-700/50 p-3.5 rounded-2xl flex justify-between items-center">
+                    <span class="text-xs text-gray-600 dark:text-gray-300 font-medium">누적 총 작성 시간</span>
                     <span class="font-mono font-bold text-base" id="modal-all-time">00:00:00</span>
                 </div>
             </div>
 
-            <div class="text-[11px] text-gray-400 bg-black/5 dark:bg-white/5 p-3 rounded-xl leading-relaxed">
-                💡 <b>자동 측정 안내:</b> 화면을 조작하거나 키보드를 칠 때만 자동으로 시간이 측정됩니다. 45초 동안 아무 반응이 없거나 탭을 이탈하면 타이머가 자동으로 정지됩니다.
+            <div class="text-[11px] text-pink-700/70 dark:text-gray-400 bg-pink-50/40 dark:bg-white/5 p-3 rounded-2xl leading-relaxed">
+                💡 키보드를 누르거나 화면을 움직일 때만 타이머가 동작해요! 45초 동안 휴식하면 타이머가 멈춘답니다.
             </div>
 
-            <button onclick="closeTimerModal()" class="w-full py-2 bg-brand-400 text-white rounded-xl font-medium text-xs hover:bg-brand-500">
-                확인
+            <button onclick="closeTimerModal()" class="w-full py-2.5 bg-pink-400 text-white rounded-2xl font-bold text-xs hover:bg-pink-500 shadow-md">
+                확인 💕
             </button>
         </div>
     </div>
 
     <!-- EXCERPT CARD EDIT & PREVIEW MODAL -->
-    <div id="excerpt-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+    <div id="excerpt-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border border-pink-100 dark:border-zinc-700">
             <div class="flex items-center justify-between border-b pb-3 dark:border-zinc-700">
-                <h3 class="font-bold text-sm flex items-center space-x-1.5">
-                    <i data-lucide="sparkles" class="w-4 h-4 text-brand-400"></i>
-                    <span>발췌 카드 만들기</span>
+                <h3 class="font-bold text-sm text-pink-600 dark:text-pink-300 flex items-center space-x-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles w-4 h-4 text-pink-400"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+                    <span>예쁜 발췌 카드 꾸미기</span>
                 </h3>
                 <button onclick="closeExcerptModal()" class="text-gray-400 hover:text-gray-600">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-4 h-4"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
             </div>
 
             <!-- Card Preview Area (Target for html2canvas) -->
-            <div id="quote-card-preview" class="p-8 rounded-2xl shadow-lg transition-all text-center flex flex-col justify-between min-h-[260px] bg-gradient-to-br from-pink-100 to-rose-50 text-gray-800 font-batang relative overflow-hidden">
-                <div class="text-3xl opacity-20 text-left font-serif">“</div>
+            <div id="quote-card-preview" class="p-8 rounded-3xl shadow-lg transition-all text-center flex flex-col justify-between min-h-[260px] bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 text-gray-800 font-batang relative overflow-hidden">
+                <div class="text-3xl opacity-30 text-left font-serif text-pink-400">“</div>
                 <div id="preview-quote-text" class="text-lg leading-relaxed font-medium px-4 my-auto whitespace-pre-wrap">
                     발췌할 문장이 여기에 들어갑니다.
                 </div>
-                <div class="text-3xl opacity-20 text-right font-serif">”</div>
-                <div class="mt-4 pt-4 border-t border-black/10 text-xs flex justify-between items-end opacity-80">
+                <div class="text-3xl opacity-30 text-right font-serif text-pink-400">”</div>
+                <div class="mt-4 pt-4 border-t border-pink-200 text-xs flex justify-between items-end opacity-80">
                     <div class="text-left">
-                        <div id="preview-author-display" class="font-bold">작자 미상 / 출처</div>
-                        <div id="preview-tags-display" class="text-[10px] opacity-70 mt-0.5">#글귀 #발췌</div>
+                        <div id="preview-author-display" class="font-bold">출처 / 작가</div>
+                        <div id="preview-tags-display" class="text-[10px] opacity-70 mt-0.5">#감성 #발췌</div>
                     </div>
-                    <div class="text-[10px] opacity-60">나의 글쓰기 노트</div>
+                    <div class="text-[10px] opacity-60">💖 나의 발췌 기록</div>
                 </div>
             </div>
 
             <!-- Styling Controls -->
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block font-medium mb-1.5">카드 테마 선택</label>
+                    <label class="block font-bold mb-1.5 text-gray-700 dark:text-gray-300">테마 칼라 선택</label>
                     <div class="grid grid-cols-6 gap-2">
-                        <button onclick="setCardTheme('pink')" class="h-8 rounded-lg bg-gradient-to-br from-pink-100 to-rose-100 border border-pink-300"></button>
-                        <button onclick="setCardTheme('sunset')" class="h-8 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-300"></button>
-                        <button onclick="setCardTheme('forest')" class="h-8 rounded-lg bg-gradient-to-br from-emerald-800 to-teal-900 text-white border border-emerald-700"></button>
-                        <button onclick="setCardTheme('lavender')" class="h-8 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-300"></button>
-                        <button onclick="setCardTheme('cream')" class="h-8 rounded-lg bg-gradient-to-br from-stone-100 to-amber-50 border border-stone-300"></button>
-                        <button onclick="setCardTheme('midnight')" class="h-8 rounded-lg bg-gradient-to-br from-gray-900 to-zinc-800 text-white border border-gray-700"></button>
+                        <button onclick="setCardTheme('pink')" class="h-8 rounded-xl bg-gradient-to-br from-pink-100 to-rose-200 border-2 border-pink-300 shadow-sm"></button>
+                        <button onclick="setCardTheme('sunset')" class="h-8 rounded-xl bg-gradient-to-br from-amber-100 to-orange-200 border-2 border-amber-300 shadow-sm"></button>
+                        <button onclick="setCardTheme('forest')" class="h-8 rounded-xl bg-gradient-to-br from-emerald-800 to-teal-900 text-white border-2 border-emerald-700 shadow-sm"></button>
+                        <button onclick="setCardTheme('lavender')" class="h-8 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-200 border-2 border-purple-300 shadow-sm"></button>
+                        <button onclick="setCardTheme('cream')" class="h-8 rounded-xl bg-gradient-to-br from-stone-100 to-amber-100 border-2 border-stone-300 shadow-sm"></button>
+                        <button onclick="setCardTheme('midnight')" class="h-8 rounded-xl bg-gradient-to-br from-gray-900 to-zinc-800 text-white border-2 border-gray-700 shadow-sm"></button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-medium mb-1">출처 / 작가</label>
-                        <input type="text" id="excerpt-author-input" oninput="updateCardPreview()" placeholder="예: [글제목] 또는 저자명" class="w-full px-3 py-1.5 rounded-lg border dark:bg-zinc-700 dark:border-zinc-600 focus:outline-none">
+                        <label class="block font-bold mb-1 text-gray-700 dark:text-gray-300">출처 / 저자</label>
+                        <input type="text" id="excerpt-author-input" oninput="updateCardPreview()" placeholder="예: [글제목] 또는 이름" class="w-full px-3 py-2 rounded-xl border border-pink-100 dark:bg-zinc-700 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-pink-300">
                     </div>
                     <div>
-                        <label class="block font-medium mb-1">해시태그</label>
-                        <input type="text" id="excerpt-tags-input" oninput="updateCardPreview()" placeholder="#감성 #생각" class="w-full px-3 py-1.5 rounded-lg border dark:bg-zinc-700 dark:border-zinc-600 focus:outline-none">
+                        <label class="block font-bold mb-1 text-gray-700 dark:text-gray-300">해시태그</label>
+                        <input type="text" id="excerpt-tags-input" oninput="updateCardPreview()" placeholder="#기록 #마음" class="w-full px-3 py-2 rounded-xl border border-pink-100 dark:bg-zinc-700 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-pink-300">
                     </div>
                 </div>
             </div>
 
             <div class="flex space-x-2 pt-2">
-                <button onclick="saveExcerptToStorage()" class="flex-1 py-2.5 bg-brand-400 hover:bg-brand-500 text-white font-medium rounded-xl text-xs shadow transition-all">
-                    보관함에 저장하기
+                <button onclick="saveExcerptToStorage()" class="flex-1 py-2.5 bg-pink-400 hover:bg-pink-500 text-white font-bold rounded-2xl text-xs shadow-md transition-all">
+                    보관함에 보관 💌
                 </button>
-                <button onclick="downloadExcerptPNG()" class="px-4 py-2.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl text-xs flex items-center space-x-1.5 shadow transition-all">
-                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <button onclick="downloadExcerptPNG()" class="px-4 py-2.5 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-2xl text-xs flex items-center space-x-1.5 shadow-md transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-3.5 h-3.5"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
                     <span>PNG 다운로드</span>
                 </button>
             </div>
@@ -456,40 +508,12 @@
         // Automatic Time Tracking Variables
         let isUserActive = false;
         let lastInteractionTime = Date.now();
-        const IDLE_TIMEOUT_MS = 45000; // 45 seconds automatic idle cutoff
+        const IDLE_TIMEOUT_MS = 45000;
         let timerInterval = null;
         let currentExcerptTemp = '';
         let currentCardTheme = 'pink';
-
-        // Initialize Default Data
-        const defaultState = {
-            activeTab: 'notebook',
-            theme: 'pink', // Set default theme to Pink Mode
-            activeNotebookId: 'default-1',
-            notebooks: [
-                {
-                    id: 'default-1',
-                    title: '무제_MUZE',
-                    author: '무제_MUZE',
-                    content: '<h2>글쓰기를 시작하세요</h2><p>여기에 자유롭게 생각을 기록하거나, 오른쪽 발췌 탭에서 수집한 구절을 활용해 보세요.</p>',
-                    updatedAt: new Date().toISOString()
-                }
-            ],
-            excerpts: [
-                {
-                    id: 'ex-1',
-                    text: '우리가 사랑한 것은 서로의 존재 자체였는지, 아니면 그 시절의 우리들이었는지.',
-                    source: '무제_MUZE',
-                    tags: ['감성', '문장'],
-                    createdAt: new Date().toISOString()
-                }
-            ],
-            timer: {
-                active: false,
-                seconds: 0,
-                autoTrack: true
-            }
-        };
+        let undoToastTimeout = null;
+        let deletedPageBackup = null;
 
         // --- LOCAL STORAGE MANAGER ---
         function saveToLocalStorage() {
@@ -512,15 +536,42 @@
             }
         }
 
+        // --- RICH TEXT FORMATTING & DESIGN TOOLS ---
+        function applyFormat(command, value = null) {
+            document.execCommand(command, false, value);
+            onEditorContentInput();
+        }
+
+        function triggerImageUpload() {
+            document.getElementById('image-upload-input').click();
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const imgHtml = `<img src="${evt.target.result}" alt="첨부 이미지" />`;
+                document.execCommand('insertHTML', false, imgHtml);
+                onEditorContentInput();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function insertDivider() {
+            const hrHtml = `<hr class="my-6 border-pink-200 dark:border-zinc-700" />`;
+            document.execCommand('insertHTML', false, hrHtml);
+            onEditorContentInput();
+        }
+
         // --- AUTOMATIC WRITING TIMER SYSTEM ---
         function setupAutoTimer() {
-            // Track activity events across the app
             const activityEvents = ['mousemove', 'keydown', 'keypress', 'mousedown', 'touchstart', 'scroll'];
             activityEvents.forEach(evt => {
                 window.addEventListener(evt, recordUserInteraction, { passive: true });
             });
 
-            // Handle visibility change (tab change / minimize)
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     isUserActive = false;
@@ -530,7 +581,6 @@
                 }
             });
 
-            // Master 1-second tick loop
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(timerTick, 1000);
         }
@@ -545,8 +595,6 @@
 
         function timerTick() {
             const now = Date.now();
-            
-            // Check idle condition (over 45s without activity)
             if (now - lastInteractionTime > IDLE_TIMEOUT_MS) {
                 if (isUserActive) {
                     isUserActive = false;
@@ -554,7 +602,6 @@
                 }
             }
 
-            // If active and on active page, increment counters
             if (isUserActive && appState.activePageId) {
                 const currentPage = appState.pages.find(p => p.id === appState.activePageId);
                 if (currentPage) {
@@ -624,7 +671,7 @@
             if (!page) return;
 
             document.getElementById('editor-title').value = page.title;
-            document.getElementById('editor-content').innerText = page.content;
+            document.getElementById('editor-content').innerHTML = page.content;
             
             const dateStr = new Date(page.updatedAt).toLocaleDateString('ko-KR', {
                 year: 'numeric', month: 'long', day: 'numeric'
@@ -699,37 +746,39 @@
 
             const filteredPages = appState.pages.filter(p => 
                 p.title.toLowerCase().includes(searchQuery) || 
-                p.content.toLowerCase().includes(searchQuery)
+                (p.content && p.content.toLowerCase().includes(searchQuery))
             );
 
             filteredPages.forEach(page => {
                 const isActive = page.id === appState.activePageId;
                 const div = document.createElement('div');
-                div.className = `group p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                div.className = `group p-2.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between ${
                     isActive 
-                        ? 'bg-white dark:bg-zinc-800 shadow-sm border border-black/5 font-medium' 
-            <header class="h-16 border-b border-rose-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md sticky top-0 z-30 px-6 flex items-center justify-between transition-colors">
-                <div class="flex items-center gap-3">
-                    <button id="sidebarToggleBtn" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300 transition-colors">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
-                        <h1 class="font-bold text-lg text-slate-800 dark:text-slate-100" id="currentDocTitle">무제_MUZE</h1>
+                        ? 'bg-white dark:bg-zinc-800 shadow-sm border border-pink-200/80 dark:border-pink-900/50 font-bold text-pink-600 dark:text-pink-300' 
+                        : 'hover:bg-white/60 dark:hover:bg-zinc-800/50 text-gray-600 dark:text-gray-300'
+                }`;
+                div.onclick = () => selectPage(page.id);
+
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2.5 overflow-hidden">
+                        <i data-lucide="heart" class="w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-pink-400 fill-current' : 'text-gray-300'}"></i>
+                        <span class="text-xs truncate">${escapeHtml(page.title || '제목 없는 글')}</span>
                     </div>
-                </div>
                     <div class="hidden group-hover:flex items-center space-x-1">
-                        <button onclick="duplicatePage('${page.id}', event)" title="복사" class="p-1 hover:text-brand-500 rounded"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="duplicatePage('${page.id}', event)" title="복사" class="p-1 hover:text-pink-500 rounded"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
                         <button onclick="deletePage('${page.id}', event)" title="삭제" class="p-1 hover:text-red-500 rounded"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                     </div>
                 `;
                 container.appendChild(div);
             });
 
-            // Update bottom stats
-            document.getElementById('page-count-display').innerText = `글 ${appState.pages.length}개`;
-            const totalWords = appState.pages.reduce((acc, p) => acc + (p.content ? p.content.length : 0), 0);
-            document.getElementById('total-words-display').innerText = `${totalWords.toLocaleString()} 자`;
+            document.getElementById('page-count-display').innerText = `📝 글 ${appState.pages.length}개`;
+            const totalWords = appState.pages.reduce((acc, p) => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = p.content || '';
+                return acc + (tempDiv.innerText ? tempDiv.innerText.length : 0);
+            }, 0);
+            document.getElementById('total-words-display').innerText = `✨ ${totalWords.toLocaleString()} 자`;
             
             lucide.createIcons();
         }
@@ -747,7 +796,7 @@
         function onEditorContentInput() {
             const page = appState.pages.find(p => p.id === appState.activePageId);
             if (!page) return;
-            page.content = document.getElementById('editor-content').innerText;
+            page.content = document.getElementById('editor-content').innerHTML;
             page.updatedAt = new Date().toISOString();
             updateCharCount();
             saveToLocalStorage();
@@ -762,7 +811,6 @@
         function setupEventListeners() {
             const editor = document.getElementById('editor-content');
             
-            // Show selection popup when text is highlighted
             document.addEventListener('selectionchange', () => {
                 const selection = window.getSelection();
                 const selectedText = selection.toString().trim();
@@ -786,7 +834,8 @@
             const currentPage = appState.pages.find(p => p.id === appState.activePageId);
             const defaultAuthor = currentPage ? `${currentPage.title}` : '글쓰기 노트';
 
-            currentExcerptTemp = selection || currentPage?.content.substring(0, 100) || '선택된 문장이 없습니다.';
+            const contentText = document.getElementById('editor-content').innerText || '';
+            currentExcerptTemp = selection || contentText.substring(0, 100) || '선택된 문장이 없습니다.';
             
             document.getElementById('preview-quote-text').innerText = currentExcerptTemp;
             document.getElementById('excerpt-author-input').value = defaultAuthor;
@@ -868,7 +917,6 @@
                 const div = document.createElement('div');
                 div.className = "p-6 rounded-2xl shadow-sm border border-black/5 flex flex-col justify-between min-h-[200px] font-batang relative group transition-all hover:shadow-md";
                 
-                // Color mapping
                 let themeClasses = "bg-white text-gray-800";
                 if (item.theme === 'pink') themeClasses = "bg-gradient-to-br from-pink-50 to-rose-100 text-gray-800";
                 if (item.theme === 'sunset') themeClasses = "bg-gradient-to-br from-amber-50 to-orange-100 text-amber-900";
@@ -923,7 +971,11 @@
             const page = appState.pages.find(p => p.id === appState.activePageId);
             if (!page) return;
 
-            const blob = new Blob([`${page.title}\n\n${page.content}`], { type: 'text/plain;charset=utf-8' });
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = page.content || '';
+            const plainContent = tempDiv.innerText;
+
+            const blob = new Blob([`${page.title}\n\n${plainContent}`], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${page.title || '글쓰기'}.txt`;
@@ -1006,24 +1058,23 @@
             }
         }
 
-        function setFontFamily(font) {
-            appState.fontFamily = font;
+        function setFontFamily(fontKey, fontLabel) {
+            appState.fontFamily = fontKey;
             const titleEl = document.getElementById('editor-title');
             const contentEl = document.getElementById('editor-content');
-            const fontBatangBtn = document.getElementById('font-batang-btn');
-            const fontSansBtn = document.getElementById('font-sans-btn');
+            const fontDisplayBtn = document.getElementById('current-font-name');
 
-            if (font === 'batang') {
-                titleEl.className = titleEl.className.replace('font-sans', 'font-batang');
-                contentEl.className = contentEl.className.replace('font-sans', 'font-batang');
-                fontBatangBtn.className = "px-2.5 py-1 rounded-md font-batang transition-all font-semibold bg-white dark:bg-zinc-800 shadow-sm";
-                fontSansBtn.className = "px-2.5 py-1 rounded-md font-sans text-gray-500 transition-all";
-            } else {
-                titleEl.className = titleEl.className.replace('font-batang', 'font-sans');
-                contentEl.className = contentEl.className.replace('font-batang', 'font-sans');
-                fontSansBtn.className = "px-2.5 py-1 rounded-md font-sans transition-all font-semibold bg-white dark:bg-zinc-800 shadow-sm";
-                fontBatangBtn.className = "px-2.5 py-1 rounded-md font-batang text-gray-500 transition-all";
-            }
+            const fontClasses = ['font-batang', 'font-dodum', 'font-maru', 'font-nanum', 'font-sunflower', 'font-sans'];
+            fontClasses.forEach(cls => {
+                titleEl.classList.remove(cls);
+                contentEl.classList.remove(cls);
+            });
+
+            titleEl.classList.add(`font-${fontKey}`);
+            contentEl.classList.add(`font-${fontKey}`);
+            if (fontDisplayBtn) fontDisplayBtn.innerText = fontLabel;
+
+            closeAllDropdowns();
             saveToLocalStorage();
         }
 
@@ -1032,8 +1083,8 @@
             const contentEl = document.getElementById('editor-content');
             contentEl.style.textAlign = align;
 
-            document.getElementById('align-left-btn').className = align === 'left' ? 'p-1 rounded text-gray-700 bg-white dark:bg-zinc-800 shadow-sm' : 'p-1 rounded text-gray-500 hover:text-gray-700';
-            document.getElementById('align-center-btn').className = align === 'center' ? 'p-1 rounded text-gray-700 bg-white dark:bg-zinc-800 shadow-sm' : 'p-1 rounded text-gray-500 hover:text-gray-700';
+            document.getElementById('align-left-btn').className = align === 'left' ? 'p-1 rounded text-pink-600 bg-white dark:bg-zinc-800 shadow-sm' : 'p-1 rounded text-gray-400 hover:text-pink-600';
+            document.getElementById('align-center-btn').className = align === 'center' ? 'p-1 rounded text-pink-600 bg-white dark:bg-zinc-800 shadow-sm' : 'p-1 rounded text-gray-400 hover:text-pink-600';
             saveToLocalStorage();
         }
 
@@ -1047,7 +1098,6 @@
             showToast('몰입 모드 설정 (Alt+F로 해제)');
         }
 
-        // Keyboard Shortcut for Focus Mode (Alt+F)
         window.addEventListener('keydown', (e) => {
             if (e.altKey && (e.key === 'f' || e.key === 'F')) {
                 e.preventDefault();
@@ -1068,14 +1118,34 @@
         }
 
         function closeAllDropdowns() {
-            document.querySelectorAll('#theme-dropdown, #export-dropdown').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('#theme-dropdown, #export-dropdown, #font-dropdown').forEach(el => el.classList.add('hidden'));
         }
 
-        // Close dropdowns on outside click
         window.onclick = function(e) {
             if (!e.target.closest('.relative')) {
                 closeAllDropdowns();
             }
+        };
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            loadFromLocalStorage();
+            applyTheme(appState.theme || 'theme-cotton');
+            
+            if (!appState.pages || appState.pages.length === 0) {
+                createNewPage('첫 번째 나의 상상 🌸', '이곳에 글을 써보세요. 텍스트를 드래그해 굵게, 기울임, 밑줄, 형광펜 등을 적용하고 사진이나 구분선도 자유롭게 추가할 수 있어요!');
+            } else {
+                renderPagesList();
+                if (!appState.activePageId || !appState.pages.find(p => p.id === appState.activePageId)) {
+                    appState.activePageId = appState.pages[0].id;
+                }
+                selectPage(appState.activePageId);
+            }
+
+            renderExcerptsGrid();
+            setupEventListeners();
+            setupAutoTimer();
+            lucide.createIcons();
         };
 
         // --- MODALS & TOASTS ---
@@ -1102,7 +1172,7 @@
         function showToast(msg) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = "bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center space-x-2 pointer-events-auto transition-all transform translate-y-2 opacity-0";
+            toast.className = "bg-pink-500 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl flex items-center space-x-2 pointer-events-auto transition-all transform translate-y-2 opacity-0 border border-pink-300";
             toast.innerHTML = `<span>${msg}</span>`;
             
             container.appendChild(toast);
@@ -1122,7 +1192,7 @@
             toast.className = "bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center justify-between space-x-4 pointer-events-auto transition-all";
             toast.innerHTML = `
                 <span>${msg}</span>
-                <button onclick="undoDelete()" class="text-brand-300 hover:underline font-bold">실행 취소 (7초)</button>
+                <button onclick="undoDelete()" class="text-pink-300 hover:underline font-bold">실행 취소 (7초)</button>
             `;
             
             container.appendChild(toast);
@@ -1135,8 +1205,9 @@
         }
 
         function escapeHtml(str) {
+            if (!str) return '';
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
     </script>
-</body>
-</html>
+
+</body></html>
