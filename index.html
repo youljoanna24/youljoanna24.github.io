@@ -9,23 +9,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#faf8f4; --panel:#fff; --border:#e5e0d8; --text:#2b2620; --muted:#8a8175;
-  --accent:#a3673c; --accent-soft:#f1e4d6;
+  --bg:#fdf0f3; --panel:#fffafb; --border:#f3d3dc; --text:#4a2c36; --muted:#a8808e;
+  --accent:#e0678a; --accent-soft:#fbdde6;
   --editor-font:'Georgia','Noto Serif KR',serif;
   --editor-size:16px;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
+:root[data-palette="beige"]{
+  --bg:#faf8f4; --panel:#fff; --border:#e5e0d8; --text:#2b2620; --muted:#8a8175;
+  --accent:#a3673c; --accent-soft:#f1e4d6;
+}
+:root[data-palette="lavender"]{
+  --bg:#f4f0fb; --panel:#fcfaff; --border:#dcd2f0; --text:#35294d; --muted:#8d80a8;
+  --accent:#8f6bd6; --accent-soft:#e6dcf7;
+}
+:root[data-palette="mint"]{
+  --bg:#eef8f4; --panel:#fafffd; --border:#cfe8de; --text:#25423a; --muted:#7aa092;
+  --accent:#3fa583; --accent-soft:#d8f0e6;
+}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#1c1a17; --panel:#242119; --border:#3a352c; --text:#ece7dd; --muted:#a89f8f;
-    --accent:#d69a63; --accent-soft:#332a1f;
+    --bg:#21171c; --panel:#2b1e24; --border:#4a3640; --text:#f6e6ec; --muted:#c4a1ae;
+    --accent:#f08cab; --accent-soft:#3d2a33;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#1c1a17; --panel:#242119; --border:#3a352c; --text:#ece7dd; --muted:#a89f8f;
-  --accent:#d69a63; --accent-soft:#332a1f;
+  --bg:#21171c; --panel:#2b1e24; --border:#4a3640; --text:#f6e6ec; --muted:#c4a1ae;
+  --accent:#f08cab; --accent-soft:#3d2a33;
 }
 *{box-sizing:border-box;}
 html,body{height:100%;}
@@ -66,7 +78,22 @@ body{
 #main{flex:1; display:flex; flex-direction:column; min-width:0;}
 #topbar{
   padding:14px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;
+  position:relative;
 }
+#stylePanel{
+  display:none; position:absolute; right:16px; top:calc(100% + 6px); z-index:20;
+  background:var(--panel); border:1px solid var(--border); border-radius:10px;
+  padding:14px; width:240px; box-shadow:0 6px 20px rgba(0,0,0,.14);
+  flex-direction:column; gap:10px; font-size:12.5px;
+}
+#stylePanel.open{display:flex;}
+#stylePanel label{display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted);}
+#stylePanel select{
+  border:1px solid var(--border); background:var(--bg); color:var(--text);
+  border-radius:7px; padding:6px 8px; font-size:12px; font-family:inherit;
+}
+#stylePanel input[type=range]{width:110px; accent-color:var(--accent);}
+#stylePanel .tbBtn{margin-left:0; width:100%;}
 #titleInput{
   font-size:22px; font-weight:bold; border:none; background:transparent; color:var(--text);
   outline:none; width:100%; font-family:var(--editor-font);
@@ -79,6 +106,11 @@ body{
   border-radius:7px; padding:7px 12px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:nowrap;
 }
 #txtBtn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
+.tbBtn{
+  margin-left:10px; border:1px solid var(--border); background:transparent; color:var(--text);
+  border-radius:7px; padding:7px 10px; font-size:12.5px; cursor:pointer; font-family:inherit; white-space:nowrap;
+}
+.tbBtn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
 #fontControls{display:flex; align-items:center; gap:6px; margin-left:12px; flex-shrink:0;}
 #fontControls select{
   border:1px solid var(--border); background:var(--panel); color:var(--text);
@@ -103,6 +135,8 @@ body{
   .print-page{
     width:210mm; height:297mm; box-sizing:border-box;
     page-break-after:always; padding:70px 60px; position:relative; overflow:hidden;
+    background-color:#fff; color:#222; background-size:cover; background-position:center;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
   .print-page:last-child{page-break-after:auto;}
   .print-page h1{font-size:21px; margin:0 0 28px; font-family:var(--editor-font);}
@@ -111,14 +145,19 @@ body{
 }
 #editorWrap{
   flex:1; overflow-y:auto; padding:32px 20px; display:flex; justify-content:center; align-items:flex-start;
-  background:var(--bg);
+  background-color:var(--bg); background-size:cover; background-position:center; background-repeat:no-repeat;
 }
 #page{
   width:100%; max-width:640px; aspect-ratio:210/297; margin:0 auto;
-  background:var(--panel); border:1px solid var(--border); border-radius:2px;
+  background:var(--panel);
+  background:color-mix(in srgb, var(--panel) var(--paper-alpha,100%), transparent);
+  border:1px solid var(--border); border-radius:2px;
   box-shadow:0 2px 10px rgba(0,0,0,.06);
   padding:56px 48px; position:relative; flex-shrink:0;
 }
+#page{background-size:cover; background-position:center; background-repeat:no-repeat;}
+#fgColor{width:44px; height:28px; padding:0; border:1px solid var(--border); border-radius:6px; background:transparent; cursor:pointer;}
+.panelTitle{font-size:11.5px; color:var(--accent); font-weight:bold; margin-top:2px;}
 #editor{
   width:100%; height:100%; min-height:520px; border:none; outline:none; resize:none;
   background:transparent; color:var(--text); font-size:var(--editor-size); line-height:2; font-family:var(--editor-font);
@@ -149,6 +188,7 @@ body{
   #titleInput{font-size:19px;}
   #status{display:none;}
   #charCount{display:none;}
+  .tbBtn{padding:6px 7px; font-size:11px; margin-left:6px;}
   #txtBtn{padding:6px 8px; font-size:11px; margin-left:6px;}
   #pdfBtn{padding:6px 8px; font-size:11px; margin-left:6px;}
   #page{padding:32px 22px;}
@@ -190,8 +230,47 @@ body{
     </div>
     <div id="status">저장됨</div>
     <span id="charCount">0자</span>
+    <button id="styleBtn" class="tbBtn" title="색상·배경 꾸미기">🎨</button>
+    <button id="themeBtn" class="tbBtn" title="다크모드 켜기/끄기">🌙</button>
+    <button id="copyBtn" class="tbBtn" title="현재 페이지 글 복사">복사</button>
     <button id="txtBtn" title="TXT로 내보내기">TXT 저장</button>
     <button id="pdfBtn" title="현재 페이지를 PDF로 저장">PDF 저장</button>
+    <div id="stylePanel">
+      <label>화면 색상
+        <select id="paletteSelect">
+          <option value="pink">핑크</option>
+          <option value="lavender">라벤더</option>
+          <option value="mint">민트</option>
+          <option value="beige">베이지</option>
+        </select>
+      </label>
+      <div class="panelTitle">글 디자인 (지금 보는 페이지)</div>
+      <label>배경
+        <select id="designSelect">
+          <option value="none">없음</option>
+          <option value="sky">핑크 하늘</option>
+          <option value="sunset">노을</option>
+          <option value="lavender">라벤더 구름</option>
+          <option value="mint">민트 숨결</option>
+          <option value="photo" disabled>내 사진</option>
+        </select>
+      </label>
+      <label>글자색
+        <select id="fgSelect">
+          <option value="">기본</option>
+          <option value="#ffffff">흰색</option>
+          <option value="#2b2b2b">검정</option>
+          <option value="#7a2f4d">진한 핑크</option>
+          <option value="custom" disabled>직접 고른 색</option>
+        </select>
+      </label>
+      <label>글자색 직접 고르기
+        <input id="fgColor" type="color" value="#4a2c36">
+      </label>
+      <button id="bgUploadBtn" class="tbBtn">내 사진 넣기</button>
+      <button id="bgClearBtn" class="tbBtn">디자인 지우기</button>
+      <input id="bgFile" type="file" accept="image/*" style="display:none;">
+    </div>
   </div>
   <div id="editorWrap">
     <div id="page">
@@ -221,12 +300,13 @@ function loadPages(){
   }catch(e){ pages = []; }
 }
 function persist(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(pages)); return true; }catch(e){ return false; }
 }
 function newPage(){
   const p = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:"", content:"", created: Date.now(), updated: Date.now() };
   pages.unshift(p);
   currentId = p.id;
+  rememberLast();
   persist();
   renderList();
   renderEditor();
@@ -241,8 +321,13 @@ function deletePage(id, e){
   renderList();
   renderEditor();
 }
+const LAST_KEY = "writing-site-last-v1";
+function rememberLast(){
+  try{ localStorage.setItem(LAST_KEY, currentId || ""); }catch(e){}
+}
 function selectPage(id){
   currentId = id;
+  rememberLast();
   renderList();
   renderEditor();
   if(window.innerWidth<=640) document.getElementById("sidebar").classList.remove("open");
@@ -296,6 +381,7 @@ function renderEditor(){
     prevBtn.disabled = true;
     nextBtn.disabled = true;
     updateCharCount();
+    applyDesign();
     return;
   }
   editor.style.display = "block";
@@ -311,6 +397,7 @@ function renderEditor(){
   prevBtn.disabled = idx<=0;
   nextBtn.disabled = idx>=order.length-1;
   updateCharCount();
+  applyDesign();
 }
 function onEdit(){
   const p = pages.find(p=>p.id===currentId);
@@ -350,7 +437,13 @@ document.getElementById("sizeSelect").onchange = applyFontSettings;
 loadFontSettings();
 
 loadPages();
-if(pages.length){ currentId = pages.slice().sort((a,b)=>b.updated-a.updated)[0].id; }
+if(pages.length){
+  let lastId = "";
+  try{ lastId = localStorage.getItem(LAST_KEY) || ""; }catch(e){}
+  currentId = pages.some(p=>p.id===lastId)
+    ? lastId
+    : pages.slice().sort((a,b)=>b.updated-a.updated)[0].id;
+}
 renderList();
 
 // wire up editor area (must exist in DOM already)
@@ -418,6 +511,14 @@ function exportPDF(){
     });
   }
   area.innerHTML = html;
+  area.querySelectorAll(".print-page").forEach(el=>{
+    if(p.bg) el.style.backgroundImage = p.bg;
+    if(p.fg){
+      el.style.color = p.fg;
+      const ft = el.querySelector(".print-footer");
+      if(ft) ft.style.color = p.fg;
+    }
+  });
   window.print();
 }
 window.addEventListener("afterprint", ()=>{
@@ -453,6 +554,173 @@ document.getElementById("nextBtn").onclick = ()=>{
   const idx = order.findIndex(x=>x.id===currentId);
   if(idx<order.length-1) selectPage(order[idx+1].id);
 };
+
+// 꾸미기: 화면 색상 + 글(페이지)별 디자인
+const STYLE_KEY = "writing-site-style-v1";
+const DESIGNS = {
+  sky:     {css:"linear-gradient(165deg,#e9a3b8 0%,#c487b5 40%,#a98bc9 70%,#f4c3cf 100%)", fg:"#ffffff"},
+  sunset:  {css:"linear-gradient(180deg,#f7c1a3 0%,#f19bb0 50%,#b887c4 100%)", fg:"#ffffff"},
+  lavender:{css:"linear-gradient(160deg,#cdb9ee 0%,#e6c3dd 55%,#f8dbe4 100%)", fg:"#4a2c5a"},
+  mint:    {css:"linear-gradient(160deg,#bfe9dc 0%,#d7ecf2 55%,#f4e6f3 100%)", fg:"#25423a"}
+};
+function applyPalette(v){
+  if(v==="pink") document.documentElement.removeAttribute("data-palette");
+  else document.documentElement.setAttribute("data-palette", v);
+}
+(function initStyle(){
+  let saved = {};
+  try{ saved = JSON.parse(localStorage.getItem(STYLE_KEY) || "{}"); }catch(e){}
+  if(saved.palette) document.getElementById("paletteSelect").value = saved.palette;
+  applyPalette(document.getElementById("paletteSelect").value);
+  try{ localStorage.removeItem("writing-site-bg-v1"); }catch(e){}
+})();
+document.getElementById("paletteSelect").onchange = (e)=>{
+  applyPalette(e.target.value);
+  try{ localStorage.setItem(STYLE_KEY, JSON.stringify({palette:e.target.value})); }catch(err){}
+};
+function curPage(){ return pages.find(p=>p.id===currentId); }
+function applyDesign(){
+  const p = curPage();
+  const bg = p && p.bg ? p.bg : "";
+  const fg = p && p.fg ? p.fg : "";
+  document.getElementById("page").style.backgroundImage = bg;
+  document.getElementById("editor").style.color = fg;
+  document.getElementById("pageNumOnPage").style.color = fg;
+  let key = "none";
+  if(bg){ key = Object.keys(DESIGNS).find(k=>DESIGNS[k].css===bg) || "photo"; }
+  const dsel = document.getElementById("designSelect");
+  const fsel = document.getElementById("fgSelect");
+  dsel.value = key;
+  const isPreset = Array.from(fsel.options).some(o=>o.value===fg && o.value!=="custom");
+  fsel.value = isPreset ? fg : "custom";
+  const m = getComputedStyle(document.getElementById("editor")).color.match(/\d+/g);
+  if(m){
+    document.getElementById("fgColor").value = "#" + m.slice(0,3).map(n=>(+n).toString(16).padStart(2,"0")).join("");
+  }
+  [dsel, fsel, document.getElementById("fgColor"), document.getElementById("bgUploadBtn"), document.getElementById("bgClearBtn")]
+    .forEach(el=>{ el.disabled = !p; });
+}
+function setDesign(bg, fg){
+  const p = curPage();
+  if(!p) return;
+  const prev = {bg:p.bg, fg:p.fg};
+  if(bg!==undefined) p.bg = bg;
+  if(fg!==undefined) p.fg = fg;
+  if(!persist()){
+    p.bg = prev.bg; p.fg = prev.fg;
+    applyDesign();
+    alert("사진이 커서 저장하지 못했어요. 더 작은 사진으로 해보세요.");
+    return;
+  }
+  applyDesign();
+}
+document.getElementById("designSelect").onchange = (e)=>{
+  const d = DESIGNS[e.target.value];
+  if(e.target.value==="none") setDesign("", "");
+  else if(d) setDesign(d.css, d.fg);
+};
+document.getElementById("fgSelect").onchange = (e)=>setDesign(undefined, e.target.value);
+document.getElementById("fgColor").oninput = (e)=>{
+  document.getElementById("editor").style.color = e.target.value;
+  document.getElementById("pageNumOnPage").style.color = e.target.value;
+};
+document.getElementById("fgColor").onchange = (e)=>setDesign(undefined, e.target.value);
+document.getElementById("bgClearBtn").onclick = ()=>setDesign("", "");
+document.getElementById("bgUploadBtn").onclick = ()=>document.getElementById("bgFile").click();
+document.getElementById("bgFile").onchange = (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const max = 1200;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      const url = c.toDataURL("image/jpeg", 0.7);
+      const p = curPage();
+      setDesign('url("' + url + '")', (p && p.fg) || "#ffffff");
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(f);
+  e.target.value = "";
+};
+document.getElementById("styleBtn").onclick = (e)=>{
+  e.stopPropagation();
+  document.getElementById("stylePanel").classList.toggle("open");
+};
+document.addEventListener("click", (e)=>{
+  const panel = document.getElementById("stylePanel");
+  if(panel.classList.contains("open") && !panel.contains(e.target)) panel.classList.remove("open");
+});
+
+// 다크모드 토글 (선택값 기억)
+const THEME_KEY = "writing-site-theme-v1";
+function isDarkNow(){
+  const t = document.documentElement.getAttribute("data-theme");
+  if(t) return t==="dark";
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function updateThemeBtn(){
+  document.getElementById("themeBtn").textContent = isDarkNow() ? "☀️" : "🌙";
+}
+try{
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+}catch(e){}
+document.getElementById("themeBtn").onclick = ()=>{
+  const next = isDarkNow() ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  updateThemeBtn();
+};
+updateThemeBtn();
+
+// 현재 페이지 글 복사
+document.getElementById("copyBtn").onclick = async ()=>{
+  const p = pages.find(p=>p.id===currentId);
+  const btn = document.getElementById("copyBtn");
+  if(!p){ alert("복사할 페이지가 없어요."); return; }
+  const text = (p.title ? p.title + "\n\n" : "") + (p.content||"");
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(e){
+    const editor = document.getElementById("editor");
+    editor.focus(); editor.select(); document.execCommand("copy");
+  }
+  btn.textContent = "복사됨 ✓";
+  setTimeout(()=>{ btn.textContent = "복사"; }, 1200);
+};
+
+// 단축키: Alt+N 새 페이지, Alt+←/→ 페이지 이동, Ctrl/Cmd+P 현재 페이지 PDF
+document.addEventListener("keydown", (e)=>{
+  if(e.altKey && !e.ctrlKey && !e.metaKey){
+    if(e.key==="n" || e.key==="N" || e.code==="KeyN"){ e.preventDefault(); newPage(); }
+    else if(e.key==="ArrowLeft"){ e.preventDefault(); document.getElementById("prevBtn").click(); }
+    else if(e.key==="ArrowRight"){ e.preventDefault(); document.getElementById("nextBtn").click(); }
+  }
+  if((e.ctrlKey || e.metaKey) && (e.key==="p" || e.key==="P")){
+    e.preventDefault();
+    exportPDF();
+  }
+});
+
+// Tab 키로 문단 들여쓰기 (전각 공백 2칸)
+document.getElementById("editor").addEventListener("keydown", (e)=>{
+  if(e.key==="Tab" && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey){
+    e.preventDefault();
+    const ta = e.target;
+    const s = ta.selectionStart, en = ta.selectionEnd;
+    const indent = "\u3000\u3000";
+    ta.value = ta.value.slice(0,s) + indent + ta.value.slice(en);
+    ta.selectionStart = ta.selectionEnd = s + indent.length;
+    onEdit();
+  }
+});
 
 renderEditor();
 
