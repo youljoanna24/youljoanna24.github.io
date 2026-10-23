@@ -3,857 +3,562 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>무제_MUZE - 글쓰기 및 발췌 아카이브</title>
-    <!-- Tailwind CSS -->
+    <title>무제_MUZE - 글쓰기 & 발췌 아카이브</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- html2canvas for PNG Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- html2pdf for Direct PDF Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Web Fonts -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Maru+Buri:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#fff0f3',
-                            100: '#ffe3e8',
-                            200: '#fccad3',
-                            300: '#f89eb1',
-                            400: '#f36886',
-                            500: '#e83e65',
-                            600: '#d3204c',
-                            700: '#b1143a',
-                            800: '#931434',
-                            900: '#7d1530',
+                        rosepink: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
                         }
-                    },
-                    fontFamily: {
-                        sans: ['Pretendard', 'sans-serif'],
-                        batang: ['Gowun Batang', 'serif'],
-                        myeongjo: ['Nanum Myeongjo', 'serif'],
-                        maruburi: ['Maru Buri', 'serif'],
-                        dodum: ['Gowun Dodum', 'sans-serif']
                     }
                 }
             }
         }
     </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gowun+Batang&family=Gowun+Dodum&family=Maru+Buri&family=Nanum+Gothic&family=Nanum+Myeongjo&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- html2pdf Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #fff8f9;
+            font-family: 'Gowun Batang', serif;
+            background-color: #fff5f6;
+            color: #4a3e3e;
         }
-        /* Custom Pink Scrollbar */
+        .font-batang { font-family: 'Gowun Batang', serif; }
+        .font-dodum { font-family: 'Gowun Dodum', sans-serif; }
+        .font-myeongjo { font-family: 'Nanum Myeongjo', serif; }
+        .font-maruburi { font-family: 'Maru Buri', serif; }
+        .font-pen { font-family: 'Nanum Pen Script', cursive; }
+        .font-dongle { font-family: 'Dongle', sans-serif; }
+        .font-noto { font-family: 'Noto Sans KR', sans-serif; }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(243, 104, 134, 0.05);
+            background: #fff0f3;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(243, 104, 134, 0.25);
-            border-radius: 4px;
+            background: #fca5a5;
+            border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(243, 104, 134, 0.45);
+            background: #f87171;
         }
 
-        /* Standard A4 Container for Image & PDF Export */
-        .a4-canvas-container {
-            width: 794px; /* Standard A4 width at 96DPI */
-            min-height: 1123px; /* Standard A4 height at 96DPI */
-            padding: 65px 75px;
-            box-sizing: border-box;
+        /* Editor content styling */
+        #editorContent[contenteditable="true"]:empty:before {
+            content: attr(placeholder);
+            color: #dda0a0;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* Printable A4 Canvas Styling */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: auto;
             background: #ffffff;
-            color: #2b2b2b;
-            word-break: break-all;
-            white-space: pre-wrap;
-            line-height: 1.85;
-            font-size: 15px;
+            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.08);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printArea, #printArea * {
+                visibility: visible;
+            }
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 15mm;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden text-gray-800 bg-[#FFF5F7]">
+<body class="h-screen flex flex-col overflow-hidden bg-rose-50/50">
 
-    <!-- Header -->
-    <header class="h-14 bg-white/90 backdrop-blur border-b border-brand-100 flex items-center justify-between px-4 z-20 shrink-0 shadow-sm">
+    <!-- App Header -->
+    <header class="h-14 bg-white/80 backdrop-blur border-b border-rose-100 flex items-center justify-between px-6 z-20">
         <div class="flex items-center gap-3">
-            <button id="toggle-sidebar-btn" class="p-2 text-brand-700 hover:text-brand-900 hover:bg-brand-50 rounded-lg transition-colors">
-                <i data-lucide="panel-left-open" class="w-5 h-5"></i>
-            </button>
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-brand-400 inline-block ring-4 ring-brand-100"></span>
-                <h1 class="font-bold text-lg tracking-tight text-brand-900">무제_MUZE</h1>
-                <span class="text-xs px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-600 border border-brand-200 font-medium">집필 노트</span>
-            </div>
+            <span class="text-rose-500 text-lg font-bold tracking-wider font-dodum">무제_MUZE</span>
+            <span class="text-xs bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full font-dodum">집필 & 발췌 노트</span>
         </div>
-
-        <!-- Timer & Export Actions -->
-        <div class="flex items-center gap-4">
-            <div class="hidden sm:flex items-center gap-2 bg-brand-50/80 border border-brand-200/60 px-3.5 py-1.5 rounded-full text-xs text-brand-800 font-medium shadow-xs">
-                <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-500 animate-pulse"></i>
-                <span>집필 시간:</span>
-                <span id="active-timer-display" class="font-mono font-semibold text-brand-900">00:00:00</span>
-                <span id="timer-status-dot" class="w-2 h-2 rounded-full bg-gray-300 ml-1" title="휴식 중"></span>
-            </div>
-
-            <!-- Export / Save Dropdown -->
-            <div class="relative">
-                <button id="export-menu-btn" class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium px-4 py-1.5 rounded-xl shadow-sm transition-all active:scale-95">
-                    <i data-lucide="download" class="w-4 h-4"></i>
-                    <span>저장 / 내보내기</span>
-                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-80"></i>
+        <div class="flex items-center gap-2">
+            <!-- Timer Display -->
+            <div class="flex items-center gap-2 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 text-xs text-rose-700 mr-2">
+                <i class="fa-regular fa-clock"></i>
+                <span id="timerDisplay" class="font-mono font-medium">00:00:00</span>
+                <button id="toggleTimerBtn" onclick="toggleTimer()" class="ml-1 text-rose-500 hover:text-rose-700">
+                    <i class="fa-solid fa-pause" id="timerIcon"></i>
                 </button>
-
-                <div id="export-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-brand-100 py-2 z-50 text-sm">
-                    <div class="px-3.5 py-1.5 text-xs font-semibold text-brand-400 tracking-wider uppercase border-b border-brand-50">현재 문서 내보내기</div>
-                    
-                    <button id="export-a4-png-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-2.5 transition-colors">
-                        <i data-lucide="image" class="w-4 h-4 text-brand-500"></i>
-                        <div>
-                            <div class="font-medium text-gray-800">PNG 이미지 저장 (A4 규격)</div>
-                            <div class="text-[11px] text-gray-400">우측 잘림 없는 선명한 A4 이미지</div>
-                        </div>
-                    </button>
-                    
-                    <button id="export-pdf-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-2.5 transition-colors">
-                        <i data-lucide="file-text" class="w-4 h-4 text-brand-500"></i>
-                        <div>
-                            <div class="font-medium text-gray-800">PDF 파일 다운로드</div>
-                            <div class="text-[11px] text-gray-400">A4 단일 문서로 즉시 저장</div>
-                        </div>
-                    </button>
-                    
-                    <button id="export-txt-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-2.5 transition-colors">
-                        <i data-lucide="file-type-2" class="w-4 h-4 text-brand-500"></i>
-                        <div>
-                            <div class="font-medium text-gray-800">TXT 텍스트 저장</div>
-                            <div class="text-[11px] text-gray-400">일반 텍스트 문서 저장</div>
-                        </div>
-                    </button>
-                    
-                    <div class="my-1 border-t border-brand-50"></div>
-                    <div class="px-3.5 py-1.5 text-xs font-semibold text-brand-400 tracking-wider uppercase">데이터 백업</div>
-                    <button id="backup-json-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-3 transition-colors">
-                        <i data-lucide="database" class="w-4 h-4 text-gray-400"></i>
-                        <span>전체 데이터 백업 (JSON)</span>
-                    </button>
-                    <button id="restore-json-btn" class="w-full text-left px-4 py-2.5 hover:bg-brand-50 text-gray-700 flex items-center gap-3 transition-colors">
-                        <i data-lucide="folder-up" class="w-4 h-4 text-gray-400"></i>
-                        <span>백업 파일 불러오기</span>
-                    </button>
-                    <input type="file" id="json-file-input" class="hidden" accept=".json">
-                </div>
             </div>
+            
+            <button onclick="openExportModal()" class="flex items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs px-3.5 py-1.5 rounded-lg transition shadow-sm font-dodum">
+                <i class="fa-solid fa-download"></i>
+                <span>저장 / 내보내기</span>
+            </button>
         </div>
     </header>
 
-    <!-- Main Workspace -->
-    <div class="flex-1 flex overflow-hidden relative">
-
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-72 bg-white/80 backdrop-blur border-r border-brand-100 flex flex-col shrink-0 transition-all duration-300 z-10">
-            <!-- New Note Button & Search -->
-            <div class="p-3 border-b border-brand-50 space-y-2">
-                <button id="new-note-btn" class="w-full bg-brand-50 hover:bg-brand-100 text-brand-700 font-medium py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm border border-brand-200/50 shadow-2xs">
-                    <i data-lucide="plus" class="w-4 h-4 text-brand-500"></i>
-                    <span>새 집필 노트</span>
-                </button>
-                <div class="relative">
-                    <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-brand-300"></i>
-                    <input type="text" id="search-input" placeholder="노트 및 발췌 검색..." class="w-full pl-8 pr-3 py-1.5 bg-brand-50/40 border border-brand-100 rounded-lg text-xs focus:outline-none focus:border-brand-300 text-gray-700 placeholder-brand-300">
-                </div>
-            </div>
-
-            <!-- Tab Navigation -->
-            <div class="flex border-b border-brand-100 bg-brand-50/30 text-xs font-medium">
-                <button id="tab-notes-btn" class="flex-1 py-2.5 text-center text-brand-600 border-b-2 border-brand-500 font-semibold flex items-center justify-center gap-1.5">
-                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                    <span>노트목차</span>
-                </button>
-                <button id="tab-excerpts-btn" class="flex-1 py-2.5 text-center text-gray-400 hover:text-brand-600 border-b-2 border-transparent flex items-center justify-center gap-1.5">
-                    <i data-lucide="quote" class="w-3.5 h-3.5"></i>
-                    <span>발췌 아카이브</span>
+    <!-- Main Container -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white/60 border-r border-rose-100 flex flex-col flex-shrink-0">
+            <div class="p-4 border-b border-rose-100 flex justify-between items-center">
+                <span class="text-xs font-bold text-rose-800 font-dodum tracking-wider">목차</span>
+                <button onclick="createNewPage()" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-2.5 py-1 rounded-md transition flex items-center gap-1 font-dodum">
+                    <i class="fa-solid fa-plus text-[10px]"></i> 새 노트
                 </button>
             </div>
-
-            <!-- Notes List View -->
-            <div id="notes-list-container" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <!-- Dynamic Notes Injected Here -->
+            <div id="pagesList" class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Pages dynamic rendering -->
             </div>
-
-            <!-- Excerpts List View -->
-            <div id="excerpts-list-container" class="hidden flex-1 overflow-y-auto p-2 space-y-2">
-                <!-- Dynamic Excerpts Injected Here -->
-            </div>
-
-            <!-- Sidebar Footer Status -->
-            <div class="p-3 border-t border-brand-100 bg-brand-50/20 text-xs text-brand-600/70 flex justify-between items-center font-medium">
-                <span id="total-stats-count">노트 0개 | 발췌 0개</span>
-                <span class="text-[10px] text-brand-400">무제_MUZE</span>
+            <div class="p-3 border-t border-rose-100 bg-white/40 text-center">
+                <span class="text-[11px] text-rose-400 font-dodum">무제_MUZE</span>
             </div>
         </aside>
 
-        <!-- Main Editor -->
-        <main class="flex-1 flex flex-col bg-white overflow-hidden relative">
-
-            <!-- Toolbar / Font Controls -->
-            <div class="h-11 border-b border-brand-100 px-4 flex items-center justify-between bg-white text-xs gap-3 shrink-0 overflow-x-auto shadow-2xs">
-                <div class="flex items-center gap-2">
-                    <span class="text-brand-400 font-medium">글꼴:</span>
-                    <select id="font-family-select" class="bg-brand-50/50 border border-brand-100 text-gray-700 rounded-lg px-2.5 py-1 focus:outline-none focus:border-brand-400 text-xs">
-                        <option value="font-sans">Pretendard (기본 산세리프)</option>
-                        <option value="font-batang">고운바탕 (감성 소설)</option>
-                        <option value="font-myeongjo">나눔명조 (고전 수필)</option>
-                        <option value="font-maruburi">마루부리 (정갈한 문체)</option>
-                        <option value="font-dodum">고운돋움 (깔끔한 돋움)</option>
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col bg-white/30 overflow-hidden">
+            
+            <!-- Editor Formatting Toolbar -->
+            <div class="h-12 border-b border-rose-100 bg-white/80 px-4 flex items-center justify-between gap-2 overflow-x-auto">
+                <div class="flex items-center gap-1">
+                    <!-- Font selector -->
+                    <select id="fontSelect" onchange="changeFont(this.value)" class="text-xs border border-rose-200 rounded px-2 py-1 bg-white text-rose-900 focus:outline-none focus:border-rose-400">
+                        <option value="font-batang">바탕체 (Gowun Batang)</option>
+                        <option value="font-dodum">돋움체 (Gowun Dodum)</option>
+                        <option value="font-myeongjo">명조체 (Nanum Myeongjo)</option>
+                        <option value="font-maruburi">마루부리체 (Maru Buri)</option>
+                        <option value="font-pen">손글씨 (Nanum Pen)</option>
+                        <option value="font-dongle">동글체 (Dongle)</option>
+                        <option value="font-noto">고딕체 (Noto Sans)</option>
                     </select>
 
-                    <span class="text-brand-400 font-medium ml-2">크기:</span>
-                    <select id="font-size-select" class="bg-brand-50/50 border border-brand-100 text-gray-700 rounded-lg px-2.5 py-1 focus:outline-none focus:border-brand-400 text-xs">
-                        <option value="text-sm">작게 (14px)</option>
-                        <option value="text-base" selected>보통 (16px)</option>
-                        <option value="text-lg">크게 (18px)</option>
-                        <option value="text-xl">매우 크게 (20px)</option>
-                    </select>
+                    <div class="h-4 w-[1px] bg-rose-200 mx-1"></div>
+
+                    <!-- Text Styles -->
+                    <button onclick="execCommand('bold')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="굵게"><i class="fa-solid fa-bold"></i></button>
+                    <button onclick="execCommand('italic')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="기울임꼴"><i class="fa-solid fa-italic"></i></button>
+                    <button onclick="execCommand('underline')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="밑줄"><i class="fa-solid fa-underline"></i></button>
+                    <button onclick="execCommand('strikeThrough')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="취소선"><i class="fa-solid fa-strikethrough"></i></button>
+
+                    <div class="h-4 w-[1px] bg-rose-200 mx-1"></div>
+
+                    <!-- Alignment -->
+                    <button onclick="execCommand('justifyLeft')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="왼쪽 정렬"><i class="fa-solid fa-align-left"></i></button>
+                    <button onclick="execCommand('justifyCenter')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="중앙 정렬"><i class="fa-solid fa-align-center"></i></button>
+                    <button onclick="execCommand('justifyRight')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="오른쪽 정렬"><i class="fa-solid fa-align-right"></i></button>
+
+                    <div class="h-4 w-[1px] bg-rose-200 mx-1"></div>
+
+                    <!-- Excerpt tool button -->
+                    <button onclick="createExcerptFromSelection()" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-2.5 py-1 rounded transition flex items-center gap-1 font-dodum">
+                        <i class="fa-solid fa-quote-left text-[10px]"></i> 선택 문장 발췌
+                    </button>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <button id="extract-selection-btn" class="flex items-center gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 px-3 py-1 rounded-lg text-xs font-medium transition-colors border border-brand-200/80">
-                        <i data-lucide="quote" class="w-3.5 h-3.5 text-brand-500"></i>
-                        <span>선택영역 발췌 생성</span>
-                    </button>
+                <div class="text-xs text-rose-400 font-dodum">
+                    <span id="autoSaveStatus">자동 저장됨</span>
+                </div>
+            </div>
+
+            <!-- Page Workspace (A4 style editor) -->
+            <div class="flex-1 overflow-y-auto p-6 md:p-10 flex justify-center">
+                <div class="a4-page shadow-sm border border-rose-100 flex flex-col" id="editorPaper">
+                    <!-- Title Input -->
+                    <input type="text" id="noteTitleInput" oninput="updateCurrentNoteTitle(this.value)" placeholder="제목을 입력하세요..." class="text-2xl font-bold border-b border-rose-200 pb-3 mb-6 focus:outline-none focus:border-rose-400 bg-transparent text-rose-950 font-dodum w-full">
                     
-                    <div class="text-brand-300 border-l border-brand-100 pl-3 flex items-center gap-3">
-                        <span>글자 수: <strong id="char-count" class="text-brand-800">0</strong>자</span>
-                        <span>단어 수: <strong id="word-count" class="text-brand-800">0</strong>개</span>
+                    <!-- Editable Body -->
+                    <div id="editorContent" contenteditable="true" oninput="saveCurrentNoteContent()" placeholder="이곳에 글을 자유롭게 작성해보세요..." class="flex-1 focus:outline-none text-base leading-relaxed text-gray-800 font-batang min-h-[500px]"></div>
+
+                    <!-- Page Footer Signature -->
+                    <div class="mt-12 pt-4 border-t border-rose-100 text-center text-xs text-rose-300 font-dodum">
+                        무제_MUZE
                     </div>
                 </div>
             </div>
 
-            <!-- Editor Document Page Container -->
-            <div class="flex-1 overflow-y-auto p-6 md:p-12 lg:p-14 flex justify-center bg-[#FFF8F9]">
-                <!-- Document Page Surface -->
-                <div class="w-full max-w-3xl bg-white min-h-[842px] shadow-sm border border-brand-100/70 rounded-2xl p-8 sm:p-14 flex flex-col">
-                    <!-- Title Input -->
-                    <input type="text" id="note-title-input" placeholder="제목 없는 집필 노트" class="w-full text-2xl sm:text-3xl font-bold border-b border-transparent hover:border-brand-100 focus:border-brand-300 focus:outline-none pb-3 mb-6 transition-colors bg-transparent text-gray-900 placeholder-brand-200">
-                    
-                    <!-- Content Input -->
-                    <textarea id="note-content-input" placeholder="이곳에 자유롭게 글을 작성하세요. 원하는 문장을 드래그하여 발췌 카드로 보관할 수 있습니다..." class="w-full flex-1 resize-none bg-transparent focus:outline-none leading-relaxed text-gray-800 font-sans text-base min-h-[500px]" spellcheck="false"></textarea>
-                </div>
-            </div>
-
-            <!-- Floating Selection Tooltip -->
-            <div id="selection-tooltip" class="hidden absolute bg-brand-900 text-white text-xs px-3.5 py-2 rounded-xl shadow-xl flex items-center gap-2 z-30 cursor-pointer hover:bg-brand-800 transition-all border border-brand-700">
-                <i data-lucide="quote" class="w-3.5 h-3.5 text-brand-300"></i>
-                <span>발췌문 카드로 만들기</span>
-            </div>
         </main>
     </div>
 
-    <!-- Render Container for Accurate A4 PNG/PDF Output -->
-    <div class="fixed left-[-9999px] top-[-9999px] overflow-hidden">
-        <div id="printable-a4-area" class="a4-canvas-container font-sans">
-            <div class="border-b-2 border-brand-400 pb-4 mb-8 flex justify-between items-end">
-                <div>
-                    <h1 id="render-title" class="text-2xl font-bold text-gray-900 mb-1">제목</h1>
-                </div>
-                <div class="text-right text-xs text-brand-300 font-mono" id="render-date">
-                    2026. 10. 23.
-                </div>
+    <!-- Export & Print Modal -->
+    <div id="exportModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl border border-rose-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-bold text-rose-900 font-dodum">저장 및 내보내기</h3>
+                <button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
-            <!-- Render Content with Full Whitespace Preservation -->
-            <div id="render-content" class="text-gray-800 text-base leading-relaxed whitespace-pre-wrap break-words">
-                내용
+            
+            <p class="text-xs text-gray-500 mb-5 font-dodum">원하는 형식으로 작성된 글을 내보내거나 보관할 수 있습니다.</p>
+
+            <div class="space-y-2.5">
+                <!-- PDF Download -->
+                <button onclick="downloadPDF()" class="w-full flex items-center justify-between p-3.5 bg-rose-50 hover:bg-rose-100/80 rounded-xl transition border border-rose-200/60 group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-rose-500 text-white flex items-center justify-center">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs font-bold text-rose-950 font-dodum">A4 PDF 다운로드</div>
+                            <div class="text-[11px] text-rose-500">A4 규격에 맞춘 고품질 PDF 문서</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-rose-400 group-hover:translate-x-1 transition"></i>
+                </button>
+
+                <!-- PNG Download -->
+                <button onclick="downloadPNG()" class="w-full flex items-center justify-between p-3.5 bg-rose-50 hover:bg-rose-100/80 rounded-xl transition border border-rose-200/60 group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-rose-400 text-white flex items-center justify-center">
+                            <i class="fa-solid fa-file-image"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs font-bold text-rose-950 font-dodum">A4 PNG 이미지 저장</div>
+                            <div class="text-[11px] text-rose-500">글자가 잘리지 않는 A4 이미지</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-rose-400 group-hover:translate-x-1 transition"></i>
+                </button>
+
+                <!-- TXT Download -->
+                <button onclick="downloadTXT()" class="w-full flex items-center justify-between p-3.5 bg-rose-50 hover:bg-rose-100/80 rounded-xl transition border border-rose-200/60 group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-rose-300 text-white flex items-center justify-center">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs font-bold text-rose-950 font-dodum">TXT 텍스트 파일</div>
+                            <div class="text-[11px] text-rose-500">순수 텍스트 파일 저장</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-rose-400 group-hover:translate-x-1 transition"></i>
+                </button>
             </div>
-            <div class="mt-16 pt-4 border-t border-brand-100 text-center text-xs text-brand-300 font-medium">
+
+            <div class="mt-5 pt-4 border-t border-rose-100 flex justify-end">
+                <button onclick="closeExportModal()" class="px-4 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg font-dodum">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Container for Printable / Export PDF Capture -->
+    <div id="printArea" class="hidden">
+        <div id="captureTarget" class="a4-page">
+            <h1 id="printTitle" class="text-2xl font-bold border-b border-rose-200 pb-3 mb-2 font-dodum text-rose-950"></h1>
+            <div id="printDate" class="text-right text-xs text-rose-400 mb-6 font-dodum"></div>
+            <div id="printBody" class="text-base leading-relaxed text-gray-800 font-batang whitespace-pre-wrap min-h-[600px]"></div>
+            <div class="mt-16 pt-4 border-t border-rose-100 text-center text-xs text-rose-400 font-dodum">
                 무제_MUZE
             </div>
         </div>
     </div>
 
-    <!-- Excerpt Modal -->
-    <div id="excerpt-modal" class="hidden fixed inset-0 bg-brand-950/20 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-brand-100 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-brand-900 flex items-center gap-2">
-                    <i data-lucide="quote" class="w-4 h-4 text-brand-500"></i>
-                    <span>새 발췌 카드 생성</span>
-                </h3>
-                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <!-- Excerpt Card Preview Target -->
-            <div id="excerpt-card-preview" class="p-6 rounded-xl bg-gradient-to-br from-brand-50 to-pink-50/60 border border-brand-100/80 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center">
-                <p id="modal-excerpt-text" class="text-gray-800 font-batang italic text-base leading-relaxed mb-3">
-                    "발췌된 문장이 여기에 표시됩니다."
-                </p>
-                <div class="text-xs text-brand-600 font-medium">
-                    — <span id="modal-excerpt-author">무제_MUZE</span>
-                </div>
-            </div>
-
-            <!-- Inputs -->
-            <div class="space-y-3 mb-6">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">출처 / 작성자</label>
-                    <input type="text" id="modal-author-input" value="무제_MUZE" class="w-full px-3 py-2 border border-brand-100 rounded-lg text-xs focus:outline-none focus:border-brand-400">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">카드 배경 테마</label>
-                    <div class="flex gap-2">
-                        <button data-theme="pink" class="theme-btn w-7 h-7 rounded-full bg-gradient-to-br from-pink-100 to-brand-100 border-2 border-brand-400"></button>
-                        <button data-theme="clean" class="theme-btn w-7 h-7 rounded-full bg-white border border-gray-300"></button>
-                        <button data-theme="dark" class="theme-btn w-7 h-7 rounded-full bg-gray-900 border border-gray-800"></button>
-                        <button data-theme="warm" class="theme-btn w-7 h-7 rounded-full bg-amber-50 border border-amber-200"></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <button id="save-excerpt-btn" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-medium py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                    <span>아카이브에 저장</span>
-                </button>
-                <button id="download-excerpt-card-btn" class="bg-brand-50 hover:bg-brand-100 text-brand-700 font-medium px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center gap-1.5 border border-brand-200/60">
-                    <i data-lucide="image" class="w-4 h-4"></i>
-                    <span>카드 이미지 저장</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- App Logic -->
+    <!-- JavaScript Application Logic -->
     <script>
         // State Management
-        let state = {
-            notes: [],
-            excerpts: [],
-            activeNoteId: null,
-            activeTab: 'notes',
-            timerSeconds: 0,
-            isTimerActive: false,
-            idleTimer: null
-        };
-
-        // DOM Elements
-        const notesListContainer = document.getElementById('notes-list-container');
-        const excerptsListContainer = document.getElementById('excerpts-list-container');
-        const noteTitleInput = document.getElementById('note-title-input');
-        const noteContentInput = document.getElementById('note-content-input');
-        const charCountEl = document.getElementById('char-count');
-        const wordCountEl = document.getElementById('word-count');
-        const activeTimerDisplay = document.getElementById('active-timer-display');
-        const timerStatusDot = document.getElementById('timer-status-dot');
-        const totalStatsCount = document.getElementById('total-stats-count');
-
-        // Font Controls
-        const fontFamilySelect = document.getElementById('font-family-select');
-        const fontSizeSelect = document.getElementById('font-size-select');
-
-        // Export & Modal Elements
-        const exportMenuBtn = document.getElementById('export-menu-btn');
-        const exportDropdown = document.getElementById('export-dropdown');
-        const excerptModal = document.getElementById('excerpt-modal');
-        const modalExcerptText = document.getElementById('modal-excerpt-text');
-        const modalAuthorInput = document.getElementById('modal-author-input');
-        const modalExcerptAuthor = document.getElementById('modal-excerpt-author');
-        const excerptCardPreview = document.getElementById('excerpt-card-preview');
-
-        // Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            loadStateFromLocalStorage();
-
-            if (state.notes.length === 0) {
-                createNewNote("무제_MUZE에 오신 것을 환영합니다", "이곳은 글쓰기와 발췌를 위한 아카이브 공간입니다.\n\n좌측 목차에서 새 집필 노트를 생성하거나 작성 중인 글에서 문장을 선택해 '발췌' 카드를 만들어 보세요.\n\n우측 상단의 '저장 / 내보내기' 버튼을 사용하면 글자 짤림 없는 깨끗한 A4 규격 이미지(PNG) 또는 PDF 파일로 쉽게 보관할 수 있습니다.");
-            } else {
-                renderNotesList();
-                renderExcerptsList();
-                selectNote(state.notes[0].id);
+        let notes = JSON.parse(localStorage.getItem('muze_notes')) || [
+            {
+                id: 'default-1',
+                title: '첫 번째 집필 노트',
+                content: '무제_MUZE에 오신 것을 환영합니다.\n\n이곳은 글쓰기와 발췌를 위한 아카이브 공간입니다. 좌측 목차에서 새 집필 노트를 생성하거나 작성 중인 글에서 문장을 선택해 발췌해보세요.\n\n우측 상단의 "저장 / 내보내기" 버튼을 사용하면 글자 짤림 없는 깨끗한 A4 규격 이미지(PNG) 또는 PDF 파일로 쉽게 보관할 수 있습니다.',
+                font: 'font-batang',
+                updatedAt: new Date().toISOString()
             }
+        ];
+        let currentNoteId = notes[0]?.id || 'default-1';
+        let timerSeconds = 0;
+        let timerActive = true;
+        let timerInterval = null;
 
-            setupEventListeners();
-            startWritingTimer();
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPagesList();
+            loadCurrentNote();
+            startTimer();
         });
 
-        // LocalStorage Logic
-        function saveStateToLocalStorage() {
-            localStorage.setItem('muze_pink_app_state', JSON.stringify({
-                notes: state.notes,
-                excerpts: state.excerpts,
-                timerSeconds: state.timerSeconds
-            }));
-            updateStatsUI();
-        }
-
-        function loadStateFromLocalStorage() {
-            const saved = localStorage.getItem('muze_pink_app_state');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    state.notes = parsed.notes || [];
-                    state.excerpts = parsed.excerpts || [];
-                    state.timerSeconds = parsed.timerSeconds || 0;
-                } catch (e) {
-                    console.error("Failed to restore state", e);
-                }
-            }
-        }
-
-        // Note Management
-        function createNewNote(title = "제목 없는 집필 노트", content = "") {
-            const newNote = {
-                id: 'note_' + Date.now(),
-                title: title,
-                content: content,
-                createdAt: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }),
-                updatedAt: Date.now()
-            };
-            state.notes.unshift(newNote);
-            saveStateToLocalStorage();
-            renderNotesList();
-            selectNote(newNote.id);
-        }
-
-        function selectNote(id) {
-            state.activeNoteId = id;
-            const note = state.notes.find(n => n.id === id);
-            if (!note) return;
-
-            noteTitleInput.value = note.title;
-            noteContentInput.value = note.content;
-
-            updateWordAndCharCount();
-            renderNotesList();
-        }
-
-        function updateCurrentNote() {
-            if (!state.activeNoteId) return;
-            const note = state.notes.find(n => n.id === state.activeNoteId);
-            if (!note) return;
-
-            note.title = noteTitleInput.value || "제목 없는 집필 노트";
-            note.content = noteContentInput.value;
-            note.updatedAt = Date.now();
-
-            saveStateToLocalStorage();
-            updateWordAndCharCount();
-            
-            const sidebarTitleEl = document.querySelector(`[data-note-id="${note.id}"] .note-title`);
-            if (sidebarTitleEl) {
-                sidebarTitleEl.textContent = note.title;
-            }
-
-            triggerActivity();
-        }
-
-        function deleteNote(id, event) {
-            event.stopPropagation();
-            if (state.notes.length <= 1) {
-                alert("최소 하나의 집필 노트는 유지되어야 합니다.");
-                return;
-            }
-            if (confirm("이 집필 노트를 삭제하시겠습니까?")) {
-                state.notes = state.notes.filter(n => n.id !== id);
-                saveStateToLocalStorage();
-                renderNotesList();
-                if (state.activeNoteId === id) {
-                    selectNote(state.notes[0].id);
-                }
-            }
-        }
-
-        // Excerpt Management
-        function saveExcerpt(text, author, theme = "pink") {
-            const newExcerpt = {
-                id: 'excerpt_' + Date.now(),
-                text: text,
-                author: author || "무제_MUZE",
-                theme: theme,
-                createdAt: new Date().toLocaleDateString('ko-KR')
-            };
-            state.excerpts.unshift(newExcerpt);
-            saveStateToLocalStorage();
-            renderExcerptsList();
-            closeExcerptModal();
-        }
-
-        function deleteExcerpt(id) {
-            state.excerpts = state.excerpts.filter(e => e.id !== id);
-            saveStateToLocalStorage();
-            renderExcerptsList();
-        }
-
-        // Render Sidebar Lists
-        function renderNotesList(query = '') {
-            notesListContainer.innerHTML = '';
-            const filtered = state.notes.filter(n => 
-                n.title.toLowerCase().includes(query.toLowerCase()) || 
-                n.content.toLowerCase().includes(query.toLowerCase())
-            );
-
-            filtered.forEach(note => {
-                const isActive = note.id === state.activeNoteId;
-                const div = document.createElement('div');
-                div.setAttribute('data-note-id', note.id);
-                div.className = `group p-3 rounded-xl cursor-pointer transition-all border ${
-                    isActive 
-                        ? 'bg-brand-50/90 border-brand-200 text-brand-900 shadow-2xs' 
-                        : 'hover:bg-brand-50/30 border-transparent text-gray-700'
-                }`;
-                div.onclick = () => selectNote(note.id);
-
-                div.innerHTML = `
-                    <div class="flex items-start justify-between gap-2 mb-1">
-                        <h4 class="note-title font-semibold text-xs truncate flex-1">${escapeHtml(note.title)}</h4>
-                        <button onclick="deleteNote('${note.id}', event)" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity p-0.5">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                    <p class="text-[11px] text-gray-400 line-clamp-2 leading-relaxed mb-1.5">${escapeHtml(note.content || '내용 없음')}</p>
-                    <div class="text-[10px] text-brand-300 font-mono">${note.createdAt}</div>
-                `;
-                notesListContainer.appendChild(div);
-            });
-            lucide.createIcons();
-            updateStatsUI();
-        }
-
-        function renderExcerptsList() {
-            excerptsListContainer.innerHTML = '';
-            if (state.excerpts.length === 0) {
-                excerptsListContainer.innerHTML = `
-                    <div class="text-center py-8 px-4 text-xs text-brand-300">
-                        <i data-lucide="quote" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
-                        저장된 발췌문이 없습니다.<br>글 작성 중 문장을 드래그해 만들어보세요.
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
-            state.excerpts.forEach(excerpt => {
-                const div = document.createElement('div');
-                div.className = 'p-3 rounded-xl bg-gradient-to-br from-pink-50/60 to-brand-50/40 border border-brand-100/70 relative group';
-                div.innerHTML = `
-                    <p class="text-xs font-batang italic text-gray-800 mb-2 leading-relaxed">"${escapeHtml(excerpt.text)}"</p>
-                    <div class="flex justify-between items-center text-[10px] text-brand-600 font-medium">
-                        <span>— ${escapeHtml(excerpt.author)}</span>
-                        <button onclick="deleteExcerpt('${excerpt.id}')" class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity">
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                `;
-                excerptsListContainer.appendChild(div);
-            });
-            lucide.createIcons();
-            updateStatsUI();
-        }
-
-        function updateStatsUI() {
-            totalStatsCount.textContent = `노트 ${state.notes.length}개 | 발췌 ${state.excerpts.length}개`;
-        }
-
-        // Active Writing Session Timer
-        function startWritingTimer() {
-            setInterval(() => {
-                if (state.isTimerActive) {
-                    state.timerSeconds++;
-                    const hours = String(Math.floor(state.timerSeconds / 3600)).padStart(2, '0');
-                    const minutes = String(Math.floor((state.timerSeconds % 3600) / 60)).padStart(2, '0');
-                    const seconds = String(state.timerSeconds % 60).padStart(2, '0');
-                    activeTimerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+        // Timer Logic
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timerActive) {
+                    timerSeconds++;
+                    updateTimerDisplay();
                 }
             }, 1000);
         }
 
-        function triggerActivity() {
-            state.isTimerActive = true;
-            timerStatusDot.className = "w-2 h-2 rounded-full bg-emerald-500 ml-1 animate-pulse";
-            timerStatusDot.title = "집필 중";
-
-            clearTimeout(state.idleTimer);
-            state.idleTimer = setTimeout(() => {
-                state.isTimerActive = false;
-                timerStatusDot.className = "w-2 h-2 rounded-full bg-gray-300 ml-1";
-                timerStatusDot.title = "휴식 중";
-            }, 45000);
-        }
-
-        // Stats & Selection Utility
-        function updateWordAndCharCount() {
-            const text = noteContentInput.value;
-            charCountEl.textContent = text.length;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            wordCountEl.textContent = words;
-        }
-
-        function handleSelection() {
-            const selectedText = window.getSelection().toString().trim();
-            const selectionTooltip = document.getElementById('selection-tooltip');
-            
-            if (selectedText.length > 3) {
-                const range = window.getSelection().getRangeAt(0);
-                const rect = range.getBoundingClientRect();
-                
-                selectionTooltip.style.left = `${rect.left + window.scrollX}px`;
-                selectionTooltip.style.top = `${rect.top + window.scrollY - 38}px`;
-                selectionTooltip.classList.remove('hidden');
+        function toggleTimer() {
+            timerActive = !timerActive;
+            const icon = document.getElementById('timerIcon');
+            if (timerActive) {
+                icon.className = 'fa-solid fa-pause';
             } else {
-                selectionTooltip.classList.add('hidden');
+                icon.className = 'fa-solid fa-play';
             }
         }
 
-        function openExcerptModalWithSelection() {
-            const selectedText = window.getSelection().toString().trim() || noteContentInput.value.slice(0, 100);
-            if (!selectedText) {
-                alert("발췌할 문장을 선택해 주세요.");
-                return;
+        function updateTimerDisplay() {
+            const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+        }
+
+        // Render Sidebar Pages
+        function renderPagesList() {
+            const listContainer = document.getElementById('pagesList');
+            listContainer.innerHTML = '';
+
+            notes.forEach(note => {
+                const isActive = note.id === currentNoteId;
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-2.5 rounded-xl cursor-pointer text-xs font-dodum transition ${
+                    isActive ? 'bg-rose-500 text-white shadow-sm' : 'hover:bg-rose-100/60 text-rose-900'
+                }`;
+                item.onclick = () => selectNote(note.id);
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2 truncate flex-1 pr-2">
+                        <i class="fa-regular fa-file-lines ${isActive ? 'text-white' : 'text-rose-400'}"></i>
+                        <span class="truncate">${note.title || '제목 없음'}</span>
+                    </div>
+                    ${notes.length > 1 ? `
+                        <button onclick="deleteNote(event, '${note.id}')" class="opacity-60 hover:opacity-100 px-1 text-[11px] ${isActive ? 'text-white' : 'text-rose-400 hover:text-rose-600'}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    ` : ''}
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function selectNote(id) {
+            currentNoteId = id;
+            renderPagesList();
+            loadCurrentNote();
+        }
+
+        function createNewPage() {
+            const newNote = {
+                id: 'note-' + Date.now(),
+                title: '새 집필 노트',
+                content: '',
+                font: 'font-batang',
+                updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newNote);
+            currentNoteId = newNote.id;
+            saveNotesToStorage();
+            renderPagesList();
+            loadCurrentNote();
+        }
+
+        function deleteNote(e, id) {
+            e.stopPropagation();
+            if (notes.length <= 1) return;
+            notes = notes.filter(n => n.id !== id);
+            if (currentNoteId === id) {
+                currentNoteId = notes[0].id;
             }
-            modalExcerptText.textContent = `"${selectedText}"`;
-            modalAuthorInput.value = "무제_MUZE";
-            modalExcerptAuthor.textContent = "무제_MUZE";
-            excerptModal.classList.remove('hidden');
-            document.getElementById('selection-tooltip').classList.add('hidden');
+            saveNotesToStorage();
+            renderPagesList();
+            loadCurrentNote();
         }
 
-        function closeExcerptModal() {
-            excerptModal.classList.add('hidden');
+        function loadCurrentNote() {
+            const note = notes.find(n => n.id === currentNoteId);
+            if (!note) return;
+
+            document.getElementById('noteTitleInput').value = note.title || '';
+            document.getElementById('editorContent').innerHTML = note.content || '';
+            
+            // Set Font
+            const fontSelect = document.getElementById('fontSelect');
+            fontSelect.value = note.font || 'font-batang';
+            changeFont(note.font || 'font-batang', false);
         }
 
-        // Export Render Preparation Helper
-        function prepareRenderContainer() {
-            const currentNote = state.notes.find(n => n.id === state.activeNoteId);
-            if (!currentNote) return null;
-
-            const renderTitle = document.getElementById('render-title');
-            const renderContent = document.getElementById('render-content');
-            const renderDate = document.getElementById('render-date');
-            const printableArea = document.getElementById('printable-a4-area');
-
-            renderTitle.textContent = currentNote.title || "제목 없는 집필 노트";
-            renderContent.textContent = currentNote.content || "내용이 없습니다.";
-            renderDate.textContent = currentNote.createdAt;
-            renderContent.className = `text-gray-800 text-base leading-relaxed whitespace-pre-wrap break-words ${fontFamilySelect.value}`;
-
-            return { currentNote, printableArea };
+        function updateCurrentNoteTitle(val) {
+            const note = notes.find(n => n.id === currentNoteId);
+            if (note) {
+                note.title = val;
+                note.updatedAt = new Date().toISOString();
+                saveNotesToStorage();
+                renderPagesList();
+            }
         }
 
-        // A4 PNG Image Export
-        async function exportToA4Image() {
-            exportDropdown.classList.add('hidden');
-            const prep = prepareRenderContainer();
-            if (!prep) return;
+        function saveCurrentNoteContent() {
+            const note = notes.find(n => n.id === currentNoteId);
+            if (note) {
+                note.content = document.getElementById('editorContent').innerHTML;
+                note.updatedAt = new Date().toISOString();
+                saveNotesToStorage();
+                
+                // Show status
+                const status = document.getElementById('autoSaveStatus');
+                status.innerText = '저장 중...';
+                setTimeout(() => {
+                    status.innerText = '자동 저장됨';
+                }, 500);
+            }
+        }
+
+        function saveNotesToStorage() {
+            localStorage.setItem('muze_notes', JSON.stringify(notes));
+        }
+
+        // Font and Formatting Commands
+        function changeFont(fontClass, save = true) {
+            const editor = document.getElementById('editorContent');
+            editor.classList.remove('font-batang', 'font-dodum', 'font-myeongjo', 'font-maruburi', 'font-pen', 'font-dongle', 'font-noto');
+            editor.classList.add(fontClass);
+
+            if (save) {
+                const note = notes.find(n => n.id === currentNoteId);
+                if (note) {
+                    note.font = fontClass;
+                    saveNotesToStorage();
+                }
+            }
+        }
+
+        function execCommand(command, value = null) {
+            document.execCommand(command, false, value);
+            saveCurrentNoteContent();
+        }
+
+        // Modal Controls
+        function openExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+        }
+
+        // Prepare Print Layout Element
+        function prepareCaptureArea() {
+            const note = notes.find(n => n.id === currentNoteId);
+            const title = note ? note.title : '집필 노트';
+            const content = document.getElementById('editorContent').innerText;
+            const dateStr = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('printTitle').innerText = title || '제목 없음';
+            document.getElementById('printDate').innerText = dateStr;
+            document.getElementById('printBody').innerText = content;
+        }
+
+        // Download PNG (A4 Ratio with clean footer)
+        async function downloadPNG() {
+            closeExportModal();
+            prepareCaptureArea();
+
+            const printArea = document.getElementById('printArea');
+            const target = document.getElementById('captureTarget');
+
+            printArea.classList.remove('hidden');
 
             try {
-                const canvas = await html2canvas(prep.printableArea, {
+                const canvas = await html2canvas(target, {
                     scale: 2,
                     useCORS: true,
-                    logging: false,
-                    width: 794,
-                    windowWidth: 794
+                    backgroundColor: '#ffffff'
                 });
 
                 const link = document.createElement('a');
-                link.download = `${prep.currentNote.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_무제MUZE.png`;
+                const note = notes.find(n => n.id === currentNoteId);
+                const filename = (note?.title || '무제_MUZE') + '.png';
+
+                link.download = filename;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (err) {
-                console.error("Image generation error:", err);
-                alert("이미지 저장 중 오류가 발생했습니다.");
+                console.error('PNG 저장 실패:', err);
+                alert('PNG 이미지 생성 중 오류가 발생했습니다.');
+            } finally {
+                printArea.classList.add('hidden');
             }
         }
 
-        // Direct Reliable PDF Export via html2pdf
-        function exportToPDF() {
-            exportDropdown.classList.add('hidden');
-            const prep = prepareRenderContainer();
-            if (!prep) return;
+        // Download PDF (Clean A4 PDF rendering)
+        function downloadPDF() {
+            closeExportModal();
+            prepareCaptureArea();
+
+            const printArea = document.getElementById('printArea');
+            const target = document.getElementById('captureTarget');
+
+            printArea.classList.remove('hidden');
+
+            const note = notes.find(n => n.id === currentNoteId);
+            const filename = (note?.title || '무제_MUZE') + '.pdf';
 
             const opt = {
-                margin:       0,
-                filename:     `${prep.currentNote.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_무제.pdf`,
+                margin:       10,
+                filename:     filename,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, width: 794, windowWidth: 794 },
+                html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(prep.printableArea).save();
+            html2pdf().set(opt).from(target).save().then(() => {
+                printArea.classList.add('hidden');
+            }).catch(err => {
+                console.error('PDF 다운로드 에러:', err);
+                printArea.classList.add('hidden');
+                // Fallback to window.print()
+                window.print();
+            });
         }
 
-        // TXT Text Download
-        function exportToTXT() {
-            exportDropdown.classList.add('hidden');
-            const currentNote = state.notes.find(n => n.id === state.activeNoteId);
-            if (!currentNote) return;
+        // Download TXT File
+        function downloadTXT() {
+            closeExportModal();
+            const note = notes.find(n => n.id === currentNoteId);
+            const title = note ? note.title : '제목 없음';
+            const content = document.getElementById('editorContent').innerText;
 
-            const textData = `제목: ${currentNote.title}\n작성일: ${currentNote.createdAt}\n출처: 무제_MUZE\n\n----------------------------------------\n\n${currentNote.content}`;
-            const blob = new Blob([textData], { type: 'text/plain;charset=utf-8' });
+            const fullText = `${title}\n\n${content}\n\n— 무제_MUZE`;
+            const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${currentNote.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_무제.txt`;
+            link.download = `${title}.txt`;
             link.click();
-        }
-
-        // Backup & Restore
-        function backupToJSON() {
-            exportDropdown.classList.add('hidden');
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `MUZE_Backup_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function restoreFromJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const restored = JSON.parse(e.target.result);
-                    if (restored.notes && Array.isArray(restored.notes)) {
-                        state.notes = restored.notes;
-                        state.excerpts = restored.excerpts || [];
-                        state.timerSeconds = restored.timerSeconds || 0;
-                        saveStateToLocalStorage();
-                        renderNotesList();
-                        renderExcerptsList();
-                        if (state.notes.length > 0) selectNote(state.notes[0].id);
-                        alert("데이터가 성공적으로 복원되었습니다.");
-                    }
-                } catch (err) {
-                    alert("올바르지 않은 백업 파일 형식입니다.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Event Listeners Setup
-        function setupEventListeners() {
-            noteTitleInput.addEventListener('input', updateCurrentNote);
-            noteContentInput.addEventListener('input', updateCurrentNote);
-
-            // Font options
-            fontFamilySelect.addEventListener('change', (e) => {
-                noteContentInput.className = `w-full flex-1 resize-none bg-transparent focus:outline-none leading-relaxed text-gray-800 ${e.target.value} ${fontSizeSelect.value} min-h-[500px]`;
-            });
-            fontSizeSelect.addEventListener('change', (e) => {
-                noteContentInput.className = `w-full flex-1 resize-none bg-transparent focus:outline-none leading-relaxed text-gray-800 ${fontFamilySelect.value} ${e.target.value} min-h-[500px]`;
-            });
-
-            document.getElementById('new-note-btn').addEventListener('click', () => createNewNote());
-            document.getElementById('search-input').addEventListener('input', (e) => renderNotesList(e.target.value));
-
-            // Tabs
-            const tabNotesBtn = document.getElementById('tab-notes-btn');
-            const tabExcerptsBtn = document.getElementById('tab-excerpts-btn');
-
-            tabNotesBtn.addEventListener('click', () => {
-                state.activeTab = 'notes';
-                tabNotesBtn.className = "flex-1 py-2.5 text-center text-brand-600 border-b-2 border-brand-500 font-semibold flex items-center justify-center gap-1.5";
-                tabExcerptsBtn.className = "flex-1 py-2.5 text-center text-gray-400 hover:text-brand-600 border-b-2 border-transparent flex items-center justify-center gap-1.5";
-                notesListContainer.classList.remove('hidden');
-                excerptsListContainer.classList.add('hidden');
-            });
-
-            tabExcerptsBtn.addEventListener('click', () => {
-                state.activeTab = 'excerpts';
-                tabExcerptsBtn.className = "flex-1 py-2.5 text-center text-brand-600 border-b-2 border-brand-500 font-semibold flex items-center justify-center gap-1.5";
-                tabNotesBtn.className = "flex-1 py-2.5 text-center text-gray-400 hover:text-brand-600 border-b-2 border-transparent flex items-center justify-center gap-1.5";
-                excerptsListContainer.classList.remove('hidden');
-                notesListContainer.classList.add('hidden');
-            });
-
-            // Toggle Sidebar
-            const sidebar = document.getElementById('sidebar');
-            document.getElementById('toggle-sidebar-btn').addEventListener('click', () => {
-                sidebar.classList.toggle('-ml-72');
-            });
-
-            // Export Menu
-            exportMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                exportDropdown.classList.toggle('hidden');
-            });
-
-            document.addEventListener('click', () => {
-                exportDropdown.classList.add('hidden');
-            });
-
-            // Actions
-            document.getElementById('export-a4-png-btn').addEventListener('click', exportToA4Image);
-            document.getElementById('export-pdf-btn').addEventListener('click', exportToPDF);
-            document.getElementById('export-txt-btn').addEventListener('click', exportToTXT);
-            document.getElementById('backup-json-btn').addEventListener('click', backupToJSON);
-            
-            const restoreBtn = document.getElementById('restore-json-btn');
-            const fileInput = document.getElementById('json-file-input');
-            restoreBtn.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', restoreFromJSON);
-
-            // Selection tooltips & Excerpt modal
-            document.addEventListener('mouseup', handleSelection);
-            document.getElementById('selection-tooltip').addEventListener('click', openExcerptModalWithSelection);
-            document.getElementById('extract-selection-btn').addEventListener('click', openExcerptModalWithSelection);
-            document.getElementById('close-modal-btn').addEventListener('click', closeExcerptModal);
-
-            modalAuthorInput.addEventListener('input', (e) => {
-                modalExcerptAuthor.textContent = e.target.value || "무제_MUZE";
-            });
-
-            // Themes
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const theme = e.currentTarget.getAttribute('data-theme');
-                    if (theme === 'pink') {
-                        excerptCardPreview.className = "p-6 rounded-xl bg-gradient-to-br from-brand-50 to-pink-50/60 border border-brand-100/80 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-gray-800";
-                    } else if (theme === 'clean') {
-                        excerptCardPreview.className = "p-6 rounded-xl bg-white border border-gray-200 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-gray-800";
-                    } else if (theme === 'dark') {
-                        excerptCardPreview.className = "p-6 rounded-xl bg-gray-900 border border-gray-800 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-white";
-                    } else if (theme === 'warm') {
-                        excerptCardPreview.className = "p-6 rounded-xl bg-amber-50/80 border border-amber-200 shadow-2xs mb-4 relative text-center min-h-[160px] flex flex-col justify-center text-amber-950";
-                    }
-                });
-            });
-
-            document.getElementById('save-excerpt-btn').addEventListener('click', () => {
-                saveExcerpt(
-                    modalExcerptText.textContent.replace(/^"|"$/g, ''),
-                    modalAuthorInput.value
-                );
-            });
-
-            document.getElementById('download-excerpt-card-btn').addEventListener('click', async () => {
-                try {
-                    const canvas = await html2canvas(excerptCardPreview, { scale: 3 });
-                    const link = document.createElement('a');
-                    link.download = `MUZE_Excerpt_${Date.now()}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                } catch (e) {
-                    alert("발췌 카드 저장 실패");
-                }
-            });
-        }
-
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
     </script>
 </body>
