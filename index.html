@@ -73,7 +73,7 @@
             display: block;
         }
 
-        /* Printable A4 Canvas Styling (Dynamic Height for Multi-page PDF) */
+        /* Printable A4 Canvas Styling */
         .a4-page {
             width: 210mm;
             padding: 20mm;
@@ -82,6 +82,18 @@
             box-shadow: 0 4px 20px rgba(244, 63, 94, 0.08);
             box-sizing: border-box;
             position: relative;
+        }
+
+        /* Excerpt Card Capture Box */
+        .excerpt-card-box {
+            width: 500px;
+            padding: 40px;
+            background: #fffdfd;
+            border: 1px solid #fecdd3;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(244, 63, 94, 0.05);
+            position: relative;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -284,6 +296,18 @@
         </div>
     </div>
 
+    <!-- Hidden Container for Excerpt Card Capture -->
+    <div id="excerptPrintArea" class="hidden">
+        <div id="excerptCaptureTarget" class="excerpt-card-box">
+            <div class="text-rose-400 text-2xl mb-3"><i class="fa-solid fa-quote-left"></i></div>
+            <p id="excerptCardText" class="text-base text-gray-800 font-batang leading-relaxed mb-6 whitespace-pre-wrap"></p>
+            <div class="flex justify-between items-center pt-3 border-t border-rose-100 text-xs text-rose-400 font-dodum">
+                <span id="excerptCardNote"></span>
+                <span>무제_MUZE</span>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Application Logic -->
     <script>
         let notes = JSON.parse(localStorage.getItem('muze_notes')) || [
@@ -395,9 +419,16 @@
                 item.className = 'p-3 bg-white rounded-xl border border-rose-200/60 shadow-sm text-xs font-batang relative group';
                 item.innerHTML = `
                     <p class="text-gray-800 mb-2 leading-relaxed">"${exc.text}"</p>
-                    <div class="flex justify-between items-center text-[10px] text-rose-400 font-dodum">
-                        <span>${exc.noteTitle}</span>
-                        <button onclick="deleteExcerpt(${index})" class="hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+                    <div class="flex justify-between items-center text-[10px] text-rose-400 font-dodum pt-2 border-t border-rose-50">
+                        <span class="truncate pr-1">${exc.noteTitle}</span>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button onclick="downloadSingleExcerpt(${index})" title="카드 이미지 저장" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-2 py-0.5 rounded transition">
+                                <i class="fa-solid fa-image"></i> 저장
+                            </button>
+                            <button onclick="deleteExcerpt(${index})" title="삭제" class="text-rose-400 hover:text-rose-600 p-0.5">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
                 listContainer.appendChild(item);
@@ -522,6 +553,38 @@
             excerpts.splice(index, 1);
             saveExcerptsToStorage();
             renderExcerptsList();
+        }
+
+        // Individual Excerpt PNG Download
+        async function downloadSingleExcerpt(index) {
+            const exc = excerpts[index];
+            if (!exc) return;
+
+            document.getElementById('excerptCardText').innerText = exc.text;
+            document.getElementById('excerptCardNote').innerText = exc.noteTitle;
+
+            const printArea = document.getElementById('excerptPrintArea');
+            const target = document.getElementById('excerptCaptureTarget');
+
+            printArea.classList.remove('hidden');
+
+            try {
+                const canvas = await html2canvas(target, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#fffdfd'
+                });
+
+                const link = document.createElement('a');
+                link.download = `발췌카드_${index + 1}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error('발췌 카드 저장 실패:', err);
+                alert('발췌 카드 이미지 생성 중 오류가 발생했습니다.');
+            } finally {
+                printArea.classList.add('hidden');
+            }
         }
 
         function openExportModal() {
