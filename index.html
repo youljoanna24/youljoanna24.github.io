@@ -84,7 +84,7 @@
             position: relative;
         }
 
-        /* Export Capture Canvas (오프스크린 보정으로 텍스트 뭉침 현상 완벽 방지) */
+        /* Export Capture Canvas */
         #captureTarget {
             width: 210mm;
             min-height: 297mm;
@@ -103,7 +103,7 @@
             overflow-wrap: break-word;
         }
 
-        /* Screen Offscreen Render Box */
+        /* Offscreen Render Box */
         .offscreen-render {
             position: fixed !important;
             left: -9999px !important;
@@ -211,4 +211,16 @@
                     <button onclick="execCommand('bold')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="굵게"><i class="fa-solid fa-bold"></i></button>
                     <button onclick="execCommand('italic')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="기울임꼴"><i class="fa-solid fa-italic"></i></button>
                     <button onclick="execCommand('underline')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="밑줄"><i class="fa-solid fa-underline"></i></button>
-                    <button onclick="execCommand('strikeThrough')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-70
+                    <button onclick="execCommand('strikeThrough')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="취소선"><i class="fa-solid fa-strikethrough"></i></button>
+
+                    <div class="h-4 w-[1px] bg-rose-200 mx-1"></div>
+
+                    <!-- Alignment -->
+                    <button onclick="execCommand('justifyLeft')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="왼쪽 정렬"><i class="fa-solid fa-align-left"></i></button>
+                    <button onclick="execCommand('justifyCenter')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="중앙 정렬"><i class="fa-solid fa-align-center"></i></button>
+                    <button onclick="execCommand('justifyRight')" class="w-7 h-7 flex items-center justify-center hover:bg-rose-100 rounded text-rose-700 text-xs" title="오른쪽 정렬"><i class="fa-solid fa-align-right"></i></button>
+
+                    <div class="h-4 w-[1px] bg-rose-200 mx-1"></div>
+
+                    <!-- Excerpt tool button -->
+                    <button onclick="createExcerptFromSelection()" class="text-xs bg-rose-100 hover:bg-
