@@ -43,4 +43,93 @@
         }
         .font-batang { font-family: 'Gowun Batang', serif; }
         .font-dodum { font-family: 'Gowun Dodum', sans-serif; }
-        .font-myeongjo { font-family: 'Nan
+        .font-myeongjo { font-family: 'Nanum Myeongjo', serif; }
+        .font-maruburi { font-family: 'Maru Buri', serif; }
+        .font-pen { font-family: 'Nanum Pen Script', cursive; }
+        .font-dongle { font-family: 'Dongle', sans-serif; }
+        .font-noto { font-family: 'Noto Sans KR', sans-serif; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f3;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fca5a5;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f87171;
+        }
+
+        /* Editor content styling */
+        #editorContent[contenteditable="true"]:empty:before {
+            content: attr(placeholder);
+            color: #dda0a0;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* Printable A4 Canvas Styling */
+        .a4-page {
+            width: 210mm;
+            padding: 20mm;
+            margin: auto;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.08);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Export Capture Canvas */
+        #captureTarget {
+            width: 210mm;
+            min-height: 297mm;
+            height: auto !important;
+            padding: 20mm;
+            background: #ffffff;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .export-text-body {
+            line-height: 1.85 !important;
+            letter-spacing: normal !important;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        /* Offscreen Render Box - Prevent Blocking Pointer Events */
+        .offscreen-render {
+            position: fixed !important;
+            left: -9999px !important;
+            top: 0 !important;
+            z-index: -9999 !important;
+            pointer-events: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+        }
+
+        /* Excerpt Card Capture Box */
+        .excerpt-card-box {
+            width: 500px;
+            padding: 40px;
+            background: #fffdfd;
+            border: 1px solid #fecdd3;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(244, 63, 94, 0.05);
+            position: relative;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden bg-rose-50/50">
+
+    <!-- App Header -->
+    <header class="h-14 bg-white/80 backdrop-blur border-b border-rose-100 flex items-center justify-between px-6 z-20">
+        <div class="flex items-center gap-3">
